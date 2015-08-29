@@ -132,7 +132,7 @@ namespace Boredbone.Utility
 #endif
 
                 //自動バックアップを使用する場合、正常に読み込めたファイルを別名でコピー
-                if (options.HasFlag(XmlLoadingOptions.UseBackup))
+                if (options.HasFlag(XmlLoadingOptions.UseBackup) || options.HasFlag(XmlLoadingOptions.DoBackup))
                 {
                     try
                     {
@@ -353,5 +353,10 @@ namespace Boredbone.Utility
         /// ロードに失敗した場合はnullを返す
         /// </summary>
         ReturnNull = 0x08,
+
+        /// <summary>
+        /// バックアップを行うが読み込まない
+        /// </summary>
+        DoBackup = 0x10,
     }
 }
