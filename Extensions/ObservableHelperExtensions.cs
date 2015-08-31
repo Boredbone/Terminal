@@ -25,7 +25,7 @@ namespace Boredbone.Utility.Extensions
             IDisposable result;
             if (dictionary.TryGetValue(key, out result))
             {
-                result.Dispose();
+                result?.Dispose();
                 dictionary.Remove(key);
             }
             //if (dictionary.ContainsKey(key))
