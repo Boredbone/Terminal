@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
 using Windows.Storage;
 #endif
 
@@ -34,7 +34,7 @@ namespace Boredbone.Utility
         /// オブジェクトをシリアライズしてxmlファイルに保存
         /// </summary>
         /// <param name="obj"></param>
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         public async Task SaveXmlAsync(T obj)
 #else
         public void SaveXml(T obj)
@@ -50,8 +50,8 @@ namespace Boredbone.Utility
             try
             {
 
-#if WINDOWS_APP
-                
+#if WINDOWS_APP || WINDOWS_UWP
+
                 //アプリ固有のフォルダにファイルを生成
                 var folder = ApplicationData.Current.LocalFolder;
 
@@ -91,7 +91,7 @@ namespace Boredbone.Utility
         /// 正常に読み込めたらそのファイルを自動でバックアップ
         /// </summary>
         /// <returns></returns>
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         public async Task<LoadedObjectContainer<T>> LoadXmlAsync()
         {
             return await LoadXmlAsync(XmlLoadingOptions.UseBackup | XmlLoadingOptions.IgnoreNotFound);
@@ -108,7 +108,7 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         public async Task<LoadedObjectContainer<T>> LoadXmlAsync(XmlLoadingOptions options)
 #else
         public LoadedObjectContainer<T> LoadXml(XmlLoadingOptions options)
@@ -121,7 +121,7 @@ namespace Boredbone.Utility
             try
             {
                 //ファイルから読み込み
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
                 var folder = ApplicationData.Current.LocalFolder;
 
                 var file = await folder.GetFileAsync(this.fileName);
@@ -136,7 +136,7 @@ namespace Boredbone.Utility
                 {
                     try
                     {
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
                         var copied = await file.CopyAsync
                             (folder, backUpNameHeader + this.fileName, NameCollisionOption.ReplaceExisting);
 #else
@@ -199,7 +199,7 @@ namespace Boredbone.Utility
 
 
             //バックアップを使用する設定の場合、バックアップファイルを読み込む
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
             return await this.LoadBackupMainAsync(options, errorMessage);
 #else
             return this.LoadBackupMain(options, errorMessage);
@@ -212,7 +212,7 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         public async Task<LoadedObjectContainer<T>> LoadBackupXmlAsync(XmlLoadingOptions options)
         {
             return await this.LoadBackupMainAsync(options, null);
@@ -226,7 +226,7 @@ namespace Boredbone.Utility
 #endif
 
 
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         public async Task<LoadedObjectContainer<T>> LoadBackupMainAsync(XmlLoadingOptions options, Exception errorMessage)
 #else
         private LoadedObjectContainer<T> LoadBackupMain(XmlLoadingOptions options, Exception errorMessage)
@@ -236,7 +236,7 @@ namespace Boredbone.Utility
             try
             {
                 //バックアップファイルを読み込む
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
                 var folder = ApplicationData.Current.LocalFolder;
 
                 var file = await folder.GetFileAsync(backUpNameHeader + fileName);
@@ -281,7 +281,7 @@ namespace Boredbone.Utility
             }
         }
 
-#if WINDOWS_APP
+#if WINDOWS_APP || WINDOWS_UWP
         private async Task<T> LoadMainAsync(StorageFolder folder,StorageFile file)
         {
             using (var stream = await file.OpenStreamForWriteAsync())
