@@ -630,19 +630,21 @@ namespace Boredbone.Utility.Extensions
             return (index >= 0 && index < array.Length);
         }
 
-
         public static T FromIndexOrDefault<T>(this IList<T> list, int index)
-        {
-            if (list != null && list.ContainsIndex(index))
-            {
-                return list[index];
-            }
-            return default(T);
-        }
+            => (list.ContainsIndex(index)) ? list[index] : default(T);
+
+        //public static T FromIndexOrDefault<T>(this IList<T> list, int index)
+        //{
+        //    if (list != null && list.ContainsIndex(index))
+        //    {
+        //        return list[index];
+        //    }
+        //    return default(T);
+        //}
 
         public static T FromIndexOrDefault<T>(this T[] array, int index)
         {
-            if (array != null && array.ContainsIndex(index))
+            if (array.ContainsIndex(index))
             {
                 return array[index];
             }
