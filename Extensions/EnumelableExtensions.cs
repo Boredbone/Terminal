@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -694,7 +695,7 @@ namespace Boredbone.Utility.Extensions
         /// </summary>
         /// <param name="array"></param>
         /// <returns></returns>
-        public static IEnumerable<object> AsEnumerable(this Array array)
+        public static IEnumerable<object> AsEnumerable(this IEnumerable array)
         {
             foreach (var item in array)
             {
@@ -708,11 +709,32 @@ namespace Boredbone.Utility.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="array"></param>
         /// <returns></returns>
-        public static IEnumerable<T> AsEnumerable<T>(this Array array)
+        public static IEnumerable<T> AsEnumerable<T>(this IEnumerable array)
         {
             foreach (var item in array)
             {
                 yield return (T)item;
+            }
+        }
+
+        //public static IEnumerable<object> AsEnumerable(this IEnumerable array)
+        //{
+        //    foreach (var item in array)
+        //    {
+        //        yield return item;
+        //    }
+        //}
+
+        public static IEnumerable<T> AsEnumerableWithSafeCast<T>(this IEnumerable array)
+            where T : class
+        {
+            foreach (var item in array)
+            {
+                var x = item as T;
+                if (x != null)
+                {
+                    yield return x;
+                }
             }
         }
     }
