@@ -15,12 +15,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ConcurrentExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumelableExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\MathExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ObservableHelperExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileSizeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NumberProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SequenceNumber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TextLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThreeState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)XmlSettingManager.cs" />
   </ItemGroup>
