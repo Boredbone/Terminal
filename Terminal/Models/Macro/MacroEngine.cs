@@ -1,0 +1,462 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Text;
+using System.Threading.Tasks;
+using Boredbone.Utility;
+using Boredbone.Utility.Extensions;
+using Boredbone.XamlTools.ViewModel;
+using Reactive.Bindings.Extensions;
+using Terminal.Models.Serial;
+
+namespace Terminal.Models.Macro
+{
+    /// <summary>
+    /// マクロに通信関連機能を提供
+    /// </summary>
+    public class MacroEngine : ViewModelBase, IMacroEngine
+    {
+
+        public int Timeout { get; set; } = 0;
+        //public bool AbortOnTimeout { get; set; } = true;
+
+        public IObservable<StatusItem> Status => this.StatusSubject.AsObservable();
+        private Subject<StatusItem> StatusSubject { get; }
+
+        private BehaviorSubject<bool> LockingSubject { get; }
+        private BehaviorSubject<bool> CancelSubject { get; }
+        //public bool IsCanceled { get; private set; }
+
+        public bool IsPausing => this.LockingSubject.Value;
+
+        private string nextMessage;
+
+
+        private IConnection Connection { get; }
+
+        //private AsyncLock asyncLock;
+        //private IDisposable locking;
+
+
+        private IObservable<WaitResultContainer> CancelObservable
+        {
+            get
+            {
+                return this.CancelSubject.Where(x => x)
+                    .Select(x => new WaitResultContainer(new OperationCanceledException("Macro was canceled")));
+
+                //return Observable.Throw<bool>(new OperationCanceledException())
+                //    .Zip(this.CancelSubject.Where(x => x), (a, b) => b);
+                //return this.CancelSubject
+                //    .Where(x => x)
+                //    .Do(x =>
+                //    {
+                //        throw new TaskCanceledException();
+                //    });
+            }
+        }
+
+        private IObservable<WaitResultContainer> ExceptionObservable
+        {
+            get
+            {
+
+                if (this.Timeout > 0)
+                {
+                    return Observable.Timer(TimeSpan.FromMilliseconds(this.Timeout))
+                        .Select(x => new WaitResultContainer
+                            (new TimeoutException($"Timeout {this.Timeout} [ms]")))
+                        .Merge(this.CancelObservable);
+                }
+                else
+                {
+                    return this.CancelObservable;
+                }
+            }
+        }
+
+
+
+
+        public MacroEngine(IConnection connection)
+        {
+            this.Connection = connection;
+            this.nextMessage = null;
+
+            this.LockingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
+            this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
+            this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
+            //this.IsCanceled = false;
+        }
+
+        /// <summary>
+        /// 返信が一行来るまで待つ
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> WaitLineAsync()
+        {
+            var result = await this.WaitLineAsync(1);
+            return result.First();
+        }
+
+        /// <summary>
+        /// 返信が指定行数来るまで待つ
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<string[]> WaitLineAsync(int count)
+        {
+            var list = new List<string>();
+            var bs = new BehaviorSubject<bool>(false);
+
+            //TODO timeout
+            var trigger = this.Connection.LineReceived
+                .Skip(1)
+                .Take(count)
+                .Delay(TimeSpan.FromMilliseconds(10))
+                .Subscribe(x =>
+                {
+                    list.Add(x);
+                    //if (count > 1)
+                    //{
+                    this.StatusSubject.OnNext(new StatusItem
+                        ($"Wait : {count} Lines, Received : {list.Count}, {x.Replace("\n", "\\n")}"));
+                    //}
+                },
+                () =>
+                {
+                    bs.OnNext(true);
+                });
+
+            await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : {count} Lines"));
+
+            //await this.SendAsync(null);
+            //
+            //this.StatusSubject.OnNext(new StatusItem($"Wait : {count} Lines"));
+            //
+            //
+            //await bs.Where(x => x).Merge(this.ExceptionObservable).Take(1);
+            //
+            //trigger.Dispose();
+            //bs.Dispose();
+            //
+            //await this.WaitIfPausingAsync();
+
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// 指定文字列のいずれかが来るまで待つ
+        /// </summary>
+        /// <param name="keywords"></param>
+        /// <returns></returns>
+        public async Task<int> WaitAsync(params string[] keywords)
+        {
+            if (keywords == null
+                || keywords.Length == 0
+                || keywords.Any(x => (x == null || x.Length < 1)))
+            {
+                var r = await this.WaitAsync();
+                return -1;
+            }
+
+            var wordSize = keywords.Select(x => x.Length).Max();
+
+            int result = -1;
+            var bs = new BehaviorSubject<bool>(false);
+
+            var list = new List<string>();
+            
+            var trigger = this.Connection.DataReceivedWithSendingLine
+                .Do(x => list.Add(x))
+                .Where(str => keywords.Any(kw => str.Contains(kw.Last())))
+                .Select(_ =>
+                {
+
+                    var textLength = 0;
+                    var invIndex = 0;
+                    for (int i = list.Count - 1; i >= 0; i--)
+                    {
+                        textLength += list[i].Length;
+                        if (textLength >= wordSize)
+                        {
+                            invIndex = i;
+                            break;
+                        }
+                    }
+                    //if (invIndex < 0)
+                    //{
+                    //    return -1;
+                    //}
+
+                    var str = list.Skip(invIndex).Join();
+
+                    for (int i = 0; i < keywords.Length; i++)
+                    {
+                        if (str.Contains(keywords[i]))
+                        {
+                            return i;
+                        }
+                    }
+                    return -1;
+                })
+                .Where(x => x >= 0)
+                .Take(1)
+                .Subscribe(x =>
+                {
+                    result = x;
+                },
+                () =>
+                {
+                    bs.OnNext(true);
+                });
+
+            await this.WaitTrigger(bs, trigger, new StatusItem
+                ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
+
+            //await this.SendAsync(null);
+            //
+            //
+            //this.StatusSubject.OnNext(new StatusItem
+            //    ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
+            //
+            //await bs.Where(x => x).Merge(this.ExceptionObservable).Take(1);
+            //
+            //trigger.Dispose();
+            //bs.Dispose();
+            //
+            //await this.WaitIfPausingAsync();
+
+            return result;
+        }
+
+        /// <summary>
+        /// 何らかの返信が来るまで待つ
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> WaitAsync()
+        {
+            string result = "";
+            var bs = new BehaviorSubject<bool>(false);
+
+            //TODO timeout
+            var trigger = this.Connection.DataReceived
+                .Subscribe(x =>
+                {
+                    result = x;
+                },
+                () =>
+                {
+                    bs.OnNext(true);
+                });
+
+            await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : Any responce"));
+
+            //await this.SendAsync(null);
+            //
+            //this.StatusSubject.OnNext(new StatusItem($"Wait : Any responce"));
+            //
+            //var waiting = await bs
+            //    .Where(x => x)
+            //    .Select(x => new WaitResultContainer(null))
+            //    .Merge(this.ExceptionObservable)
+            //    .Take(1);
+            //
+            //trigger.Dispose();
+            //bs.Dispose();
+            //
+            //if (!waiting.IsSucceeded)
+            //{
+            //    throw waiting.Exception;
+            //}
+            //
+            //await this.WaitIfPausingAsync();
+
+            return result;
+        }
+
+        /// <summary>
+        /// トリガーにかかるか例外が出るまで待つ
+        /// </summary>
+        /// <param name="bs"></param>
+        /// <param name="trigger"></param>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        private async Task WaitTrigger(BehaviorSubject<bool> bs, IDisposable trigger, StatusItem status)
+        {
+
+            await this.SendAsync(null);
+
+            this.StatusSubject.OnNext(status);
+
+            var waiting = await bs
+                .Where(x => x)
+                .Select(x => new WaitResultContainer(null))
+                .Merge(this.ExceptionObservable)
+                .Take(1);
+
+            trigger.Dispose();
+            bs.Dispose();
+
+            if (!waiting.IsSucceeded)
+            {
+                throw waiting.Exception;
+            }
+
+            await this.WaitIfPausingAsync();
+        }
+
+        /// <summary>
+        /// 指定時間待機
+        /// </summary>
+        /// <param name="timeMillisec"></param>
+        /// <returns></returns>
+        public async Task DelayAsync(int timeMillisec)
+        {
+            //await this.WaitIfPausingAsync();
+            await this.SendAsync(null);
+
+            this.StatusSubject.OnNext(new StatusItem($"Wait : {timeMillisec} [ms]"));
+            await Task.Delay(timeMillisec);
+
+            await this.WaitIfPausingAsync();
+        }
+
+        /// <summary>
+        /// 文字列を送信
+        /// </summary>
+        /// <param name="text"></param>
+        public async Task SendAsync(string text)
+        {
+            await this.SendAsync(text, false);
+        }
+
+        /// <summary>
+        /// 文字列を送信
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="immediately"></param>
+        public async Task SendAsync(string text, bool immediately)
+        {
+            if (this.nextMessage != null)
+            {
+                await this.SendMessageAsync(this.nextMessage);
+            }
+
+            if (immediately)
+            {
+                if (text != null)
+                {
+                    await this.SendMessageAsync(text);
+                }
+                this.nextMessage = null;
+            }
+            else
+            {
+                this.nextMessage = text;
+            }
+        }
+
+        /// <summary>
+        /// 文字列をConnectionに渡す
+        /// </summary>
+        /// <param name="text"></param>
+        private async Task SendMessageAsync(string text)
+        {
+            await this.WaitIfPausingAsync();
+
+            this.StatusSubject.OnNext(new StatusItem("Send : " + text));
+            this.Connection.WriteLine(text);// StatusItem.count.ToString()+ text);
+
+            await this.WaitIfPausingAsync();
+
+        }
+
+        public void Display(string text)
+        {
+            this.StatusSubject.OnNext(new StatusItem(text) { Type = StatusType.Message });
+        }
+        public void Start(string name)
+        {
+            this.StatusSubject.OnNext(new StatusItem($"Macro {name} start"));
+        }
+        public void End(string name)
+        {
+            this.StatusSubject.OnNext(new StatusItem($"Macro {name} end"));
+        }
+
+
+        public void Pause()
+        {
+            this.LockingSubject.OnNext(true);
+        }
+        public void Resume()
+        {
+            this.LockingSubject.OnNext(false);
+        }
+        private async Task WaitIfPausingAsync()
+        {
+            //if (this.IsCanceled)
+            //{
+            //    throw new OperationCanceledException();
+            //}
+            //await this.LockingSubject.Where(x => !x).Take(1);
+            var waiting = await this.LockingSubject
+                .Where(x => !x)
+                .Select(x => new WaitResultContainer(null))
+                .Merge(this.CancelObservable)
+                .Take(1);
+
+            if (!waiting.IsSucceeded)
+            {
+                throw waiting.Exception;
+            }
+        }
+
+        public void Cancel()
+        {
+            //this.IsCanceled = true;
+            this.CancelSubject.OnNext(true);
+        }
+
+
+
+
+        private class WaitResultContainer
+        {
+            public bool IsSucceeded => this.Exception == null;
+            public Exception Exception { get; }
+
+            public WaitResultContainer(Exception exception)
+            {
+                //this.IsSucceeded = isSucceeded;
+                this.Exception = exception;
+            }
+        }
+    }
+
+
+
+
+    public class StatusItem
+    {
+        public string Text { get; }
+        public StatusType Type { get; set; }
+
+        public static int count = 0;
+
+        public StatusItem(string text)
+        {
+            this.Text = text;// count.ToString() + text;
+            this.Type = StatusType.Normal;
+            count++;
+        }
+    }
+
+    public enum StatusType
+    {
+        Normal, Error, Message
+    }
+}

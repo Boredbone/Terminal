@@ -1,0 +1,99 @@
+﻿<Window x:Class="Terminal.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Terminal"
+        mc:Ignorable="d"
+        Title="Terminal Heaven's Rock" Height="700" Width="800" Closing="Window_Closing">
+
+    
+    <Grid Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="2">
+            
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Button Width="100" Content="Macro" Command="{Binding MacroCommand}"/>
+                <Button Width="100" Content="Cancel" Command="{Binding MacroCancelCommand}"/>
+                <Button Width="100" Content="{Binding PauseText.Value}" Command="{Binding MacroPauseCommand}"/>
+                <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Button Width="100" Content="Port" Command="{Binding GetPortNamesCommand}"/>
+                <ComboBox Width="100" ItemsSource="{Binding PortNames}"
+                      SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
+                      IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
+                <!--<TextBlock Width="100" Text="{Binding PortName.Value}"/>-->
+                <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"/>
+                <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"/>
+            </StackPanel>
+            
+        </StackPanel>
+
+        <ListView x:Name="textsList" ItemsSource="{Binding Texts}" Grid.Row="1"
+                  Margin="2"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  VirtualizingPanel.ScrollUnit="Pixel"
+                  HorizontalContentAlignment="Stretch"
+                  KeyDown="textsList_KeyDown">
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <TextBlock Text="{Binding Text}"
+                                   Foreground="{Binding Color}"
+                                   TextWrapping="Wrap" 
+                                   HorizontalAlignment="Stretch" FontFamily="Consolas"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+
+        </ListView>
+
+        <Grid Grid.Row="2" Margin="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0"
+                     HorizontalAlignment="Stretch"
+                     Text="{Binding RequestedText.Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                     KeyDown="TextBox_KeyDown"
+                     PreviewKeyDown="TextBox_PreviewKeyDown"/>
+            
+            <Button Grid.Column="1" Width="100" Content="Send" Command="{Binding SendCommand}"/>
+            
+        </Grid>
+
+
+        <ListView ItemsSource="{Binding ReceivedTexts}"
+                  Grid.RowSpan="3" Grid.Column="1"
+                  Margin="2"
+                  VirtualizingPanel.ScrollUnit="Pixel">
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   TextWrapping="NoWrap" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+    </Grid>
+</Window>
