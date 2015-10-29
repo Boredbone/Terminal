@@ -21,6 +21,8 @@ namespace Terminal.Models.Macro
         private MacroEngine Engine { get; set; }
         private IConnection Connaction { get; }
 
+        private Dictionary<string, IModule> Modules { get; }
+
         private Subject<string> ErrorSubject { get; }
         public IObservable<string> Error => this.ErrorSubject.AsObservable();
 
@@ -47,6 +49,8 @@ namespace Terminal.Models.Macro
             this.MessageSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.IsExecutingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.IsPausingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
+
+            this.Modules = new Dictionary<string, IModule>();
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace Terminal.Models.Macro
             {
                 try
                 {
-                    await code.RunAsync(macro);
+                    await code.RunAsync(macro, this.Modules);
                 }
                 catch (Exception e) when (e is TimeoutException || e is OperationCanceledException)
                 {
@@ -137,6 +141,16 @@ namespace Terminal.Models.Macro
                 this.Engine.Pause();
             }
 
+        }
+
+        /// <summary>
+        /// モジュールを登録
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="module"></param>
+        public void RegisterModule(string key,IModule module)
+        {
+            this.Modules[key] = module;
         }
     }
 }

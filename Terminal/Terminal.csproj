@@ -175,12 +175,13 @@
     <Compile Include="Models\Macro\CodeBlock.cs" />
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
+    <Compile Include="Models\Macro\IModule.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\ScriptMacro.cs" />
     <Compile Include="Models\Serial\IConnection.cs" />
     <Compile Include="Models\Macro\IMacroEngine.cs" />
     <Compile Include="Models\Serial\LineCodes.cs" />
-    <Compile Include="Models\Macro\MacroCode.cs" />
+    <Compile Include="Models\Macro\IMacroCode.cs" />
     <Compile Include="Models\Macro\MacroEngine.cs" />
     <Compile Include="Models\Macro\MacroPlayer.cs" />
     <Compile Include="Models\Macro\MacroSample.cs" />

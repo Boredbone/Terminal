@@ -11,18 +11,28 @@ namespace Terminal.Models.Macro
     public class DelegateMacro : IMacroCode
     {
         private string Name { get; }
-        private Func<IMacroEngine, Task> AsyncFunc { get; }
+        private Func<IMacroEngine, IReadOnlyDictionary<string, IModule>, Task> AsyncFunc { get; }
 
-        public DelegateMacro(string name, Func<IMacroEngine, Task> asyncFunc)
+        public DelegateMacro(string name,
+            Func<IMacroEngine, IReadOnlyDictionary<string, IModule>, Task> asyncFunc)
         {
             this.Name = name;
             this.AsyncFunc = asyncFunc;
 #if SIMULATION
             if (asyncFunc == null)
             {
-                this.AsyncFunc = async (Macro) =>
+                this.AsyncFunc = async (Macro, Modules) =>
                 {
 
+
+                    //var module = Modules["Module0"];
+                    //
+                    //module["parameter1"] = 1;
+                    //module["parameter2"] = "text";
+                    //
+                    //var currentParameter = module["parameter3"];
+                    //
+                    //var result = await module.RunAsync(null);
 
                     Macro.Timeout = 0;
 
@@ -96,12 +106,12 @@ namespace Terminal.Models.Macro
 #endif
         }
 
-        public async Task RunAsync(MacroEngine Macro)
+        public async Task RunAsync(MacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
         {
             Macro.Start(this.Name);
             try
             {
-                await this.AsyncFunc(Macro);
+                await this.AsyncFunc(Macro, Modules);
 
                 //ユーザー指定コードの実行後に必ず行う
                 await Macro.SendAsync(null);

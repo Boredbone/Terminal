@@ -44,9 +44,9 @@ namespace Terminal.Models.Macro
         //    this.Name = Path.GetFileNameWithoutExtension(filePath);
         //}
 
-        public async Task RunAsync(MacroEngine Macro)
+        public async Task RunAsync(MacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
         {
-            var global = new MacroGlobal(Macro);
+            var global = new MacroGlobal(Macro, Modules);
 
             var options = ScriptOptions.Default
                 .WithNamespaces(

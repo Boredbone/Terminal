@@ -10,8 +10,10 @@ namespace Terminal.Models.Macro
 {
     class MacroSample
     {
-        public async Task Sample(IMacroEngine Macro)
+        public async Task Sample(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
         {
+            #region Sample
+
             Macro.Timeout = 0;
 
             await Macro.SendAsync("cs1");
@@ -79,11 +81,37 @@ namespace Terminal.Models.Macro
             await Macro.SendAsync("cs5");
 
             await Macro.WaitAsync("\ny>");
+
+            #endregion
         }
 
-        public async Task Execute(IMacroEngine Macro)
+        public async Task ModuleSample(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
         {
-            
+            #region ModuleSample
+
+
+
+            Macro.Display(Modules.ToString());
+
+            var module = Modules["Module0"];
+
+            module["parameter1"] = 1;
+            module["parameter2"] = "text";
+
+            var currentParameter = module["parameter3"];
+
+            var result = await module.RunAsync(null);
+
+
+
+            #endregion
+        }
+
+        public async Task Execute(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        {
+            #region Template
+
+            #endregion
         }
     }
 }

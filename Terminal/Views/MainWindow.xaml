@@ -53,7 +53,7 @@
                         <TextBlock Text="{Binding Text}"
                                    Foreground="{Binding Color}"
                                    TextWrapping="Wrap" 
-                                   HorizontalAlignment="Stretch" FontFamily="Consolas"/>
+                                   HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="13.333"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
