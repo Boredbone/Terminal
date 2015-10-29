@@ -4,7 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+#if WINDOWS_APP || WINDOWS_UWP
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
+#else
 using System.Windows.Media;
+#endif
 
 namespace Boredbone.XamlTools.Extensions
 {
