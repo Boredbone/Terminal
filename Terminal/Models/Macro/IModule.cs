@@ -8,8 +8,9 @@ namespace Terminal.Models.Macro
 {
     public interface IModule
     {
-        object this[string key] { get; set; }
+        //object this[string key] { get; set; }
         //void SetParameter(string key, object value);
-        Task<object> RunAsync(object arg);
+        //Task<object> RunAsync(object arg);
+        MacroEngine Engine { get; set; }
     }
 }

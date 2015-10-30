@@ -18,16 +18,16 @@ namespace Terminal.Models.Macro
     /// </summary>
     public class MacroEngine : ViewModelBase, IMacroEngine
     {
-
+        /// <summary>
+        /// タイムアウト時間，0の場合タイムアウトなし
+        /// </summary>
         public int Timeout { get; set; } = 0;
-        //public bool AbortOnTimeout { get; set; } = true;
 
         public IObservable<StatusItem> Status => this.StatusSubject.AsObservable();
         private Subject<StatusItem> StatusSubject { get; }
 
         private BehaviorSubject<bool> LockingSubject { get; }
         private BehaviorSubject<bool> CancelSubject { get; }
-        //public bool IsCanceled { get; private set; }
 
         public bool IsPausing => this.LockingSubject.Value;
 
@@ -36,46 +36,24 @@ namespace Terminal.Models.Macro
 
         private IConnection Connection { get; }
 
-        //private AsyncLock asyncLock;
-        //private IDisposable locking;
 
-
+        /// <summary>
+        /// キャンセル要求時にOperationCanceledExceptionを発生させる
+        /// </summary>
         private IObservable<WaitResultContainer> CancelObservable
-        {
-            get
-            {
-                return this.CancelSubject.Where(x => x)
-                    .Select(x => new WaitResultContainer(new OperationCanceledException("Macro was canceled")));
+            => this.CancelSubject.Where(x => x)
+            .Select(x => new WaitResultContainer(new OperationCanceledException("Macro was canceled")));
 
-                //return Observable.Throw<bool>(new OperationCanceledException())
-                //    .Zip(this.CancelSubject.Where(x => x), (a, b) => b);
-                //return this.CancelSubject
-                //    .Where(x => x)
-                //    .Do(x =>
-                //    {
-                //        throw new TaskCanceledException();
-                //    });
-            }
-        }
 
+        /// <summary>
+        /// キャンセル要求とタイムアウト時に例外を発生させる
+        /// </summary>
         private IObservable<WaitResultContainer> ExceptionObservable
-        {
-            get
-            {
-
-                if (this.Timeout > 0)
-                {
-                    return Observable.Timer(TimeSpan.FromMilliseconds(this.Timeout))
-                        .Select(x => new WaitResultContainer
-                            (new TimeoutException($"Timeout {this.Timeout} [ms]")))
-                        .Merge(this.CancelObservable);
-                }
-                else
-                {
-                    return this.CancelObservable;
-                }
-            }
-        }
+            => (this.Timeout <= 0) ? this.CancelObservable
+            : Observable.Timer(TimeSpan.FromMilliseconds(this.Timeout))
+            .Select(x => new WaitResultContainer(new TimeoutException($"Timeout {this.Timeout} [ms]")))
+            .Merge(this.CancelObservable);
+        
 
 
 
@@ -88,7 +66,7 @@ namespace Terminal.Models.Macro
             this.LockingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
-            //this.IsCanceled = false;
+
         }
 
         /// <summary>
@@ -110,8 +88,7 @@ namespace Terminal.Models.Macro
         {
             var list = new List<string>();
             var bs = new BehaviorSubject<bool>(false);
-
-            //TODO timeout
+            
             var trigger = this.Connection.LineReceived
                 .Skip(1)
                 .Take(count)
@@ -119,11 +96,8 @@ namespace Terminal.Models.Macro
                 .Subscribe(x =>
                 {
                     list.Add(x);
-                    //if (count > 1)
-                    //{
                     this.StatusSubject.OnNext(new StatusItem
                         ($"Wait : {count} Lines, Received : {list.Count}, {x.Replace("\n", "\\n")}"));
-                    //}
                 },
                 () =>
                 {
@@ -131,18 +105,7 @@ namespace Terminal.Models.Macro
                 });
 
             await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : {count} Lines"));
-
-            //await this.SendAsync(null);
-            //
-            //this.StatusSubject.OnNext(new StatusItem($"Wait : {count} Lines"));
-            //
-            //
-            //await bs.Where(x => x).Merge(this.ExceptionObservable).Take(1);
-            //
-            //trigger.Dispose();
-            //bs.Dispose();
-            //
-            //await this.WaitIfPausingAsync();
+            
 
             return list.ToArray();
         }
@@ -162,6 +125,7 @@ namespace Terminal.Models.Macro
                 return -1;
             }
 
+            //キーワードの最大文字数
             var wordSize = keywords.Select(x => x.Length).Max();
 
             int result = -1;
@@ -177,6 +141,8 @@ namespace Terminal.Models.Macro
 
                     var textLength = 0;
                     var invIndex = 0;
+
+                    //キーワード判定のために必要な受信データの数を調べる
                     for (int i = list.Count - 1; i >= 0; i--)
                     {
                         textLength += list[i].Length;
@@ -186,20 +152,21 @@ namespace Terminal.Models.Macro
                             break;
                         }
                     }
-                    //if (invIndex < 0)
-                    //{
-                    //    return -1;
-                    //}
 
+                    //新しい受信データのうち必要な分を結合
                     var str = list.Skip(invIndex).Join();
 
+                    //キーワードが含まれているか
                     for (int i = 0; i < keywords.Length; i++)
                     {
                         if (str.Contains(keywords[i]))
                         {
+                            //インデックスを返却
                             return i;
                         }
                     }
+
+                    //キーワードが含まれていない
                     return -1;
                 })
                 .Where(x => x >= 0)
@@ -215,20 +182,7 @@ namespace Terminal.Models.Macro
 
             await this.WaitTrigger(bs, trigger, new StatusItem
                 ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
-
-            //await this.SendAsync(null);
-            //
-            //
-            //this.StatusSubject.OnNext(new StatusItem
-            //    ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
-            //
-            //await bs.Where(x => x).Merge(this.ExceptionObservable).Take(1);
-            //
-            //trigger.Dispose();
-            //bs.Dispose();
-            //
-            //await this.WaitIfPausingAsync();
-
+            
             return result;
         }
 
@@ -241,39 +195,12 @@ namespace Terminal.Models.Macro
             string result = "";
             var bs = new BehaviorSubject<bool>(false);
 
-            //TODO timeout
             var trigger = this.Connection.DataReceived
-                .Subscribe(x =>
-                {
-                    result = x;
-                },
-                () =>
-                {
-                    bs.OnNext(true);
-                });
+                .Take(1)
+                .Subscribe(x => result = x, () => bs.OnNext(true));
 
             await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : Any responce"));
-
-            //await this.SendAsync(null);
-            //
-            //this.StatusSubject.OnNext(new StatusItem($"Wait : Any responce"));
-            //
-            //var waiting = await bs
-            //    .Where(x => x)
-            //    .Select(x => new WaitResultContainer(null))
-            //    .Merge(this.ExceptionObservable)
-            //    .Take(1);
-            //
-            //trigger.Dispose();
-            //bs.Dispose();
-            //
-            //if (!waiting.IsSucceeded)
-            //{
-            //    throw waiting.Exception;
-            //}
-            //
-            //await this.WaitIfPausingAsync();
-
+            
             return result;
         }
 
@@ -315,7 +242,6 @@ namespace Terminal.Models.Macro
         /// <returns></returns>
         public async Task DelayAsync(int timeMillisec)
         {
-            //await this.WaitIfPausingAsync();
             await this.SendAsync(null);
 
             this.StatusSubject.OnNext(new StatusItem($"Wait : {timeMillisec} [ms]"));
@@ -368,41 +294,61 @@ namespace Terminal.Models.Macro
             await this.WaitIfPausingAsync();
 
             this.StatusSubject.OnNext(new StatusItem("Send : " + text));
-            this.Connection.WriteLine(text);// StatusItem.count.ToString()+ text);
+            this.Connection.WriteLine(text);
 
             await this.WaitIfPausingAsync();
 
         }
 
+        /// <summary>
+        /// 文字列を画面に表示
+        /// </summary>
+        /// <param name="text"></param>
         public void Display(string text)
         {
             this.StatusSubject.OnNext(new StatusItem(text) { Type = StatusType.Message });
         }
+
+        /// <summary>
+        /// マクロ開始
+        /// </summary>
+        /// <param name="name"></param>
         public void Start(string name)
         {
             this.StatusSubject.OnNext(new StatusItem($"Macro {name} start"));
         }
+
+        /// <summary>
+        /// マクロ終了
+        /// </summary>
+        /// <param name="name"></param>
         public void End(string name)
         {
             this.StatusSubject.OnNext(new StatusItem($"Macro {name} end"));
         }
 
-
+        /// <summary>
+        /// 一時停止
+        /// </summary>
         public void Pause()
         {
             this.LockingSubject.OnNext(true);
         }
+
+        /// <summary>
+        /// 再開
+        /// </summary>
         public void Resume()
         {
             this.LockingSubject.OnNext(false);
         }
+
+        /// <summary>
+        /// 一時停止中の場合は待機
+        /// </summary>
+        /// <returns></returns>
         private async Task WaitIfPausingAsync()
         {
-            //if (this.IsCanceled)
-            //{
-            //    throw new OperationCanceledException();
-            //}
-            //await this.LockingSubject.Where(x => !x).Take(1);
             var waiting = await this.LockingSubject
                 .Where(x => !x)
                 .Select(x => new WaitResultContainer(null))
@@ -415,15 +361,19 @@ namespace Terminal.Models.Macro
             }
         }
 
+        /// <summary>
+        /// 実行を停止
+        /// </summary>
         public void Cancel()
         {
-            //this.IsCanceled = true;
             this.CancelSubject.OnNext(true);
         }
 
 
 
-
+        /// <summary>
+        /// 待機結果のコンテナ
+        /// </summary>
         private class WaitResultContainer
         {
             public bool IsSucceeded => this.Exception == null;
@@ -431,32 +381,8 @@ namespace Terminal.Models.Macro
 
             public WaitResultContainer(Exception exception)
             {
-                //this.IsSucceeded = isSucceeded;
                 this.Exception = exception;
             }
         }
-    }
-
-
-
-
-    public class StatusItem
-    {
-        public string Text { get; }
-        public StatusType Type { get; set; }
-
-        public static int count = 0;
-
-        public StatusItem(string text)
-        {
-            this.Text = text;// count.ToString() + text;
-            this.Type = StatusType.Normal;
-            count++;
-        }
-    }
-
-    public enum StatusType
-    {
-        Normal, Error, Message
     }
 }

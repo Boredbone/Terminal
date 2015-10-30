@@ -21,13 +21,11 @@ namespace Terminal.Models.Macro
         private MacroEngine Engine { get; set; }
         private IConnection Connaction { get; }
 
-        private Dictionary<string, IModule> Modules { get; }
+        public ModuleManager Modules { get; }
 
         private Subject<string> ErrorSubject { get; }
         public IObservable<string> Error => this.ErrorSubject.AsObservable();
-
-        //private Subject<string> NoticeSubject { get; }
-        //public IObservable<string> Notice => this.NoticeSubject.AsObservable();
+        
 
         private Subject<StatusItem> MessageSubject { get; }
         public IObservable<StatusItem> Message => this.MessageSubject.AsObservable();
@@ -45,12 +43,11 @@ namespace Terminal.Models.Macro
         {
             this.Connaction = connection;
             this.ErrorSubject = new Subject<string>().AddTo(this.Disposables);
-            //this.NoticeSubject = new Subject<string>().AddTo(this.Disposables);
             this.MessageSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.IsExecutingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.IsPausingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
 
-            this.Modules = new Dictionary<string, IModule>();
+            this.Modules = new ModuleManager();
         }
 
         /// <summary>
@@ -73,15 +70,14 @@ namespace Terminal.Models.Macro
             this.Engine = macro;
 
             macro.Status
-            //.ObserveOnUIDispatcher()
             .Subscribe(y =>
             {
                 this.MessageSubject.OnNext(y);
             })
             .AddTo(macroDisposables);
 
-
-            //var mc = new MacroCode();
+            this.Modules.Engine = macro;
+            
 
             //別スレッドで開始
             Task.Run(async () =>
@@ -148,9 +144,9 @@ namespace Terminal.Models.Macro
         /// </summary>
         /// <param name="key"></param>
         /// <param name="module"></param>
-        public void RegisterModule(string key,IModule module)
-        {
-            this.Modules[key] = module;
-        }
+        //public void RegisterModule(string key,IModule module)
+        //{
+        //    this.Modules[key] = module;
+        //}
     }
 }

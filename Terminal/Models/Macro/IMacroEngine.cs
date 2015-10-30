@@ -5,7 +5,7 @@ namespace Terminal.Models.Macro
     public interface IMacroEngine
     {
         /// <summary>
-        /// タイムアウト時間　
+        /// タイムアウト時間，0の場合タイムアウトなし
         /// </summary>
         int Timeout { get; set; }
 

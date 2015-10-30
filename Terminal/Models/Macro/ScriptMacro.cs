@@ -1,65 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Boredbone.Utility.Extensions;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
 
 namespace Terminal.Models.Macro
 {
-
+    /// <summary>
+    /// 文字列をC#コードとして実行
+    /// </summary>
     public class ScriptMacro : IMacroCode
     {
         private string Code { get; }
         private string Name { get; }
+
+        //private static bool initialized = false;
 
         public ScriptMacro(string name, string code)
         {
             this.Name = name;
             this.Code = code;
         }
-
-        //public void Load(string filePath)
-        //{
-        //    string text = "";
-        //
-        //    //テキストファイルを開く
-        //    using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        //    {
-        //        byte[] bs = new byte[fs.Length];
-        //        //byte配列に読み込む
-        //        fs.Read(bs, 0, bs.Length);
-        //
-        //        //文字コードを取得する
-        //        var enc = bs.GetCode();
-        //
-        //        text = enc.GetString(bs);
-        //    }
-        //
-        //    this.Code = text;
-        //    this.Name = Path.GetFileNameWithoutExtension(filePath);
-        //}
-
-        public async Task RunAsync(MacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        
+        /// <summary>
+        /// マクロ実行
+        /// </summary>
+        /// <param name="Macro"></param>
+        /// <param name="Modules"></param>
+        /// <returns></returns>
+        public async Task RunAsync(MacroEngine Macro, ModuleManager Modules)
         {
+
+            //if (!initialized)
+            //{
+            //    await CSharpScript.Create("").RunAsync();
+            //    initialized = true;
+            //}
+
+
             var global = new MacroGlobal(Macro, Modules);
 
-            var options = ScriptOptions.Default
-                .WithNamespaces(
+            var spaces = new[] {
                 "System",
                 "System.Collections",
                 "System.Collections.Generic",
                 "System.Threading.Tasks",
                 "System.Text",
                 "System.IO",
-                "System.Linq")
-                .WithReferences(
+                "System.Linq"}
+            .Union(Modules.NameSpaces);
+
+            var assemblies = new[] {
                 typeof(object).Assembly,
-                typeof(Enumerable).Assembly);
+                typeof(Enumerable).Assembly}
+            .Union(Modules.Assemblies);
+
+            var options = ScriptOptions.Default
+                .WithNamespaces(spaces)
+                .WithReferences(assemblies);
 
             var script = CSharpScript.Create(this.Code, options, typeof(MacroGlobal));
 
@@ -68,7 +68,7 @@ namespace Terminal.Models.Macro
             {
                 var state = await script.RunAsync(global);
 
-                //ユーザー指定コードの実行後に必ず行う
+                //送信バッファを空にする
                 await Macro.SendAsync(null);
             }
             finally

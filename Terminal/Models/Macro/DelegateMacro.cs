@@ -8,13 +8,16 @@ using Terminal.Models.Serial;
 
 namespace Terminal.Models.Macro
 {
+    /// <summary>
+    /// デリゲートをマクロとして実行
+    /// </summary>
     public class DelegateMacro : IMacroCode
     {
         private string Name { get; }
-        private Func<IMacroEngine, IReadOnlyDictionary<string, IModule>, Task> AsyncFunc { get; }
+        private Func<IMacroEngine, ModuleManager, Task> AsyncFunc { get; }
 
         public DelegateMacro(string name,
-            Func<IMacroEngine, IReadOnlyDictionary<string, IModule>, Task> asyncFunc)
+            Func<IMacroEngine, ModuleManager, Task> asyncFunc)
         {
             this.Name = name;
             this.AsyncFunc = asyncFunc;
@@ -25,6 +28,18 @@ namespace Terminal.Models.Macro
                 {
 
 
+                    //Macro.Display(Modules.ToString());
+                    //
+                    //var module = Modules.Get<ModuleSample>();
+                    //
+                    //module.Parameter1 = 1;
+                    //module.Parameter2 = "text";
+                    //
+                    //var currentParameter = module.Parameter3;
+                    //
+                    //
+                    //var result = await module.RunAsync();
+                    //return;
                     //var module = Modules["Module0"];
                     //
                     //module["parameter1"] = 1;
@@ -106,14 +121,20 @@ namespace Terminal.Models.Macro
 #endif
         }
 
-        public async Task RunAsync(MacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        /// <summary>
+        /// マクロ実行
+        /// </summary>
+        /// <param name="Macro"></param>
+        /// <param name="Modules"></param>
+        /// <returns></returns>
+        public async Task RunAsync(MacroEngine Macro, ModuleManager Modules)
         {
             Macro.Start(this.Name);
             try
             {
                 await this.AsyncFunc(Macro, Modules);
 
-                //ユーザー指定コードの実行後に必ず行う
+                //送信バッファを空にする
                 await Macro.SendAsync(null);
             }
             finally

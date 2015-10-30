@@ -177,7 +177,11 @@
     <Compile Include="Models\Macro\DelegateMacro.cs" />
     <Compile Include="Models\Macro\IModule.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
+    <Compile Include="Models\Macro\ModuleManager.cs" />
+    <Compile Include="Models\Macro\ModuleSample.cs" />
     <Compile Include="Models\Macro\ScriptMacro.cs" />
+    <Compile Include="Models\Macro\StatusItem.cs" />
+    <Compile Include="Models\Macro\StatusType.cs" />
     <Compile Include="Models\Serial\IConnection.cs" />
     <Compile Include="Models\Macro\IMacroEngine.cs" />
     <Compile Include="Models\Serial\LineCodes.cs" />

@@ -6,6 +6,6 @@ namespace Terminal.Models.Macro
 {
     public interface IMacroCode
     {
-        Task RunAsync(MacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules);
+        Task RunAsync(MacroEngine Macro, ModuleManager Modules);
     }
 }

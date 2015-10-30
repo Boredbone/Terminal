@@ -10,7 +10,7 @@ namespace Terminal.Models.Macro
 {
     class MacroSample
     {
-        public async Task Sample(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        public async Task Sample(IMacroEngine Macro, ModuleManager Modules)
         {
             #region Sample
 
@@ -85,29 +85,31 @@ namespace Terminal.Models.Macro
             #endregion
         }
 
-        public async Task ModuleSample(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        public async Task ModuleSample(IMacroEngine Macro, ModuleManager Modules)
         {
             #region ModuleSample
 
 
 
-            Macro.Display(Modules.ToString());
 
-            var module = Modules["Module0"];
+            var module = Modules.Get<ModuleSample>();
 
-            module["parameter1"] = 1;
-            module["parameter2"] = "text";
+            Macro.Display(module.ToString());
 
-            var currentParameter = module["parameter3"];
+            module.Parameter1 = 1;
+            module.Parameter2 = "text";
+            
+            var currentParameter = module.Parameter3;
+            
 
-            var result = await module.RunAsync(null);
+            var result = await module.RunAsync();
 
 
 
             #endregion
         }
 
-        public async Task Execute(IMacroEngine Macro, IReadOnlyDictionary<string, IModule> Modules)
+        public async Task Execute(IMacroEngine Macro, ModuleManager Modules)
         {
             #region Template
 

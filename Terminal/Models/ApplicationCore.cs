@@ -28,13 +28,13 @@ namespace Terminal.Models
 #endif
             this.Connection.LineCode = LineCodes.Lf;
 
-            this.MacroPlayer = new MacroPlayer(this.Connection);
+            this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
 
             //TODO module
-            this.MacroPlayer.RegisterModule("Module1", null);
-            this.MacroPlayer.RegisterModule("Module2", null);
-            this.MacroPlayer.RegisterModule("Module3", null);
+            this.MacroPlayer.Modules.Register(new ModuleSample());
+            //this.MacroPlayer.RegisterModule("Module2", null);
+            //this.MacroPlayer.RegisterModule("Module3", null);
         }
     }
 }

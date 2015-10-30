@@ -78,7 +78,7 @@ namespace Terminal.ViewModels
             this.Core = ((App)Application.Current).CoreData;
 
             this.ActionQueue = new ConcurrentQueue<Action>();
-            this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);//.AddTo(this.Disposables);
+            this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
             this.Texts = new ObservableCollection<LogItem>();
             this.TextHistory = new List<string>();
@@ -101,8 +101,7 @@ namespace Terminal.ViewModels
             this.PortName = new ReactiveProperty<string>("").AddTo(this.Disposables);
 
 
-            this.Connection = this.Core.Connection;// new SerialConnection().AddTo(this.Disposables);
-            //this.Connection.LineCode = LineCodes.Lf;
+            this.Connection = this.Core.Connection;
 
             this.IsPortOpen = this.Connection.IsOpenChanged.ToReactiveProperty().AddTo(this.Disposables);
 
@@ -119,21 +118,18 @@ namespace Terminal.ViewModels
             //データ受信時の動作
             this.Connection
                 .DataReceived
-                //.ObserveOnUIDispatcher()
                 .Subscribe(str => this.Write(str, false))
                 .AddTo(this.Disposables);
 
             //データ送信時のエコー
             this.Connection
                 .DataSent
-                //.ObserveOnUIDispatcher()
                 .Subscribe(str => this.Write(str, true))
                 .AddTo(this.Disposables);
 
             //データが送信されなかった
             this.Connection
                 .DataIgnored
-                //.ObserveOnUIDispatcher()
                 .Subscribe(str => this.WriteNotice(str, false, LogTypes.DisabledMessage))
                 .AddTo(this.Disposables);
 
@@ -229,7 +225,6 @@ namespace Terminal.ViewModels
 
             this.PauseText = player.IsPausing
                 .Select(y => y ? "Resume" : "Pause")
-                //.ObserveOnUIDispatcher()
                 .ToReactiveProperty()
                 .AddTo(this.Disposables);
 
@@ -287,12 +282,7 @@ namespace Terminal.ViewModels
                     {
                         //次の要求が来るまで待機
                         this.WaitHandle.WaitOne(-1);
-
-                        //if (this.CancellationTokenSource.Token.IsCancellationRequested)
-                        //{
-                        //    break;
-                        //}
-                        //this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                        
 
                         //キューにリクエストがあれば実行
                         Action request;
@@ -316,9 +306,7 @@ namespace Terminal.ViewModels
                     //throw;
                 }
             }, this.CancellationTokenSource.Token);
-
-            //Disposable.Create(() => this.CancellationTokenSource.Cancel()).AddTo(this.Disposables);
-
+            
 
 
             //リストに空アイテムを追加
@@ -428,18 +416,7 @@ namespace Terminal.ViewModels
         {
             this.AddLine("", LogTypes.Normal);
         }
-
-        /// <summary>
-        /// テキストを追加して改行
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="forceScroll"></param>
-        //private void WriteAndFeed(string text,bool forceScroll)
-        //{
-        //    this.Write(text);
-        //    this.FeedLine();
-        //    this.ScrollToBottom(forceScroll);
-        //}
+        
 
 
         /// <summary>
@@ -512,7 +489,9 @@ namespace Terminal.ViewModels
             }
         }
 
-
+        /// <summary>
+        /// ファイルを選択してマクロを実行
+        /// </summary>
         private void StartMacro()
         {
 

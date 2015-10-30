@@ -152,19 +152,11 @@ namespace Terminal.Models.Serial
             //受信データを一行ごとに整形
             this.DataReceivedWithSendingLine
                 .Buffer(this.DataReceivedWithSendingLine.Where(x => x.Contains(this.ReceivingNewLine)))
-                //.Delay(TimeSpan.FromMilliseconds(10))
                 .Subscribe(list =>
                 {
                     var fixedText = buffer + list.Join();
                     var texts = fixedText.Split(this.Splitter, StringSplitOptions.None);
 
-                    /*
-                    if (fixedText.EndsWith(this.Splitter.First()))
-                    {
-                        texts.ForEach(x => this.LineReceivedSubject.OnNext(x));
-                        buffer = "";
-                    }
-                    else */
                     if (texts.Length > 0)
                     {
                         for (int i = 0; i < texts.Length - 1; i++)
@@ -246,27 +238,15 @@ namespace Terminal.Models.Serial
         {
             if (this.Port != null)
             {
-                //var nl = "\r\n";// this.Port.NewLine;
                 this.Port.WriteLine(text);
-                //this.Port.Write(text + this.SendingNewLine);
                 this.DataSentSubject.OnNext(text);
-                //this.InputNewLineSubject.OnNext(this.ReceivingNewLine);
-
-                //this.DataReceivedSubject.OnNext("aaabbb\n\nccc\n");
             }
             else
             {
                 this.DataIgnoredSubject.OnNext(text);
             }
         }
-
-        //private void Write(string text)
-        //{
-        //    if(this.Port!= null)
-        //    {
-        //        this.Port.Write(text);
-        //    }
-        //}
+        
 
         /// <summary>
         /// ポートを破棄

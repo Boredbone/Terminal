@@ -151,7 +151,7 @@ namespace Terminal.Models.Serial
                 .AddTo(this.Disposables);
 
             this.DataSentSubject
-                .Delay(TimeSpan.FromMilliseconds(1000))
+                .Delay(TimeSpan.FromMilliseconds(2000))
                 .Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
                 .Subscribe(this.DataReceivedSubject)
                 .AddTo(this.Disposables);
