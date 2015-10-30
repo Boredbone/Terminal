@@ -46,6 +46,14 @@ namespace Boredbone.Utility.Extensions
             //return first.Concat(second).Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value);
         }
 
+        /// <summary>
+        /// 二つのDictionaryを結合
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
         public static ConcurrentDictionary<TKey, TValue> Merge<TKey, TValue>
             (this ConcurrentDictionary<TKey, TValue> first, IEnumerable<KeyValuePair<TKey, TValue>> second)
         {
@@ -75,6 +83,12 @@ namespace Boredbone.Utility.Extensions
             //.ToDictionary(x => x.Key, x => x.Value);
         }
 
+        /// <summary>
+        /// 最初の要素を返却，シーケンスが空の場合はnull
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static T? FirstOrNull<T>(this IEnumerable<T> source) where T : struct
         {
             foreach (var item in source)
@@ -84,6 +98,13 @@ namespace Boredbone.Utility.Extensions
             return null;
         }
 
+        /// <summary>
+        /// 条件に一致する最初の要素を返却，シーケンスが空の場合はnull
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public static T? FirstOrNull<T>
             (this IEnumerable<T> source, Func<T, bool> predicate) where T : struct
         {
@@ -96,22 +117,13 @@ namespace Boredbone.Utility.Extensions
             }
             return null;
         }
-
-        /*
-        public static int FirstIndex<T>(this IEnumerable<T> source, Func<T, bool> predicate)
-        {
-            int count = 0;
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                {
-                    return count;
-                }
-                count++;
-            }
-            return -1;
-        }*/
-
+        
+        /// <summary>
+        /// シーケンスの全要素に対する処理
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="action"></param>
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (var item in source)
@@ -119,6 +131,13 @@ namespace Boredbone.Utility.Extensions
                 action(item);
             }
         }
+
+        /// <summary>
+        /// シーケンスの全要素に対する処理
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="action"></param>
         public static void ForEachIndexed<T>(this IEnumerable<T> source, Action<T, int> action)
         {
             int index = 0;
@@ -128,15 +147,7 @@ namespace Boredbone.Utility.Extensions
                 index++;
             }
         }
-
-        //public static IEnumerable<Tout> Convert<Tin, Tout>
-        //    (this IEnumerable<Tin> source, Func<Tin, Tout> converter)
-        //{
-        //    foreach (var item in source)
-        //    {
-        //        yield return converter(item);
-        //    }
-        //}
+        
 
         /// <summary>
         /// 2つのシーケンスを連結
@@ -174,20 +185,7 @@ namespace Boredbone.Utility.Extensions
                 yield return result.ToArray();
             }
         }
-
-        //public static IEnumerable<IEnumerable<T>> Buffer<T>(this IEnumerable<T> source, int size)
-        //{
-        //    if (size <= 0)
-        //    {
-        //        throw new ArgumentException("Chunk size must be greater than 0.", nameof(size));
-        //    }
-
-        //    while (source.Any())
-        //    {
-        //        yield return source.Take(size);
-        //        source = source.Skip(size);
-        //    }
-        //}
+        
 
         /// <summary>
         /// 要素とインデックスを格納するクラス
@@ -288,6 +286,15 @@ namespace Boredbone.Utility.Extensions
             //source.AbsorbStrictly(reference, match, converter);
         }
 
+        /// <summary>
+        /// 二つのシーケンスを順番に比較し，referenceにしかない要素があれば追加
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="reference"></param>
+        /// <param name="match"></param>
+        /// <param name="converter"></param>
         private static void AbsorbStrictly<T1, T2>
             (this IList<T1> source, IEnumerable<T2> reference, Func<T1, T2, bool> match, Func<T2, T1> converter)
         {
@@ -366,15 +373,21 @@ namespace Boredbone.Utility.Extensions
             }
         }
 
-
+        /// <summary>
+        /// 二つのシーケンスを順番に比較し，referenceに存在しない要素があれば削除
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="reference"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
         private static List<T1> FilterStrictlyBy<T1, T2>
             (this IList<T1> source, IEnumerable<T2> reference, Func<T1, T2, bool> match)
         {
             //消えたアイテムの削除
 
-            //int referenceIndex = 0;
             var removedItems = new List<T1>();
-
 
             using (var e = reference.GetEnumerator())
             {
@@ -394,20 +407,7 @@ namespace Boredbone.Utility.Extensions
                     }
                 }
             }
-
-
-            //foreach (var item in source)
-            //{
-            //    if (referenceIndex >= reference.Count
-            //        || !match(item, reference[referenceIndex]))
-            //    {
-            //        removedItems.Add(item);
-            //    }
-            //    else
-            //    {
-            //        referenceIndex++;
-            //    }
-            //}
+            
 
             foreach (var di in removedItems)
             {
@@ -434,7 +434,6 @@ namespace Boredbone.Utility.Extensions
             int referenceIndex = 0;
 
             var removedItems = new List<T1>();
-            //var length = reference.Count;
 
             foreach (var item in source)
             {
@@ -448,25 +447,7 @@ namespace Boredbone.Utility.Extensions
                 {
                     referenceIndex = existingIndex + 1;
                 }
-
-
-                //bool existance = false;
-                //
-                //for (int i = referenceIndex; i < length; i++)
-                //{
-                //    var checkItem = reference[i];
-                //    if (match(item, checkItem))
-                //    {
-                //        referenceIndex = i + 1;
-                //        existance = true;
-                //        break;
-                //    }
-                //}
-                //
-                //if (!existance)
-                //{
-                //    removedItems.Add(item);
-                //}
+                
             }
 
 
@@ -582,22 +563,7 @@ namespace Boredbone.Utility.Extensions
             }
             return true;
         }
-
-        /*
-        public static bool SequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second)
-            where T : IEquatable<T>
-        {
-            using (var e1 = first.GetEnumerator())
-            using (var e2 = second.GetEnumerator())
-            {
-                while (e1.MoveNext())
-                {
-                    if (!(e2.MoveNext() && e1.Current.Equals(e2.Current))) return false;
-                }
-                if (e2.MoveNext()) return false;
-            }
-            return true;
-        }*/
+        
 
         /// <summary>
         /// インデックスが配列の範囲内かどうか調べる
@@ -631,18 +597,23 @@ namespace Boredbone.Utility.Extensions
             return (index >= 0 && index < array.Length);
         }
 
+        /// <summary>
+        /// 指定されたインデックスの要素を取得，配列の範囲外の場合はdefault
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public static T FromIndexOrDefault<T>(this IList<T> list, int index)
             => (list.ContainsIndex(index)) ? list[index] : default(T);
 
-        //public static T FromIndexOrDefault<T>(this IList<T> list, int index)
-        //{
-        //    if (list != null && list.ContainsIndex(index))
-        //    {
-        //        return list[index];
-        //    }
-        //    return default(T);
-        //}
-
+        /// <summary>
+        /// 指定されたインデックスの要素を取得，配列の範囲外の場合はdefault
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public static T FromIndexOrDefault<T>(this T[] array, int index)
         {
             if (array.ContainsIndex(index))
@@ -716,15 +687,13 @@ namespace Boredbone.Utility.Extensions
                 yield return (T)item;
             }
         }
-
-        //public static IEnumerable<object> AsEnumerable(this IEnumerable array)
-        //{
-        //    foreach (var item in array)
-        //    {
-        //        yield return item;
-        //    }
-        //}
-
+        
+        /// <summary>
+        /// キャスト可能な要素のみ抽出
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
         public static IEnumerable<T> AsEnumerableWithSafeCast<T>(this IEnumerable array)
             where T : class
         {

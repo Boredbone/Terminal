@@ -30,11 +30,7 @@ namespace Boredbone.XamlTools.Extensions
                 result?.Dispose();
                 dictionary.Remove(key);
             }
-            //if (dictionary.ContainsKey(key))
-            //{
-            //    dictionary[key].Dispose();
-            //    dictionary.Remove(key);
-            //}
+
             dictionary.Add(key, disposable);
 
             return disposable;
@@ -53,8 +49,7 @@ namespace Boredbone.XamlTools.Extensions
             {
                 var subscriptions = new CompositeDisposable();
                 var acceepted = true;
-
-                //var pub = source.Where(x => acceepted).Publish(x => x);
+                
                 var pub = source.Where(x => acceepted);
 
                 pub.Subscribe(o).AddTo(subscriptions);
@@ -65,14 +60,6 @@ namespace Boredbone.XamlTools.Extensions
 
                 return subscriptions;
             });
-
-            //bool acceepted = true;
-            //var sub = new Subject<T>();
-            //
-            //source.Where(x => acceepted).Subscribe(sub);
-            //sub.Do(x => acceepted = false).Delay(interval).Subscribe(x => acceepted = true);
-            //
-            //return sub.AsObservable();
         }
 
         public static ReactiveCommand<Tvalue> WithSubscribe<Tvalue>
