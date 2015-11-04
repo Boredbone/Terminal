@@ -306,6 +306,30 @@ namespace Boredbone.Utility
         }
 #endif
 
+#if WINDOWS_APP || WINDOWS_UWP
+        public async Task DeleteFileAsync()
+        {
+            try
+            {
+                var folder = ApplicationData.Current.LocalFolder;
+                var file = await folder.GetFileAsync(fileName);
+                if (file != null)
+                {
+                    await file.DeleteAsync();
+                }
+            }
+            catch
+            {
+
+            }
+        }
+#else
+        public void DeleteFile()
+        {
+            //TODO
+        }
+#endif
+
 
 
     }
