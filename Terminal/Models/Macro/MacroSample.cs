@@ -10,9 +10,9 @@ namespace Terminal.Models.Macro
 {
     class MacroSample
     {
-        public async Task Sample(IMacroEngine Macro, ModuleManager Modules)
+        [Macro]
+        public async Task Sample(IMacroEngine Macro, IModuleManager Modules)
         {
-            #region Sample
 
             Macro.Timeout = 0;
 
@@ -81,15 +81,12 @@ namespace Terminal.Models.Macro
             await Macro.SendAsync("cs5");
 
             await Macro.WaitAsync("\ny>");
-
-            #endregion
+            
         }
 
-        public async Task ModuleSample(IMacroEngine Macro, ModuleManager Modules)
+        [Macro("Module")]
+        public async Task ModuleSample(IMacroEngine Macro, IModuleManager Modules)
         {
-            #region ModuleSample
-
-
 
 
             var module = Modules.Get<ModuleSample>();
@@ -104,16 +101,12 @@ namespace Terminal.Models.Macro
 
             var result = await module.RunAsync();
 
-
-
-            #endregion
+            
         }
 
-        public async Task Execute(IMacroEngine Macro, ModuleManager Modules)
+        [Macro]
+        public async Task Execute(IMacroEngine Macro, IModuleManager Modules)
         {
-            #region Template
-
-            #endregion
         }
     }
 }

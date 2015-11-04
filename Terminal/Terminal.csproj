@@ -176,6 +176,8 @@
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
     <Compile Include="Models\Macro\IModule.cs" />
+    <Compile Include="Models\Macro\IModuleManager.cs" />
+    <Compile Include="Models\Macro\MacroAttribute.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\ModuleManager.cs" />
     <Compile Include="Models\Macro\ModuleSample.cs" />

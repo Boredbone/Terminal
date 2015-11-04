@@ -13,11 +13,11 @@ namespace Terminal.Models.Macro
     /// </summary>
     public class DelegateMacro : IMacroCode
     {
-        private string Name { get; }
-        private Func<IMacroEngine, ModuleManager, Task> AsyncFunc { get; }
+        public string Name { get; }
+        private Func<IMacroEngine, IModuleManager, Task> AsyncFunc { get; }
 
         public DelegateMacro(string name,
-            Func<IMacroEngine, ModuleManager, Task> asyncFunc)
+            Func<IMacroEngine, IModuleManager, Task> asyncFunc)
         {
             this.Name = name;
             this.AsyncFunc = asyncFunc;
@@ -127,9 +127,9 @@ namespace Terminal.Models.Macro
         /// <param name="Macro"></param>
         /// <param name="Modules"></param>
         /// <returns></returns>
-        public async Task RunAsync(MacroEngine Macro, ModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
         {
-            Macro.Start(this.Name);
+            //Macro.Start(this.Name);
             try
             {
                 await this.AsyncFunc(Macro, Modules);
@@ -139,7 +139,7 @@ namespace Terminal.Models.Macro
             }
             finally
             {
-                Macro.End(this.Name);
+                //Macro.End(this.Name);
             }
         }
     }

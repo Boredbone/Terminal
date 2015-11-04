@@ -506,15 +506,12 @@ namespace Terminal.ViewModels
 
             var path = dialog.FileName;
 
-            CodeBlock[] blocks;
-            var name = "";
-            var code = "";
+            //CodeBlock[] blocks;
             var text = "";
 
             try
             {
                 text = new TextLoader().Load(path);
-                blocks = new CodeReader().GetBlocks(text).ToArray();
             }
             catch (Exception e)
             {
@@ -522,8 +519,10 @@ namespace Terminal.ViewModels
                 return;
             }
 
+            var blocks = new CodeReader().GetBlocks(text);
 
-
+            var name = "";
+            var code = "";
 
             if (blocks == null || blocks.Length <= 0)
             {
@@ -551,7 +550,7 @@ namespace Terminal.ViewModels
 
                 }
                 name = blocks[index].Name;
-                code = blocks[index].Codes.Join("\n");
+                code = blocks[index].Code;
             }
 
 

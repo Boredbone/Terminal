@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Terminal.Models.Macro
 {
-    public class ModuleManager
+    public class ModuleManager : IModuleManager
     {
 
         private Dictionary<string, IModule> Dictionary { get; }
-        public MacroEngine Engine { get; set; }
+        public IMacroEngine Engine { get; set; }
 
         public HashSet<Assembly> Assemblies { get; }
         public HashSet<string> NameSpaces { get; }

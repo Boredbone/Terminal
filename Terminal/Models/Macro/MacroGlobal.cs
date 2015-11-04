@@ -12,9 +12,9 @@ namespace Terminal.Models.Macro
     public class MacroGlobal
     {
         public IMacroEngine Macro { get; }
-        public ModuleManager Modules { get; }
+        public IModuleManager Modules { get; }
 
-        public MacroGlobal(IMacroEngine macro, ModuleManager modules)
+        public MacroGlobal(IMacroEngine macro, IModuleManager modules)
         {
             this.Macro = macro;
             this.Modules = modules;

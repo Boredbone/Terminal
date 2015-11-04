@@ -82,6 +82,8 @@ namespace Terminal.Models.Macro
             //別スレッドで開始
             Task.Run(async () =>
             {
+                macro.Start(code.Name);
+
                 try
                 {
                     await code.RunAsync(macro, this.Modules);
@@ -96,6 +98,7 @@ namespace Terminal.Models.Macro
                 }
                 finally
                 {
+                    macro.End(code.Name);
                     macroDisposables.Dispose();
                     this.Engine = null;
                     this.IsExecutingSubject.OnNext(false);

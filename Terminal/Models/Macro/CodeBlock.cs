@@ -9,12 +9,10 @@ namespace Terminal.Models.Macro
     public class CodeBlock
     {
         public string Name { get; }
-        public List<string> Codes { get; }
+        public string Code { get; set; }
         public CodeBlock(string name)
         {
             this.Name = name;
-            this.Codes = new List<string>();
         }
-        public void Add(string text) => this.Codes.Add(text);
     }
 }

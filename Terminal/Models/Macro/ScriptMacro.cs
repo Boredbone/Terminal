@@ -14,7 +14,7 @@ namespace Terminal.Models.Macro
     public class ScriptMacro : IMacroCode
     {
         private string Code { get; }
-        private string Name { get; }
+        public string Name { get; }
 
         //private static bool initialized = false;
 
@@ -30,7 +30,7 @@ namespace Terminal.Models.Macro
         /// <param name="Macro"></param>
         /// <param name="Modules"></param>
         /// <returns></returns>
-        public async Task RunAsync(MacroEngine Macro, ModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
         {
 
             //if (!initialized)
@@ -63,7 +63,7 @@ namespace Terminal.Models.Macro
 
             var script = CSharpScript.Create(this.Code, options, typeof(MacroGlobal));
 
-            Macro.Start(this.Name);
+            //Macro.Start(this.Name);
             try
             {
                 var state = await script.RunAsync(global);
@@ -73,7 +73,7 @@ namespace Terminal.Models.Macro
             }
             finally
             {
-                Macro.End(this.Name);
+                //Macro.End(this.Name);
             }
         }
     }

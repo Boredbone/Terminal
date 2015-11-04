@@ -11,6 +11,6 @@ namespace Terminal.Models.Macro
         //object this[string key] { get; set; }
         //void SetParameter(string key, object value);
         //Task<object> RunAsync(object arg);
-        MacroEngine Engine { get; set; }
+        IMacroEngine Engine { get; set; }
     }
 }
