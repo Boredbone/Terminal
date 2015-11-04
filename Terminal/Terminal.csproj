@@ -175,9 +175,6 @@
     <Compile Include="Models\Macro\CodeBlock.cs" />
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
-    <Compile Include="Models\Macro\IModule.cs" />
-    <Compile Include="Models\Macro\IModuleManager.cs" />
-    <Compile Include="Models\Macro\MacroAttribute.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\ModuleManager.cs" />
     <Compile Include="Models\Macro\ModuleSample.cs" />
@@ -185,7 +182,6 @@
     <Compile Include="Models\Macro\StatusItem.cs" />
     <Compile Include="Models\Macro\StatusType.cs" />
     <Compile Include="Models\Serial\IConnection.cs" />
-    <Compile Include="Models\Macro\IMacroEngine.cs" />
     <Compile Include="Models\Serial\LineCodes.cs" />
     <Compile Include="Models\Macro\IMacroCode.cs" />
     <Compile Include="Models\Macro\MacroEngine.cs" />
@@ -247,6 +243,12 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Api\Terminal.Macro.Api.csproj">
+      <Project>{094a65b4-ffdb-4fb6-9548-55558b0c9e7a}</Project>
+      <Name>Terminal.Macro.Api</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Utility\Utility.projitems" Label="Shared" />
   <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />

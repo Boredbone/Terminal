@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 using System.Linq;
+using Terminal.Macro.Api;
 
 namespace Terminal.Models.Macro
 {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.Scripting.CSharp;
+using Terminal.Macro.Api;
 
 namespace Terminal.Models.Macro
 {
@@ -49,12 +50,16 @@ namespace Terminal.Models.Macro
                 "System.Threading.Tasks",
                 "System.Text",
                 "System.IO",
-                "System.Linq"}
+                "System.Linq",
+                typeof(IModule).Namespace
+            }
             .Union(Modules.NameSpaces);
 
             var assemblies = new[] {
                 typeof(object).Assembly,
-                typeof(Enumerable).Assembly}
+                typeof(Enumerable).Assembly,
+                typeof(IModule).Assembly
+            }
             .Union(Modules.Assemblies);
 
             var options = ScriptOptions.Default
