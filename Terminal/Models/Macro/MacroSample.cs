@@ -22,7 +22,7 @@ namespace Terminal.Models.Macro
             await Macro.WaitAsync("\n>");
 
 
-            var num = 2;
+            //var num = 2;
             await Macro.DelayAsync(1000);
 
 
@@ -108,6 +108,7 @@ namespace Terminal.Models.Macro
         [Macro]
         public async Task Execute(IMacroEngine Macro, IModuleManager Modules)
         {
+            await Macro.DelayAsync(10);
         }
     }
 }

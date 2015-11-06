@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal"
         mc:Ignorable="d"
+        Loaded="Window_Loaded"
         Title="Terminal Heaven's Rock" Height="700" Width="800" Closing="Window_Closing">
 
     

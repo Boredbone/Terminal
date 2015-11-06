@@ -7,6 +7,7 @@ using Boredbone.XamlTools.ViewModel;
 using Reactive.Bindings.Extensions;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;
+using Terminal.Views;
 
 namespace Terminal.Models
 {
@@ -17,6 +18,10 @@ namespace Terminal.Models
 
         public IConnection Connection { get; }
         public MacroPlayer MacroPlayer { get; }
+
+        private PluginLoader<IActivator> PluginLoader { get; }
+
+        public IActivator[] Plugins { get; }
 
 
         public ApplicationCore()
@@ -30,6 +35,27 @@ namespace Terminal.Models
 
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
+            this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
+            this.Plugins = this.PluginLoader.Plugins.ToArray();
+
+            foreach(var activator in this.Plugins)
+            {
+                activator.AddTo(this.Disposables);
+
+                //var activator = new FrequencyResponseAnalyzer.Activator();
+                var module = activator.Activate(this.MacroPlayer);
+
+                this.MacroPlayer.Modules.Register(module);
+
+                //activator.OpenWindowRequested += o =>
+                //{
+                //    var window = new ModuleWindow();
+                //    window.Content = o;
+                //    window.Show();
+                //    window.Activate();
+                //};
+                //activator.LaunchUI();
+            }
 
             //TODO module
             this.MacroPlayer.Modules.Register(new ModuleSample(this.MacroPlayer));

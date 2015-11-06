@@ -286,7 +286,7 @@ namespace Terminal.Models.Serial
             {
                 return SerialPort.GetPortNames();
             }
-            catch(Exception e)
+            catch//(Exception e)
             {
                 return new string[0];
                 //return new string[] { e.ToString() };

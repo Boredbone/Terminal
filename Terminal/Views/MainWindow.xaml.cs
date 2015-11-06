@@ -31,8 +31,20 @@ namespace Terminal.Views
             this.ViewModel.View = this;
             this.ViewModel.TextsList = this.textsList;
             this.DataContext = this.ViewModel;
-            
-		}
+
+            foreach (var plugin in ((App)Application.Current).CoreData.Plugins)
+            {
+                plugin.OpenWindowRequested = o =>
+                {
+                    var window = new ModuleWindow();
+                    window.Content = o;
+                    window.Title = plugin.Name;
+                    //window.Owner = this;
+                    window.Show();
+                    window.Activate();
+                };
+            }
+        }
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
@@ -80,6 +92,13 @@ namespace Terminal.Views
                 this.ViewModel.CopyCommand.Execute();
             }
         }
-        
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (var plugin in ((App)Application.Current).CoreData.Plugins)
+            {
+                plugin.LaunchUI();
+            }
+        }
     }
 }

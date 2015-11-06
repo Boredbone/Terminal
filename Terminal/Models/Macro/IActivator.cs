@@ -9,8 +9,9 @@ namespace Terminal.Models.Macro
 {
     public interface IActivator : IDisposable
     {
+        string Name { get; }
         IModule Activate(MacroPlayer player);
         bool LaunchUI();
-        event Action<object> OpenWindowRequested;
+        Action<object> OpenWindowRequested { get; set; }
     }
 }
