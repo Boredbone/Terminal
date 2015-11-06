@@ -9,14 +9,19 @@ using System.Threading.Tasks;
 using Boredbone.Utility.Extensions;
 using Boredbone.XamlTools.ViewModel;
 using Reactive.Bindings.Extensions;
+using Terminal.Macro.Api;
+using Terminal.Models.Serial;
 
-namespace Terminal.Macro.Api
+namespace Terminal.Models.Macro
 {
     /// <summary>
     /// マクロの実行を管理
     /// </summary>
-    public class MacroPlayer : ViewModelBase
+    public class MacroPlayer : ViewModelBase, IMacroPlayer
     {
+        IMacroEngine IMacroPlayer.Engine => this.Engine;
+        IModuleManager IMacroPlayer.Modules => this.Modules;
+
         public MacroEngine Engine { get; private set; }
         private IConnection Connaction { get; }
 
@@ -140,15 +145,12 @@ namespace Terminal.Macro.Api
             }
 
         }
+        
 
-        /// <summary>
-        /// モジュールを登録
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="module"></param>
-        //public void RegisterModule(string key,IModule module)
-        //{
-        //    this.Modules[key] = module;
-        //}
+        void IMacroPlayer.Start(string name, Func<IMacroEngine, IModuleManager, Task> asyncFunc)
+        {
+            this.Start(new DelegateMacro(name, asyncFunc));
+        }
+        
     }
 }

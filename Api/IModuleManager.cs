@@ -1,4 +1,7 @@
-﻿namespace Terminal.Macro.Api
+﻿using System.Collections.Generic;
+using System.Reflection;
+
+namespace Terminal.Macro.Api
 {
     /// <summary>
     /// 登録されたモジュールを管理
@@ -11,5 +14,9 @@
         /// <typeparam name="T">モジュールの型</typeparam>
         /// <returns>モジュールのインスタンス</returns>
         T Get<T>() where T : IModule;
+
+
+        HashSet<Assembly> Assemblies { get; }
+        HashSet<string> NameSpaces { get; }
     }
 }

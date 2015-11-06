@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Terminal.Macro.Api
+namespace Terminal.Models.Serial
 {
     public interface IConnection : IDisposable
     {

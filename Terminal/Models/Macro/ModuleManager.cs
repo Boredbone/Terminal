@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Terminal.Macro.Api;
 
-namespace Terminal.Macro.Api
+namespace Terminal.Models.Macro
 {
     public class ModuleManager : IModuleManager
     {

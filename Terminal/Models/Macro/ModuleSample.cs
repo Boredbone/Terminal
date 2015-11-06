@@ -5,17 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Terminal.Macro.Api;
 
-namespace Terminal.Macro.Api
+namespace Terminal.Models.Macro
 {
     public class ModuleSample : IModule
     {
-        public MacroPlayer Player { get; set; }
+        public IMacroPlayer Player { get; set; }
 
         public int Parameter1 { get; set; }
         public string Parameter2 { get; set; }
         public int Parameter3 { get; set; }
 
-        public ModuleSample(MacroPlayer player)
+        public ModuleSample(IMacroPlayer player)
         {
             this.Player = player;
         }

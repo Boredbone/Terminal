@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terminal.Macro.Api;
 
-namespace Terminal.Macro.Api
+namespace Terminal.Models.Macro
 {
     /// <summary>
     /// デリゲートをマクロとして実行
@@ -126,7 +127,7 @@ namespace Terminal.Macro.Api
         /// <param name="Macro"></param>
         /// <param name="Modules"></param>
         /// <returns></returns>
-        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, IModuleManager Modules)
         {
             //Macro.Start(this.Name);
             try
