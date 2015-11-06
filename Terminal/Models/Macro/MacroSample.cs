@@ -101,7 +101,6 @@ namespace Terminal.Models.Macro
             
 
             var result = await module.RunAsync();
-
             
         }
 

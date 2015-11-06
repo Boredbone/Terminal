@@ -16,15 +16,22 @@ namespace Terminal.Models
 
         public PluginLoader(string path)
         {
-            var catalog = new DirectoryCatalog(path);
+            try
+            {
+                var catalog = new DirectoryCatalog(path);
 
-            this._container = new CompositionContainer(catalog);
-            this._container.ComposeParts(this);
+                this._container = new CompositionContainer(catalog);
+                this._container.ComposeParts(this);
+            }
+            catch
+            {
+                this.Plugins = new T[0];
+            }
         }
 
         public void Dispose()
         {
-            this._container.Dispose();
+            this._container?.Dispose();
         }
     }
 }

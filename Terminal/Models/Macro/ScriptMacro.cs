@@ -58,7 +58,8 @@ namespace Terminal.Models.Macro
             var assemblies = new[] {
                 typeof(object).Assembly,
                 typeof(Enumerable).Assembly,
-                typeof(IModule).Assembly
+                typeof(IModule).Assembly,
+                typeof(System.ComponentModel.INotifyPropertyChanged).Assembly
             }
             .Union(Modules.Assemblies);
 

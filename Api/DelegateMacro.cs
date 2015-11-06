@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Terminal.Macro.Api;
-using Terminal.Models.Serial;
 
-namespace Terminal.Models.Macro
+namespace Terminal.Macro.Api
 {
     /// <summary>
     /// デリゲートをマクロとして実行

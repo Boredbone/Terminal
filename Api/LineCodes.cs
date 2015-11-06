@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Terminal.Models.Serial
+namespace Terminal.Macro.Api
 {
     public enum LineCodes
     {

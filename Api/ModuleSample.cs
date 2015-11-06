@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terminal.Macro.Api;
 
-namespace Terminal.Models.Macro
+namespace Terminal.Macro.Api
 {
     public class ModuleSample : IModule
     {

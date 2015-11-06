@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Terminal.Models.Macro
+namespace Terminal.Macro.Api
 {
     /// <summary>
     /// マクロ実行ステータスの種類

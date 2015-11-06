@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Boredbone.Utility.Extensions;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Terminal.Macro.Api;
 
 namespace Terminal.Models.Serial
 {

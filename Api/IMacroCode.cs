@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Terminal.Macro.Api;
 
-namespace Terminal.Models.Macro
+namespace Terminal.Macro.Api
 {
     public interface IMacroCode
     {

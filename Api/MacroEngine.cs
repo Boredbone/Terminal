@@ -9,10 +9,8 @@ using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
 using Boredbone.XamlTools.ViewModel;
 using Reactive.Bindings.Extensions;
-using Terminal.Macro.Api;
-using Terminal.Models.Serial;
 
-namespace Terminal.Models.Macro
+namespace Terminal.Macro.Api
 {
     /// <summary>
     /// マクロに通信関連機能を提供

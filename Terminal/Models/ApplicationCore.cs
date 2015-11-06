@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Boredbone.XamlTools.ViewModel;
 using Reactive.Bindings.Extensions;
+using Terminal.Macro.Api;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;
 using Terminal.Views;

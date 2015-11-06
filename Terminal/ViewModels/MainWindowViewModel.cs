@@ -19,6 +19,7 @@ using Boredbone.XamlTools.ViewModel;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Terminal.Macro.Api;
 using Terminal.Models;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;

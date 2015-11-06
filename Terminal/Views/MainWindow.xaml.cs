@@ -10,11 +10,11 @@ using Terminal.ViewModels;
 
 namespace Terminal.Views
 {
-	/// <summary>
-	/// MainWindow.xaml の相互作用ロジック
-	/// </summary>
-	public partial class MainWindow : Window
-	{
+    /// <summary>
+    /// MainWindow.xaml の相互作用ロジック
+    /// </summary>
+    public partial class MainWindow : Window
+    {
 
         private MainWindowViewModel _viewModel;
         public MainWindowViewModel ViewModel
@@ -24,8 +24,8 @@ namespace Terminal.Views
         }
 
         public MainWindow()
-		{
-			InitializeComponent();
+        {
+            InitializeComponent();
 
             this.ViewModel = new MainWindowViewModel();
             this.ViewModel.View = this;
@@ -46,10 +46,10 @@ namespace Terminal.Views
             }
         }
 
-		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
             this.ViewModel.Dispose();
-		}
+        }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
