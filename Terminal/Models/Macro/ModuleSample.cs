@@ -9,16 +9,21 @@ namespace Terminal.Models.Macro
 {
     public class ModuleSample : IModule
     {
-        public IMacroEngine Engine { get; set; }
+        public MacroPlayer Player { get; set; }
 
         public int Parameter1 { get; set; }
         public string Parameter2 { get; set; }
         public int Parameter3 { get; set; }
 
+        public ModuleSample(MacroPlayer player)
+        {
+            this.Player = player;
+        }
+
         public async Task<string> RunAsync()
         {
-            await this.Engine.SendAsync(this.Parameter2);
-            await this.Engine.WaitAsync();
+            await this.Player.Engine.SendAsync(this.Parameter2);
+            await this.Player.Engine.WaitAsync();
             return "";
         }
     }

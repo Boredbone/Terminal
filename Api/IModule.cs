@@ -6,9 +6,5 @@ namespace Terminal.Macro.Api
     /// </summary>
     public interface IModule
     {
-        /// <summary>
-        /// モジュールに設定されたMacroEngine
-        /// </summary>
-        IMacroEngine Engine { get; set; }
     }
 }

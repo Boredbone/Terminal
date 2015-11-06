@@ -26,10 +26,12 @@ namespace Terminal.Models.Macro
 
         public T Get<T>() where T : IModule
         {
-            var module = this.Dictionary[typeof(T).FullName];
-            module.Engine = this.Engine;
+            return (T)this.Dictionary[typeof(T).FullName];
 
-            return (T)module;
+            //var module = this.Dictionary[typeof(T).FullName];
+            //module.Engine = this.Engine;
+            //
+            //return (T)module;
         }
 
         public void Register(IModule value)

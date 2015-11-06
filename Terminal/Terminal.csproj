@@ -93,15 +93,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveProperty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.2.2.6.1\lib\net45\ReactiveProperty.dll</HintPath>
+      <HintPath>..\..\FrequencyResponseAnalyzer\packages\ReactiveProperty.2.2.7.1\lib\net45\ReactiveProperty.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveProperty.DataAnnotations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.2.2.6.1\lib\net45\ReactiveProperty.DataAnnotations.dll</HintPath>
+      <HintPath>..\..\FrequencyResponseAnalyzer\packages\ReactiveProperty.2.2.7.1\lib\net45\ReactiveProperty.DataAnnotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveProperty.NET45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.2.2.6.1\lib\net45\ReactiveProperty.NET45.dll</HintPath>
+      <HintPath>..\..\FrequencyResponseAnalyzer\packages\ReactiveProperty.2.2.7.1\lib\net45\ReactiveProperty.NET45.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -175,6 +175,7 @@
     <Compile Include="Models\Macro\CodeBlock.cs" />
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
+    <Compile Include="Models\Macro\IActivator.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\ModuleManager.cs" />
     <Compile Include="Models\Macro\ModuleSample.cs" />

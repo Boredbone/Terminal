@@ -32,7 +32,7 @@ namespace Terminal.Models
 
 
             //TODO module
-            this.MacroPlayer.Modules.Register(new ModuleSample());
+            this.MacroPlayer.Modules.Register(new ModuleSample(this.MacroPlayer));
             //this.MacroPlayer.RegisterModule("Module2", null);
             //this.MacroPlayer.RegisterModule("Module3", null);
         }

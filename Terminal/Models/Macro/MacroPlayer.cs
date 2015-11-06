@@ -18,7 +18,7 @@ namespace Terminal.Models.Macro
     /// </summary>
     public class MacroPlayer : ViewModelBase
     {
-        private MacroEngine Engine { get; set; }
+        public MacroEngine Engine { get; private set; }
         private IConnection Connaction { get; }
 
         public ModuleManager Modules { get; }
