@@ -127,7 +127,7 @@ namespace Terminal.Models.Macro
         /// <param name="Macro"></param>
         /// <param name="Modules"></param>
         /// <returns></returns>
-        public async Task RunAsync(IMacroEngine Macro, IModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
         {
             //Macro.Start(this.Name);
             try

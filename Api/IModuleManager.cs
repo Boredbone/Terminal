@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-
+﻿
 namespace Terminal.Macro.Api
 {
     /// <summary>
@@ -16,7 +14,7 @@ namespace Terminal.Macro.Api
         T Get<T>() where T : IModule;
 
 
-        HashSet<Assembly> Assemblies { get; }
-        HashSet<string> NameSpaces { get; }
+        //HashSet<Assembly> Assemblies { get; }
+        //HashSet<string> NameSpaces { get; }
     }
 }

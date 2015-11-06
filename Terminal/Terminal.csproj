@@ -259,6 +259,8 @@
       <Name>Terminal.Macro.Api</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\Utility\Utility.projitems" Label="Shared" />
+  <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
