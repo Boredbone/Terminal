@@ -83,5 +83,12 @@ namespace Boredbone.XamlTools.Extensions
             observable.AddTo(container);
             return observable;
         }
+
+        public static bool Toggle(this ReactiveProperty<bool> target)
+        {
+            var newValue = !target.Value;
+            target.Value = newValue;
+            return newValue;
+        }
     }
 }
