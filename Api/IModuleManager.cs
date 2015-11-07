@@ -12,9 +12,6 @@ namespace Terminal.Macro.Api
         /// <typeparam name="T">モジュールの型</typeparam>
         /// <returns>モジュールのインスタンス</returns>
         T Get<T>() where T : IModule;
-
-
-        //HashSet<Assembly> Assemblies { get; }
-        //HashSet<string> NameSpaces { get; }
+        
     }
 }

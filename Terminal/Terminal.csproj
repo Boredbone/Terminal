@@ -27,7 +27,7 @@
     <DefineConstants>TRACE;DEBUG;SIMULATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -178,7 +178,6 @@
     <Compile Include="Models\Macro\DelegateMacro.cs" />
     <Compile Include="Models\Macro\IMacroCode.cs" />
     <Compile Include="Models\Serial\ConnectionBase.cs" />
-    <Compile Include="Models\Serial\ConnectionHistory.cs" />
     <Compile Include="Models\Serial\LineCodes.cs" />
     <Compile Include="Models\Macro\MacroEngine.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
@@ -190,10 +189,10 @@
     <Compile Include="Models\Macro\StatusType.cs" />
     <Compile Include="Models\PluginLoader.cs" />
     <Compile Include="Models\Macro\MacroSample.cs" />
-    <Compile Include="Models\Serial\IConnection.cs" />
     <Compile Include="Models\Serial\SerialConnection.cs" />
     <Compile Include="Models\Serial\ConnectionSimulator.cs" />
     <Compile Include="ViewModels\LogItem.cs" />
+    <Compile Include="ViewModels\TestViewModel.cs" />
     <Compile Include="Views\ModuleWindow.xaml.cs">
       <DependentUpon>ModuleWindow.xaml</DependentUpon>
     </Compile>

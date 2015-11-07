@@ -50,7 +50,7 @@ namespace Terminal.Models.Macro
             this.MessageSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.IsExecutingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.IsPausingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
-
+            
             this.Modules = new ModuleManager();
         }
 

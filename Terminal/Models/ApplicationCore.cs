@@ -35,7 +35,8 @@ namespace Terminal.Models
             this.Connection.LineCode = LineCodes.Lf;
 
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
-
+            
+            
             this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
             this.Plugins = this.PluginLoader.Plugins.ToArray();
 

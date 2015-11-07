@@ -26,8 +26,9 @@ namespace Terminal.Views
         public MainWindow()
         {
             InitializeComponent();
-
+            
             this.ViewModel = new MainWindowViewModel();
+            
             this.ViewModel.View = this;
             this.ViewModel.TextsList = this.textsList;
             this.DataContext = this.ViewModel;

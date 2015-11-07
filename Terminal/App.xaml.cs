@@ -9,11 +9,11 @@ using Terminal.Models;
 
 namespace Terminal
 {
-	/// <summary>
-	/// App.xaml の相互作用ロジック
-	/// </summary>
-	public partial class App : Application
-	{
+    /// <summary>
+    /// App.xaml の相互作用ロジック
+    /// </summary>
+    public partial class App : Application
+    {
 
         public ApplicationCore CoreData { get; private set; }// = new ApplicationCore();
 

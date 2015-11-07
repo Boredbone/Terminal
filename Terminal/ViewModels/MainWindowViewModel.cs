@@ -75,7 +75,6 @@ namespace Terminal.ViewModels
 
         public MainWindowViewModel()
         {
-
             this.Core = ((App)Application.Current).CoreData;
 
             this.ActionQueue = new ConcurrentQueue<Action>();

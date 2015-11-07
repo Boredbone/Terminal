@@ -48,17 +48,13 @@ namespace Terminal.Models.Serial
 
         public string SendingNewLine { get; set; } = "\r\n";
         public Encoding Encoding { get; set; } = Encoding.GetEncoding("Shift_JIS");
-        //public int BaudRate { get; set; } = 9600;
-        //public int DataBits { get; set; } = 8;
 
-        public string PortName { get; protected set; }
+        public string PortName { get; private set; }
 
 
         private List<string> HistoryList { get; }
-        //public IReadOnlyList<string> History => this.HistoryList;
         private string LineBuffer { get; set; }
-
-        //private ConnectionHistory ConnectionHistory { get; }
+        
 
 
         /// <summary>
@@ -72,7 +68,7 @@ namespace Terminal.Models.Serial
         /// </summary>
         public IObservable<bool> IsOpenChanged => this.IsOpenProperty.AsObservable();
         public bool IsOpen => this.IsOpenProperty.Value;
-        protected ReactiveProperty<bool> IsOpenProperty { get; }
+        private ReactiveProperty<bool> IsOpenProperty { get; }
 
         /// <summary>
         /// データ受信通知
@@ -83,7 +79,7 @@ namespace Terminal.Models.Serial
         /// <summary>
         /// データ送信による改行を含むデータ受信通知
         /// </summary>
-        public IObservable<string> DataReceivedWithSendingLine { get; } //=> this.ConnectionHistory.DataReceivedWithSendingLine;
+        public IObservable<string> DataReceivedWithSendingLine { get; }
 
 
         /// <summary>
@@ -98,7 +94,7 @@ namespace Terminal.Models.Serial
         /// ローカルエコー
         /// </summary>
         public IObservable<string> DataSent => this.DataSentSubject.AsObservable();
-        protected Subject<string> DataSentSubject { get; }
+        private Subject<string> DataSentSubject { get; }
 
         /// <summary>
         /// データ送信失敗
@@ -106,9 +102,8 @@ namespace Terminal.Models.Serial
         public IObservable<string> DataIgnored => this.DataIgnoredSubject.AsObservable();
         private Subject<string> DataIgnoredSubject { get; }
 
-
-        //private CompositeDisposable ConnectionDisposables { get; }
-        protected CompositeDisposable Disposables { get; }
+        
+        private CompositeDisposable Disposables { get; }
 
         protected abstract bool IsPortEnabled { get; }
 
@@ -121,7 +116,7 @@ namespace Terminal.Models.Serial
             this.PortChangedSubject = new Subject<bool>().AddTo(this.Disposables);
             this.DataReceivedSubject = new Subject<string>().AddTo(this.Disposables);
             this.DataIgnoredSubject = new Subject<string>().AddTo(this.Disposables);
-            //this.LineReceivedSubject = new Subject<string>().AddTo(this.Disposables);
+            this.LineReceivedSubject = new Subject<string>().AddTo(this.Disposables);
             this.DataSentSubject = new Subject<string>().AddTo(this.Disposables);
 
             this.IsOpenProperty = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
@@ -130,13 +125,11 @@ namespace Terminal.Models.Serial
 
             this.HistoryList = new List<string>();
             this.LineBuffer = "";
-
-            this.LineReceivedSubject = new Subject<string>().AddTo(this.Disposables);
+            
 
             this.DataReceivedWithSendingLine = this.DataReceivedSubject
                 .Merge(this.DataSentSubject.Select(x => this.ReceivingNewLine));
-
-            //var buffer = "";
+            
 
             //受信データを一行ごとに整形
             this.DataReceivedWithSendingLine
@@ -158,13 +151,15 @@ namespace Terminal.Models.Serial
 
                 })
                 .AddTo(this.Disposables);
-
-            //this.ConnectionHistory = new ConnectionHistory(this).AddTo(this.Disposables);
+            
             
         }
-
-        //public string History(int back) => this.ConnectionHistory.History(back);
-
+        
+        /// <summary>
+        /// 受信データ履歴
+        /// </summary>
+        /// <param name="back"></param>
+        /// <returns></returns>
         public string History(int back)
         {
 
@@ -193,6 +188,9 @@ namespace Terminal.Models.Serial
             }
 
             this.OnOpening(name);
+
+            this.PortName = name;
+            this.IsOpenProperty.Value = true;
         }
 
         /// <summary>
@@ -228,7 +226,15 @@ namespace Terminal.Models.Serial
         public void Close()
         {
             this.OnClosing();
+            this.IsOpenProperty.Value = false;
         }
+
+
+        /// <summary>
+        /// ポート名一覧取得
+        /// </summary>
+        /// <returns></returns>
+        public abstract string[] GetPortNames();
 
 
         protected abstract void OnOpening(string name);
@@ -237,10 +243,11 @@ namespace Terminal.Models.Serial
 
         protected abstract void OnClosing();
 
-        /// <summary>
-        /// ポート名一覧取得
-        /// </summary>
-        /// <returns></returns>
-        public abstract string[] GetPortNames();
+        protected void AddToDisposables(IDisposable disposable)
+        {
+            disposable.AddTo(this.Disposables);
+        }
+        
+
     }
 }
