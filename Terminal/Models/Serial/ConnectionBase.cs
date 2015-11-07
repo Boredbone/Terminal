@@ -11,13 +11,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using Boredbone.Utility.Extensions;
 
 namespace Terminal.Models.Serial
 {
-    public abstract class ConnectionBase
+    public abstract class ConnectionBase : IDisposable
     {
-        private string ValidPortName = "Valid";
-        private string InvalidPortName = "Invalid";
 
         private LineCodes _fieldLineCode;
         public LineCodes LineCode
@@ -52,46 +51,54 @@ namespace Terminal.Models.Serial
         //public int BaudRate { get; set; } = 9600;
         //public int DataBits { get; set; } = 8;
 
-        public string PortName { get; private set; }
+        public string PortName { get; protected set; }
 
-        private ConnectionHistory ConnectionHistory { get; }
+
+        private List<string> HistoryList { get; }
+        //public IReadOnlyList<string> History => this.HistoryList;
+        private string LineBuffer { get; set; }
+
+        //private ConnectionHistory ConnectionHistory { get; }
 
 
         /// <summary>
         /// ポート変更通知
         /// </summary>
-        private Subject<bool> PortChangedSubject { get; }
         public IObservable<bool> Portchanged => this.PortChangedSubject.AsObservable();
+        protected Subject<bool> PortChangedSubject { get; }
 
         /// <summary>
         /// ポートOpen/Close通知
         /// </summary>
         public IObservable<bool> IsOpenChanged => this.IsOpenProperty.AsObservable();
         public bool IsOpen => this.IsOpenProperty.Value;
-        private ReactiveProperty<bool> IsOpenProperty { get; }
+        protected ReactiveProperty<bool> IsOpenProperty { get; }
 
         /// <summary>
         /// データ受信通知
         /// </summary>
         public IObservable<string> DataReceived => this.DataReceivedSubject.AsObservable();
-        private Subject<string> DataReceivedSubject { get; }
+        protected Subject<string> DataReceivedSubject { get; }
 
         /// <summary>
         /// データ送信による改行を含むデータ受信通知
         /// </summary>
-        public IObservable<string> DataReceivedWithSendingLine => this.ConnectionHistory.DataReceivedWithSendingLine;
+        public IObservable<string> DataReceivedWithSendingLine { get; } //=> this.ConnectionHistory.DataReceivedWithSendingLine;
+
 
         /// <summary>
         /// 一行受信
         /// </summary>
-        public IObservable<string> LineReceived => this.ConnectionHistory.LineReceived;//this.LineReceivedSubject.AsObservable();
-        //private Subject<string> LineReceivedSubject { get; }
+        public IObservable<string> LineReceived
+            => this.LineReceivedSubject.Buffer(this.DataReceivedWithSendingLine).SelectMany(y => y);
+        //this.LineReceivedSubject.AsObservable();
+        private Subject<string> LineReceivedSubject { get; }
 
         /// <summary>
         /// ローカルエコー
         /// </summary>
         public IObservable<string> DataSent => this.DataSentSubject.AsObservable();
-        private Subject<string> DataSentSubject { get; }
+        protected Subject<string> DataSentSubject { get; }
 
         /// <summary>
         /// データ送信失敗
@@ -100,15 +107,14 @@ namespace Terminal.Models.Serial
         private Subject<string> DataIgnoredSubject { get; }
 
 
-        private CompositeDisposable ConnectionDisposables { get; }
-        private CompositeDisposable Disposables { get; }
+        //private CompositeDisposable ConnectionDisposables { get; }
+        protected CompositeDisposable Disposables { get; }
 
-
+        protected abstract bool IsPortEnabled { get; }
 
         public ConnectionBase()
         {
             this.Disposables = new CompositeDisposable();
-            this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
 
             this.PortName = "";
 
@@ -122,43 +128,56 @@ namespace Terminal.Models.Serial
 
             this.LineCode = LineCodes.Lf;
 
-            this.ConnectionHistory = new ConnectionHistory(this).AddTo(this.Disposables);
+            this.HistoryList = new List<string>();
+            this.LineBuffer = "";
 
-            //this.DataReceivedWithSendingLine = this.DataReceivedSubject
-            //    .Merge(this.DataSentSubject.Select(x => this.ReceivingNewLine));
-            //
+            this.LineReceivedSubject = new Subject<string>().AddTo(this.Disposables);
+
+            this.DataReceivedWithSendingLine = this.DataReceivedSubject
+                .Merge(this.DataSentSubject.Select(x => this.ReceivingNewLine));
+
             //var buffer = "";
-            //
-            ////受信データを一行ごとに整形
-            //this.DataReceivedWithSendingLine
-            //    .Buffer(this.DataReceivedWithSendingLine.Where(x => x.Contains(this.ReceivingNewLine)))
-            //    .Subscribe(list =>
-            //    {
-            //        var fixedText = buffer + list.Join();
-            //        var texts = fixedText.Split(this.Splitter, StringSplitOptions.None);
-            //
-            //        if (texts.Length > 0)
-            //        {
-            //            for (int i = 0; i < texts.Length - 1; i++)
-            //            {
-            //                this.LineReceivedSubject.OnNext(texts[i]);
-            //            }
-            //            buffer = texts[texts.Length - 1];
-            //        }
-            //
-            //    })
-            //    .AddTo(this.Disposables);
 
-            this.DataSentSubject
-                .Delay(TimeSpan.FromMilliseconds(2000))
-                .Select(x => "echo:" + x + (x.Length > 0 ? "\n>" : ">"))
-                //.Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
-                .Subscribe(this.DataReceivedSubject)
+            //受信データを一行ごとに整形
+            this.DataReceivedWithSendingLine
+                .Buffer(this.DataReceivedWithSendingLine.Where(x => x.Contains(this.ReceivingNewLine)))
+                .Subscribe(list =>
+                {
+                    var fixedText = this.LineBuffer + list.Join();
+                    var texts = fixedText.Split(this.Splitter, StringSplitOptions.None);
+
+                    if (texts.Length > 0)
+                    {
+                        for (int i = 0; i < texts.Length - 1; i++)
+                        {
+                            this.HistoryList.Add(texts[i]);
+                            this.LineReceivedSubject.OnNext(texts[i]);
+                        }
+                        this.LineBuffer = texts[texts.Length - 1];
+                    }
+
+                })
                 .AddTo(this.Disposables);
 
+            //this.ConnectionHistory = new ConnectionHistory(this).AddTo(this.Disposables);
+            
         }
 
-        public string History(int back) => this.ConnectionHistory.History(back);
+        //public string History(int back) => this.ConnectionHistory.History(back);
+
+        public string History(int back)
+        {
+
+            if (back <= 0)
+            {
+                return this.LineBuffer;
+            }
+
+            var index = this.HistoryList.Count - back;
+
+            return (index >= 0) ? this.HistoryList[index] : "";
+
+        }
 
         /// <summary>
         /// シリアルポートを開く
@@ -168,24 +187,12 @@ namespace Terminal.Models.Serial
         public void Open(string name)
         {
             //すでにポートを開いていたら例外
-            if (this.IsOpen)
+            if (this.IsPortEnabled)
             {
                 throw new InvalidOperationException("Already connected");
             }
 
-
-            this.ConnectionDisposables.Clear();
-
-            if (name.Equals(this.ValidPortName))
-            {
-                this.PortName = name;
-                this.IsOpenProperty.Value = true;
-                this.DataReceivedSubject.OnNext(">");
-            }
-            else
-            {
-                throw new ArgumentException("Invalid name");
-            }
+            this.OnOpening(name);
         }
 
         /// <summary>
@@ -194,8 +201,9 @@ namespace Terminal.Models.Serial
         /// <param name="text"></param>
         public void WriteLine(string text)
         {
-            if (this.IsOpen)
+            if (this.IsPortEnabled)
             {
+                this.OnSending(text);
                 this.DataSentSubject.OnNext(text);
             }
             else
@@ -219,17 +227,20 @@ namespace Terminal.Models.Serial
         /// </summary>
         public void Close()
         {
-            this.IsOpenProperty.Value = false;
-            this.ConnectionDisposables.Clear();
+            this.OnClosing();
         }
+
+
+        protected abstract void OnOpening(string name);
+
+        protected abstract void OnSending(string text);
+
+        protected abstract void OnClosing();
 
         /// <summary>
         /// ポート名一覧取得
         /// </summary>
         /// <returns></returns>
-        public string[] GetPortNames()
-        {
-            return new[] { this.ValidPortName, this.InvalidPortName };
-        }
+        public abstract string[] GetPortNames();
     }
 }

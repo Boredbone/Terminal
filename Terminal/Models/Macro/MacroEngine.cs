@@ -35,7 +35,7 @@ namespace Terminal.Models.Macro
         private string nextMessage;
 
 
-        private IConnection Connection { get; }
+        private ConnectionBase Connection { get; }
 
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Terminal.Models.Macro
 
 
 
-        public MacroEngine(IConnection connection)
+        public MacroEngine(ConnectionBase connection)
         {
             this.Connection = connection;
             this.nextMessage = null;

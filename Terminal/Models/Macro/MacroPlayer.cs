@@ -23,7 +23,7 @@ namespace Terminal.Models.Macro
         IModuleManager IMacroPlayer.Modules => this.Modules;
 
         public MacroEngine Engine { get; private set; }
-        private IConnection Connaction { get; }
+        private ConnectionBase Connaction { get; }
 
         public ModuleManager Modules { get; }
 
@@ -43,7 +43,7 @@ namespace Terminal.Models.Macro
         public IObservable<bool> IsPausing => this.IsPausingSubject.AsObservable();
 
 
-        public MacroPlayer(IConnection connection)
+        public MacroPlayer(ConnectionBase connection)
         {
             this.Connaction = connection;
             this.ErrorSubject = new Subject<string>().AddTo(this.Disposables);

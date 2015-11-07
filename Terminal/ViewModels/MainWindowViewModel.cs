@@ -34,7 +34,7 @@ namespace Terminal.ViewModels
         private string ignoredNewLine = "\r";
 
         private ApplicationCore Core { get; }
-        private IConnection Connection { get; }
+        private ConnectionBase Connection { get; }
 
         private string InputText { get; set; }
         private List<string> TextHistory { get; }

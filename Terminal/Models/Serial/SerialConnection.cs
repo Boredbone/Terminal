@@ -17,7 +17,124 @@ namespace Terminal.Models.Serial
     /// <summary>
     /// SerialPortの管理
     /// </summary>
-    public class SerialConnection : IConnection
+    public class SerialConnection : ConnectionBase
+    {
+
+        private SerialPort _fieldPort;
+        private SerialPort Port
+        {
+            get { return _fieldPort; }
+            set
+            {
+                if (_fieldPort != value)
+                {
+                    _fieldPort?.Dispose();
+                    _fieldPort = value;
+                    if (this.PortChangedSubject.HasObservers)
+                    {
+                        this.PortChangedSubject.OnNext(value != null);
+                    }
+                }
+            }
+        }
+
+        public int BaudRate { get; set; } = 9600;
+        public int DataBits { get; set; } = 8;
+
+        protected override bool IsPortEnabled => this.Port != null;
+
+        private CompositeDisposable ConnectionDisposables { get; }
+
+        public SerialConnection()
+        {
+            this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
+        }
+
+        public override string[] GetPortNames()
+        {
+            try
+            {
+                return SerialPort.GetPortNames();
+            }
+            catch//(Exception e)
+            {
+                return new string[0];
+                //return new string[] { e.ToString() };
+            }
+        }
+
+        protected override void OnClosing()
+        {
+            if (this.Port != null)
+            {
+                if (this.Port.IsOpen)
+                {
+                    this.Port.Close();
+                }
+                this.Port.Dispose();
+                this.Port = null;
+            }
+            //this.PortName = "";
+            this.IsOpenProperty.Value = false;
+            this.ConnectionDisposables.Clear();
+        }
+
+        protected override void OnOpening(string name)
+        {
+
+            var port = new SerialPort(name, this.BaudRate, Parity.None, this.DataBits, StopBits.One);
+
+            this.ConnectionDisposables.Clear();
+
+            try
+            {
+                port.Open();
+                port.DtrEnable = true;
+                port.RtsEnable = true;
+                port.Encoding = this.Encoding;
+                port.NewLine = this.SendingNewLine;
+                //port.ReadBufferSize = 1024;
+
+                //データ受信時の動作を登録
+                Observable.FromEvent<SerialDataReceivedEventHandler, SerialDataReceivedEventArgs>(
+                    h => (s, e) => h(e),
+                    h => port.DataReceived += h,
+                    h => port.DataReceived -= h)
+                    .Select(x =>
+                    {
+                        //var pt1 = (SerialPort)pt;
+                        //var buf = new byte[1024];
+                        //var len = port.Read(buf, 0, 1024);
+                        //var s = Encoding.GetEncoding("Shift_JIS").GetString(buf, 0, len);
+                        //return s;
+                        return port.ReadExisting()
+                            .Replace("\0", "")
+                            .Replace(this.IgnoredNewLine, "");
+                    })
+                    .Subscribe(this.DataReceivedSubject)
+                    .AddTo(this.ConnectionDisposables);
+
+                this.Port = port;
+                this.PortName = name;
+                this.IsOpenProperty.Value = true;
+            }
+            catch
+            {
+                //ポートオープンに失敗
+                port.Dispose();
+                this.Port = null;
+                throw;
+            }
+        }
+
+        protected override void OnSending(string text)
+        {
+            this.Port.WriteLine(text);
+        }
+    }
+
+    /*
+    public class _SerialConnection : IConnection
     {
         private SerialPort _fieldPort;
         private SerialPort Port
@@ -121,12 +238,12 @@ namespace Terminal.Models.Serial
         private CompositeDisposable ConnectionDisposables { get; }
         private CompositeDisposable Disposables { get; }
 
+        private bool IsPortEnabled => this.Port != null;
 
 
         public SerialConnection()
         {
             this.Disposables = new CompositeDisposable();
-            this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
 
             this.PortName = "";
 
@@ -167,6 +284,7 @@ namespace Terminal.Models.Serial
             //    })
             //    .AddTo(this.Disposables);
 
+            this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
         }
 
         public string History(int back) => this.ConnectionHistory.History(back);
@@ -179,15 +297,58 @@ namespace Terminal.Models.Serial
         public void Open(string name)
         {
             //すでにポートを開いていたら例外
-            if (this.Port != null)
+            if (this.IsPortEnabled)
             {
                 throw new InvalidOperationException("Already connected");
             }
 
+            this.OnOpening(name);
+        }
+
+        /// <summary>
+        /// 送信
+        /// </summary>
+        /// <param name="text"></param>
+        public void WriteLine(string text)
+        {
+            if (this.IsPortEnabled)
+            {
+                this.OnSending(text);
+                this.DataSentSubject.OnNext(text);
+            }
+            else
+            {
+                this.DataIgnoredSubject.OnNext(text);
+            }
+        }
+
+
+        /// <summary>
+        /// ポートを破棄
+        /// </summary>
+        public void Dispose()
+        {
+            this.Close();
+            this.Disposables.Dispose();
+        }
+
+        /// <summary>
+        /// ポートを閉じる
+        /// </summary>
+        public void Close()
+        {
+            this.OnClosing();
+        }
+
+
+
+        private void OnOpening(string name)
+        {
+
             var port = new SerialPort(name, this.BaudRate, Parity.None, this.DataBits, StopBits.One);
-            
+
             this.ConnectionDisposables.Clear();
-            
+
             try
             {
                 port.Open();
@@ -229,37 +390,12 @@ namespace Terminal.Models.Serial
             }
         }
 
-        /// <summary>
-        /// 送信
-        /// </summary>
-        /// <param name="text"></param>
-        public void WriteLine(string text)
+        private void OnSending(string text)
         {
-            if (this.Port != null)
-            {
-                this.Port.WriteLine(text);
-                this.DataSentSubject.OnNext(text);
-            }
-            else
-            {
-                this.DataIgnoredSubject.OnNext(text);
-            }
+            this.Port.WriteLine(text);
         }
 
-
-        /// <summary>
-        /// ポートを破棄
-        /// </summary>
-        public void Dispose()
-        {
-            this.Close();
-            this.Disposables.Dispose();
-        }
-
-        /// <summary>
-        /// ポートを閉じる
-        /// </summary>
-        public void Close()
+        private void OnClosing()
         {
             if (this.Port != null)
             {
@@ -291,5 +427,5 @@ namespace Terminal.Models.Serial
                 //return new string[] { e.ToString() };
             }
         }
-    }
+    }*/
 }

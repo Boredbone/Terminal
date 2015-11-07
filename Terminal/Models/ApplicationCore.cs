@@ -17,7 +17,7 @@ namespace Terminal.Models
         //private static ApplicationCore _instance = new ApplicationCore();
         //public static ApplicationCore Instance => _instance;
 
-        public IConnection Connection { get; }
+        public ConnectionBase Connection { get; }
         public MacroPlayer MacroPlayer { get; }
 
         private PluginLoader<IActivator> PluginLoader { get; }

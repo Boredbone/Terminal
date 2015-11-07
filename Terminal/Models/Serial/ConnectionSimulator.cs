@@ -14,7 +14,58 @@ using Reactive.Bindings.Extensions;
 
 namespace Terminal.Models.Serial
 {
-    public class ConnectionSimulator : IConnection
+    public class ConnectionSimulator : ConnectionBase
+    {
+        private string ValidPortName = "Valid";
+        private string InvalidPortName = "Invalid";
+
+        protected override bool IsPortEnabled => this.IsOpen;
+
+
+        public ConnectionSimulator()
+        {
+
+            this.DataSentSubject
+                .Delay(TimeSpan.FromMilliseconds(2000))
+                .Select(x => "echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+                //.Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+                .Subscribe(this.DataReceivedSubject)
+                .AddTo(this.Disposables);
+        }
+
+
+        public override string[] GetPortNames()
+        {
+            return new[] { this.ValidPortName, this.InvalidPortName };
+        }
+
+        protected override void OnClosing()
+        {
+            this.IsOpenProperty.Value = false;
+        }
+
+        protected override void OnOpening(string name)
+        {
+            if (name.Equals(this.ValidPortName))
+            {
+                this.PortName = name;
+                this.IsOpenProperty.Value = true;
+                this.DataReceivedSubject.OnNext(">");
+            }
+            else
+            {
+                throw new ArgumentException("Invalid name");
+            }
+        }
+
+        protected override void OnSending(string text)
+        {
+            //No operation
+        }
+    }
+
+    /*
+    public class _ConnectionSimulator : IConnection
     {
         private string ValidPortName = "Valid";
         private string InvalidPortName = "Invalid";
@@ -100,15 +151,14 @@ namespace Terminal.Models.Serial
         private Subject<string> DataIgnoredSubject { get; }
 
 
-        private CompositeDisposable ConnectionDisposables { get; }
+        //private CompositeDisposable ConnectionDisposables { get; }
         private CompositeDisposable Disposables { get; }
 
-
+        private bool IsPortEnabled => this.IsOpen;
 
         public ConnectionSimulator()
         {
             this.Disposables = new CompositeDisposable();
-            this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
 
             this.PortName = "";
 
@@ -168,24 +218,12 @@ namespace Terminal.Models.Serial
         public void Open(string name)
         {
             //すでにポートを開いていたら例外
-            if (this.IsOpen)
+            if (this.IsPortEnabled)
             {
                 throw new InvalidOperationException("Already connected");
             }
 
-
-            this.ConnectionDisposables.Clear();
-
-            if (name.Equals(this.ValidPortName))
-            {
-                this.PortName = name;
-                this.IsOpenProperty.Value = true;
-                this.DataReceivedSubject.OnNext(">");
-            }
-            else
-            {
-                throw new ArgumentException("Invalid name");
-            }
+            this.OnOpening(name);
         }
 
         /// <summary>
@@ -194,8 +232,9 @@ namespace Terminal.Models.Serial
         /// <param name="text"></param>
         public void WriteLine(string text)
         {
-            if (this.IsOpen)
+            if (this.IsPortEnabled)
             {
+                this.OnSending(text);
                 this.DataSentSubject.OnNext(text);
             }
             else
@@ -219,8 +258,32 @@ namespace Terminal.Models.Serial
         /// </summary>
         public void Close()
         {
+            this.OnClosing();
+        }
+
+
+        private void OnOpening(string name)
+        {
+            if (name.Equals(this.ValidPortName))
+            {
+                this.PortName = name;
+                this.IsOpenProperty.Value = true;
+                this.DataReceivedSubject.OnNext(">");
+            }
+            else
+            {
+                throw new ArgumentException("Invalid name");
+            }
+        }
+
+        private void OnSending(string text)
+        {
+
+        }
+
+        private void OnClosing()
+        {
             this.IsOpenProperty.Value = false;
-            this.ConnectionDisposables.Clear();
         }
 
         /// <summary>
@@ -231,5 +294,5 @@ namespace Terminal.Models.Serial
         {
             return new[] { this.ValidPortName, this.InvalidPortName };
         }
-    }
+    }*/
 }
