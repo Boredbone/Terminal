@@ -28,6 +28,13 @@ namespace Terminal.Macro.Api
         void Display(string text);
 
         /// <summary>
+        /// 受信履歴
+        /// </summary>
+        /// <param name="back">さかのぼる行数</param>
+        /// <returns>指定された行の受信文字列</returns>
+        string History(int back);
+
+        /// <summary>
         /// 文字列を送信
         /// </summary>
         /// <param name="text">送信する文字列</param>

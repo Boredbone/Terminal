@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terminal.Macro.Api", "Api\T
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		XamlTools\XamlTools.projitems*{094a65b4-ffdb-4fb6-9548-55558b0c9e7a}*SharedItemsImports = 4
-		Utility\Utility.projitems*{094a65b4-ffdb-4fb6-9548-55558b0c9e7a}*SharedItemsImports = 4
 		XamlTools\XamlTools.projitems*{19c859c2-cd1f-4a28-bbf5-615cc5f7427f}*SharedItemsImports = 13
 		Utility\Utility.projitems*{42ab21e2-202c-4001-9578-5e8d166b9b6c}*SharedItemsImports = 13
 	EndGlobalSection

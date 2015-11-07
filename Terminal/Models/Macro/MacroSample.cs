@@ -40,6 +40,11 @@ namespace Terminal.Models.Macro
 
             await Macro.WaitAsync("\n>");
 
+            Macro.Display(Macro.History(0));
+            Macro.Display(Macro.History(1));
+            Macro.Display(Macro.History(2));
+            Macro.Display(Macro.History(3));
+
             //Macro.Cancel();
 
             var fileName = @"d.txt";

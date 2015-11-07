@@ -7,15 +7,23 @@ using System.Threading.Tasks;
 
 namespace Terminal.Models.Serial
 {
-    public interface IConnection : IDisposable
+    public interface _IConnection : IDisposable
     {
         LineCodes LineCode { get; set; }
         Encoding Encoding { get; set; }
         string SendingNewLine { get; set; }
-        int BaudRate { get; set; }
-        int DataBits { get; set; }
+        //int BaudRate { get; set; }
+        //int DataBits { get; set; }
         string PortName { get; }
         bool IsOpen { get; }
+
+        string History(int back);
+
+
+        string[] Splitter { get; }
+        string ReceivingNewLine { get; }
+        string IgnoredNewLine { get; }
+
 
         /// <summary>
         /// ポート変更通知

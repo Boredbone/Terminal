@@ -236,7 +236,7 @@ namespace Terminal.ViewModels
                 {
                     this.WriteNotice(y.Text, false, LogTypes.MacroMessage);
                 }
-                else if (this.IsNoticeEnabled.Value)
+                else// if (this.IsNoticeEnabled.Value)
                 {
                     this.WriteNotice(y.Text, false, LogTypes.Notice);
                 }
@@ -375,6 +375,11 @@ namespace Terminal.ViewModels
         /// <param name="type"></param>
         private void WriteNotice(string text, bool forceScroll, LogTypes type)
         {
+            if(!this.IsNoticeEnabled.Value && type == LogTypes.Notice)
+            {
+                return;
+            }
+
             this.ActionQueue.Enqueue(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");

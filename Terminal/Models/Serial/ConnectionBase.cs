@@ -14,28 +14,10 @@ using Reactive.Bindings.Extensions;
 
 namespace Terminal.Models.Serial
 {
-    /// <summary>
-    /// SerialPortの管理
-    /// </summary>
-    public class SerialConnection : IConnection
+    public abstract class ConnectionBase
     {
-        private SerialPort _fieldPort;
-        private SerialPort Port
-        {
-            get { return _fieldPort; }
-            set
-            {
-                if (_fieldPort != value)
-                {
-                    _fieldPort?.Dispose();
-                    _fieldPort = value;
-                    if (this.PortChangedSubject.HasObservers)
-                    {
-                        this.PortChangedSubject.OnNext(value != null);
-                    }
-                }
-            }
-        }
+        private string ValidPortName = "Valid";
+        private string InvalidPortName = "Invalid";
 
         private LineCodes _fieldLineCode;
         public LineCodes LineCode
@@ -67,8 +49,8 @@ namespace Terminal.Models.Serial
 
         public string SendingNewLine { get; set; } = "\r\n";
         public Encoding Encoding { get; set; } = Encoding.GetEncoding("Shift_JIS");
-        public int BaudRate { get; set; } = 9600;
-        public int DataBits { get; set; } = 8;
+        //public int BaudRate { get; set; } = 9600;
+        //public int DataBits { get; set; } = 8;
 
         public string PortName { get; private set; }
 
@@ -123,7 +105,7 @@ namespace Terminal.Models.Serial
 
 
 
-        public SerialConnection()
+        public ConnectionBase()
         {
             this.Disposables = new CompositeDisposable();
             this.ConnectionDisposables = new CompositeDisposable().AddTo(this.Disposables);
@@ -135,7 +117,7 @@ namespace Terminal.Models.Serial
             this.DataIgnoredSubject = new Subject<string>().AddTo(this.Disposables);
             //this.LineReceivedSubject = new Subject<string>().AddTo(this.Disposables);
             this.DataSentSubject = new Subject<string>().AddTo(this.Disposables);
-            
+
             this.IsOpenProperty = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
 
             this.LineCode = LineCodes.Lf;
@@ -167,6 +149,13 @@ namespace Terminal.Models.Serial
             //    })
             //    .AddTo(this.Disposables);
 
+            this.DataSentSubject
+                .Delay(TimeSpan.FromMilliseconds(2000))
+                .Select(x => "echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+                //.Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+                .Subscribe(this.DataReceivedSubject)
+                .AddTo(this.Disposables);
+
         }
 
         public string History(int back) => this.ConnectionHistory.History(back);
@@ -179,53 +168,23 @@ namespace Terminal.Models.Serial
         public void Open(string name)
         {
             //すでにポートを開いていたら例外
-            if (this.Port != null)
+            if (this.IsOpen)
             {
                 throw new InvalidOperationException("Already connected");
             }
 
-            var port = new SerialPort(name, this.BaudRate, Parity.None, this.DataBits, StopBits.One);
-            
+
             this.ConnectionDisposables.Clear();
-            
-            try
+
+            if (name.Equals(this.ValidPortName))
             {
-                port.Open();
-                port.DtrEnable = true;
-                port.RtsEnable = true;
-                port.Encoding = this.Encoding;
-                port.NewLine = this.SendingNewLine;
-                //port.ReadBufferSize = 1024;
-
-                //データ受信時の動作を登録
-                Observable.FromEvent<SerialDataReceivedEventHandler, SerialDataReceivedEventArgs>(
-                    h => (s, e) => h(e),
-                    h => port.DataReceived += h,
-                    h => port.DataReceived -= h)
-                    .Select(x =>
-                    {
-                        //var pt1 = (SerialPort)pt;
-                        //var buf = new byte[1024];
-                        //var len = port.Read(buf, 0, 1024);
-                        //var s = Encoding.GetEncoding("Shift_JIS").GetString(buf, 0, len);
-                        //return s;
-                        return port.ReadExisting()
-                            .Replace("\0", "")
-                            .Replace(this.IgnoredNewLine, "");
-                    })
-                    .Subscribe(this.DataReceivedSubject)
-                    .AddTo(this.ConnectionDisposables);
-
-                this.Port = port;
                 this.PortName = name;
                 this.IsOpenProperty.Value = true;
+                this.DataReceivedSubject.OnNext(">");
             }
-            catch
+            else
             {
-                //ポートオープンに失敗
-                port.Dispose();
-                this.Port = null;
-                throw;
+                throw new ArgumentException("Invalid name");
             }
         }
 
@@ -235,9 +194,8 @@ namespace Terminal.Models.Serial
         /// <param name="text"></param>
         public void WriteLine(string text)
         {
-            if (this.Port != null)
+            if (this.IsOpen)
             {
-                this.Port.WriteLine(text);
                 this.DataSentSubject.OnNext(text);
             }
             else
@@ -261,16 +219,6 @@ namespace Terminal.Models.Serial
         /// </summary>
         public void Close()
         {
-            if (this.Port != null)
-            {
-                if (this.Port.IsOpen)
-                {
-                    this.Port.Close();
-                }
-                this.Port.Dispose();
-                this.Port = null;
-            }
-            //this.PortName = "";
             this.IsOpenProperty.Value = false;
             this.ConnectionDisposables.Clear();
         }
@@ -281,15 +229,7 @@ namespace Terminal.Models.Serial
         /// <returns></returns>
         public string[] GetPortNames()
         {
-            try
-            {
-                return SerialPort.GetPortNames();
-            }
-            catch//(Exception e)
-            {
-                return new string[0];
-                //return new string[] { e.ToString() };
-            }
+            return new[] { this.ValidPortName, this.InvalidPortName };
         }
     }
 }

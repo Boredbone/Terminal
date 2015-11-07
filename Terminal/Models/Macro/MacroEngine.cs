@@ -93,7 +93,7 @@ namespace Terminal.Models.Macro
             var trigger = this.Connection.LineReceived
                 .Skip(1)
                 .Take(count)
-                .Delay(TimeSpan.FromMilliseconds(10))
+                //.Delay(TimeSpan.FromMilliseconds(10))
                 .Subscribe(x =>
                 {
                     list.Add(x);
@@ -300,6 +300,13 @@ namespace Terminal.Models.Macro
             await this.WaitIfPausingAsync();
 
         }
+
+        /// <summary>
+        /// 受信履歴
+        /// </summary>
+        /// <param name="back">さかのぼる行数</param>
+        /// <returns>指定された行の受信文字列</returns>
+        public string History(int back) => this.Connection.History(back);
 
         /// <summary>
         /// 文字列を画面に表示
