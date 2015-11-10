@@ -36,7 +36,8 @@ namespace Terminal.Models.Macro
 
 
         private BehaviorSubject<bool> IsExecutingSubject { get; }
-        public IObservable<bool> IsExecuting => this.IsExecutingSubject.AsObservable();
+        public IObservable<bool> IsExecutingChanged => this.IsExecutingSubject.AsObservable();
+        public bool IsExecuting => this.IsExecutingSubject.Value;
 
 
         private BehaviorSubject<bool> IsPausingSubject { get; }

@@ -24,12 +24,45 @@ namespace Terminal.Models.Serial
 
         public ConnectionSimulator()
         {
+            //this.AddToDisposables(this.DataSent
+            //    .Delay(TimeSpan.FromMilliseconds(2000))
+            //    .Select(x => "echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+            //    //.Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
+            //    .Subscribe(this.DataReceivedSubject));
+            ////.AddTo(this.Disposables);
+
             this.AddToDisposables(this.DataSent
-                .Delay(TimeSpan.FromMilliseconds(2000))
-                .Select(x => "echo:" + x + (x.Length > 0 ? "\n>" : ">"))
-                //.Select(x => ">")//"echo:" + x + (x.Length > 0 ? "\n>" : ">"))
-                .Subscribe(this.DataReceivedSubject));
-            //.AddTo(this.Disposables);
+                .Subscribe(async str =>
+                {
+                    var command = str.Replace("\n", "");
+                    string reply;
+
+                    if (command.Length <= 0)
+                    {
+                        await Task.Delay(10);
+                        reply = ">";
+                    }
+                    else
+                    {
+                        var cmds = command.Split(',');
+
+                        if (cmds.Length >= 2 && cmds[0].Equals("delay"))
+                        {
+                            int num;
+                            if (int.TryParse(cmds[1], out num))
+                            {
+                                await Task.Delay(num);
+                            }
+                        }
+                        else
+                        {
+                            await Task.Delay(2000);
+                        }
+                        reply = "echo:" + command + "\n>";
+                    }
+                    this.DataReceivedSubject.OnNext(reply);
+
+                }));
 
             this.AddToDisposables(this.IsOpenChanged.Where(y => y)
                 .Delay(TimeSpan.FromMilliseconds(10))

@@ -62,6 +62,14 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroCancelCommand { get; }
         public ReactiveCommand MacroPauseCommand { get; }
 
+        private Subject<bool> ScrollRequestSubject { get; }
+        private int scrollDelayTimeFast = 200;
+        private int scrollDelayTimeSlow = 2000;
+        private int scrollDelayTimeCurrent;
+
+        private bool autoScroll = true;
+        private double lastVerticalOffset = 0;
+
         public ListView TextsList { get; set; }
         public ScrollViewer ListScroller { get; set; }
         public Window View { get; set; }
@@ -95,6 +103,10 @@ namespace Terminal.ViewModels
 
 
             this.IsNoticeEnabled = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
+
+
+            this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
+
 
 
             this.PortNames = new ObservableCollection<string>();
@@ -250,20 +262,20 @@ namespace Terminal.ViewModels
             .AddTo(this.Disposables);
 
             //マクロ実行開始
-            this.MacroCommand = player.IsExecuting
+            this.MacroCommand = player.IsExecutingChanged
                 .Select(x => !x)
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => this.StartMacro(), this.Disposables);
 
             //マクロ終了
-            this.MacroCancelCommand = player.IsExecuting
+            this.MacroCancelCommand = player.IsExecutingChanged
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => player.Cancel(), this.Disposables);
 
             //マクロ一時停止・再開
-            this.MacroPauseCommand = player.IsExecuting
+            this.MacroPauseCommand = player.IsExecutingChanged
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => player.PauseOrResume(), this.Disposables);
@@ -297,7 +309,7 @@ namespace Terminal.ViewModels
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 request();
-                            });
+                            });//,System.Windows.Threading.DispatcherPriority.Render);
                         }
                     }
                 }
@@ -306,8 +318,98 @@ namespace Terminal.ViewModels
                     //throw;
                 }
             }, this.CancellationTokenSource.Token);
-            
 
+
+
+
+
+            //this.scrollDelayTimeCurrent = this.scrollDelayTimeFast;
+            //
+            ////var macroExecuting = false;
+            //player.IsExecutingChanged.Subscribe
+            //    (y =>
+            //    {
+            //        this.scrollDelayTimeCurrent =
+            //            y ? this.scrollDelayTimeSlow
+            //            : this.scrollDelayTimeFast;
+            //    })
+            //.AddTo(this.Disposables);
+            //
+            /*
+            Observable.Merge(
+                this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
+                .Where(_ => !player.IsExecuting),
+                this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
+                .Where(y => player.IsExecuting))
+                .ObserveOnUIDispatcher()
+                .Subscribe(y =>
+                {
+                    this.ListScroller?.ScrollToBottom();
+                })
+                .AddTo(this.Disposables);
+                */
+            /*
+            var downSampleFast = this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast));
+            var bufferedFast = this.ScrollRequestSubject
+                .Buffer(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
+                .Where(y => y.Count > 0)
+                .Select(_ => true);
+            var downSampleSlow = this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow));
+            var bufferedSlow = this.ScrollRequestSubject
+                .Buffer(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
+                .Where(y => y.Count > 0)
+                .Select(_ => true);
+
+            Observable.Merge(
+                Observable.Merge(downSampleFast, bufferedFast)
+                .Where(_ => !player.IsExecuting),
+                Observable.Merge(downSampleSlow, bufferedSlow)
+                .Where(_ => player.IsExecuting))
+                .ObserveOnUIDispatcher()
+                .Subscribe(y =>
+                {
+                    this.ListScroller?.ScrollToBottom();
+                })
+                .AddTo(this.Disposables);
+                */
+
+            var downSampleFast = this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast));
+            var bufferedFast = this.ScrollRequestSubject
+                .Throttle(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
+                .Select(_ => true);
+            var downSampleSlow = this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow));
+            var bufferedSlow = this.ScrollRequestSubject
+                .Throttle(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
+                .Select(_ => true);
+
+            //Observable.Merge(
+            //    Observable.Merge(downSampleFast, bufferedFast)
+            //    .Where(_ => !player.IsExecuting),
+            //    Observable.Merge(downSampleSlow, bufferedSlow)
+            //    .Where(_ => player.IsExecuting))
+            //    .ObserveOnUIDispatcher()
+            //    .Subscribe(y =>
+            //    {
+            //        this.ListScroller?.ScrollToBottom();
+            //    })
+            //    .AddTo(this.Disposables);
+            Observable.Merge(
+                Observable.Merge(downSampleFast, bufferedFast)
+                .Where(_ => !player.IsExecuting),
+                downSampleSlow
+                .Where(_ => player.IsExecuting))
+                .ObserveOnUIDispatcher()
+                .Subscribe(y =>
+                {
+                    this.ListScroller?.ScrollToBottom();
+                })
+                .AddTo(this.Disposables);
 
             //リストに空アイテムを追加
             this.FeedLine();
@@ -321,13 +423,13 @@ namespace Terminal.ViewModels
         }
 
 
-
         /// <summary>
         /// 末尾までスクロール
         /// </summary>
         /// <param name="force"></param>
         private void ScrollToBottom(bool force)
         {
+            //return;
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
@@ -335,9 +437,24 @@ namespace Terminal.ViewModels
 
             if (this.ListScroller != null)
             {
-                if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
+                var nearBottom = this.ListScroller.VerticalOffset > this.lastVerticalOffset - 2;
+
+                if (!nearBottom)
                 {
-                    this.ListScroller.ScrollToBottom();
+                    this.autoScroll = false;
+                }
+                else if (this.ListScroller.ScrollableHeight - this.ListScroller.VerticalOffset
+                    < this.ListScroller.ActualHeight)
+                {
+                    this.autoScroll = true;
+                }
+
+                //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
+                if (force || this.autoScroll)//(nearBottom && this.autoScroll)
+                {
+                    this.lastVerticalOffset = this.ListScroller.VerticalOffset;
+                    this.ScrollRequestSubject.OnNext(true);
+                    //this.ListScroller.ScrollToBottom();
                 }
             }
         }

@@ -202,7 +202,7 @@ namespace Terminal.Models.Serial
             if (this.IsPortEnabled)
             {
                 this.OnSending(text);
-                this.DataSentSubject.OnNext(text);
+                this.DataSentSubject.OnNext(text + this.ReceivingNewLine);
             }
             else
             {

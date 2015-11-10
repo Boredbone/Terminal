@@ -21,7 +21,7 @@ namespace Terminal.Macro.Api
         /// <summary>
         /// 
         /// </summary>
-        IObservable<bool> IsExecuting { get; }
+        IObservable<bool> IsExecutingChanged { get; }
 
         /// <summary>
         /// 
