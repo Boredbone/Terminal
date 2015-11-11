@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal.Views"
         mc:Ignorable="d"
-        Title="ModuleWindow" Height="300" Width="300">
+        Title="ModuleWindow" Height="500" Width="500">
     <Grid>
         
     </Grid>

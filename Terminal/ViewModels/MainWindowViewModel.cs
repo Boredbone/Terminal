@@ -64,7 +64,7 @@ namespace Terminal.ViewModels
 
         private Subject<bool> ScrollRequestSubject { get; }
         private int scrollDelayTimeFast = 200;
-        private int scrollDelayTimeSlow = 2000;
+        private int scrollDelayTimeSlow = 1000;
         private int scrollDelayTimeCurrent;
 
         private bool autoScroll = true;
