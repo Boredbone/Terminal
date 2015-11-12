@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AsyncLock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BinaryHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Box.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Directions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ConcurrentExtensions.cs" />
