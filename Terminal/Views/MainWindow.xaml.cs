@@ -35,11 +35,21 @@ namespace Terminal.Views
 
             foreach (var plugin in ((App)Application.Current).CoreData.Plugins)
             {
-                plugin.OpenWindowRequested = o =>
+                plugin.OpenWindowRequested = args =>
                 {
                     var window = new ModuleWindow();
-                    window.Content = o;
-                    window.Title = plugin.Name;
+                    window.Content = args.Content;
+                    window.Title = args.Title ?? plugin.Name;
+
+                    if (args.Width >= 64)
+                    {
+                        window.Width = args.Width;
+                    }
+                    if (args.Height >= 64)
+                    {
+                        window.Height = args.Height;
+                    }
+
                     //window.Owner = this;
                     window.Show();
                     window.Activate();

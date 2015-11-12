@@ -54,6 +54,7 @@
     <Compile Include="IModule.cs" />
     <Compile Include="IModuleManager.cs" />
     <Compile Include="MacroAttribute.cs" />
+    <Compile Include="OpenWindowRequestEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
