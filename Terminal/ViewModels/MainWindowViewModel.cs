@@ -27,6 +27,9 @@ using Terminal.Views;
 
 namespace Terminal.ViewModels
 {
+    /// <summary>
+    /// コマンド入出力画面のViewModel
+    /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
 
@@ -51,6 +54,8 @@ namespace Terminal.ViewModels
 
         public ReactiveProperty<string> PauseText { get; }
 
+
+        public ReactiveProperty<string> NoticeText { get; }
         public ReactiveProperty<bool> IsNoticeEnabled { get; }
 
         public ReactiveCommand GetPortNamesCommand { get; }
@@ -101,8 +106,8 @@ namespace Terminal.ViewModels
 
             this.ReceivedTexts = new ObservableCollection<string>();
 
-
-            this.IsNoticeEnabled = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
+            this.NoticeText = new ReactiveProperty<string>().AddTo(this.Disposables);
+            this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
 
 
             this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
@@ -491,9 +496,15 @@ namespace Terminal.ViewModels
         /// <param name="type"></param>
         private void WriteNotice(string text, bool forceScroll, LogTypes type)
         {
-            if(!this.IsNoticeEnabled.Value && type == LogTypes.Notice)
+            if (type == LogTypes.Notice)
             {
-                return;
+                Application.Current.Dispatcher.Invoke
+                    (() => this.NoticeText.Value = text);
+
+                if (!this.IsNoticeEnabled.Value)
+                {
+                    return;
+                }
             }
 
             this.ActionQueue.Enqueue(() =>

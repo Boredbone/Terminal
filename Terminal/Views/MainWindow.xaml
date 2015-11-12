@@ -39,6 +39,9 @@
                 <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"/>
             </StackPanel>
             
+            <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
+                       Foreground="Green"/>
+            
         </StackPanel>
 
         <ListView x:Name="textsList" ItemsSource="{Binding Texts}" Grid.Row="1"
