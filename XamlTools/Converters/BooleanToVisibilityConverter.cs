@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 #if WINDOWS_APP || WINDOWS_UWP
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 #else
 using System.Windows;
