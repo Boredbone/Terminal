@@ -219,6 +219,24 @@ namespace Terminal.ViewModels
                         .Join(Environment.NewLine);
 
                     Clipboard.SetDataObject(items.ToString(), true);
+
+                    if (!items.Contains("\n"))
+                    {
+                        try
+                        {
+                            ulong num2 = ulong.Parse(items.Trim(), System.Globalization.NumberStyles.AllowHexSpecifier);
+
+                            var buf = BitConverter.GetBytes(num2);
+                            var num = BitConverter.ToDouble(buf, 0);
+
+                            MessageBox.Show(num.ToString());
+
+                        }
+                        catch
+                        {
+
+                        }
+                    }
                 }, this.Disposables);
             
 
