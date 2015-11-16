@@ -44,6 +44,10 @@ namespace Terminal.Models.Macro
         public IObservable<bool> IsPausing => this.IsPausingSubject.AsObservable();
 
 
+        public IObservable<bool> LogState => this.LogStateSubject.AsObservable();
+        private Subject<bool> LogStateSubject { get; }
+
+
         public MacroPlayer(ConnectionBase connection)
         {
             this.Connaction = connection;
@@ -51,7 +55,8 @@ namespace Terminal.Models.Macro
             this.MessageSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.IsExecutingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.IsPausingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
-            
+            this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
+
             this.Modules = new ModuleManager();
         }
 
@@ -74,12 +79,8 @@ namespace Terminal.Models.Macro
             var macro = new MacroEngine(this.Connaction).AddTo(macroDisposables);
             this.Engine = macro;
 
-            macro.Status
-            .Subscribe(y =>
-            {
-                this.MessageSubject.OnNext(y);
-            })
-            .AddTo(macroDisposables);
+            macro.Status.Subscribe(y => this.MessageSubject.OnNext(y)).AddTo(macroDisposables);
+            macro.LogState.Subscribe(y => this.LogStateSubject.OnNext(y)).AddTo(macroDisposables);
 
             this.Modules.Engine = macro;
             
@@ -108,6 +109,7 @@ namespace Terminal.Models.Macro
                     this.Engine = null;
                     this.IsExecutingSubject.OnNext(false);
                     this.IsPausingSubject.OnNext(false);
+                    this.LogStateSubject.OnNext(true);
                 }
             })
             .FireAndForget(e =>

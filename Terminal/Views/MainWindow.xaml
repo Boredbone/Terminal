@@ -46,10 +46,12 @@
 
         <ListView x:Name="textsList" ItemsSource="{Binding Texts}" Grid.Row="1"
                   Margin="2"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   VirtualizingPanel.ScrollUnit="Pixel"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   HorizontalContentAlignment="Stretch"
                   KeyDown="textsList_KeyDown">
+            <!--
+                  VirtualizingPanel.ScrollUnit="{Binding ScrollMode.Value}"-->
 
             <ListView.ItemTemplate>
                 <DataTemplate>

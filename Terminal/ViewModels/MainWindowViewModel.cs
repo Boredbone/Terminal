@@ -54,9 +54,10 @@ namespace Terminal.ViewModels
 
         public ReactiveProperty<string> PauseText { get; }
 
-
         public ReactiveProperty<string> NoticeText { get; }
         public ReactiveProperty<bool> IsNoticeEnabled { get; }
+
+        public ReactiveProperty<ScrollUnit> ScrollMode { get; }
 
         public ReactiveCommand GetPortNamesCommand { get; }
         public ReactiveCommand OpenPortCommand { get; }
@@ -68,11 +69,13 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroPauseCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
-        private int scrollDelayTimeFast = 200;
+        private int scrollDelayTimeFast = 100;
         private int scrollDelayTimeSlow = 1000;
-        private int scrollDelayTimeCurrent;
+        //private int scrollDelayTimeCurrent;
 
+        private bool isLogFollowing = true;
         private bool autoScroll = true;
+        private double autoScrollThreshold = 10;
         private double lastVerticalOffset = 0;
 
         public ListView TextsList { get; set; }
@@ -220,23 +223,23 @@ namespace Terminal.ViewModels
 
                     Clipboard.SetDataObject(items.ToString(), true);
 
-                    if (!items.Contains("\n"))
-                    {
-                        try
-                        {
-                            ulong num2 = ulong.Parse(items.Trim(), System.Globalization.NumberStyles.AllowHexSpecifier);
-
-                            var buf = BitConverter.GetBytes(num2);
-                            var num = BitConverter.ToDouble(buf, 0);
-
-                            MessageBox.Show(num.ToString());
-
-                        }
-                        catch
-                        {
-
-                        }
-                    }
+                    //if (!items.Contains("\n"))
+                    //{
+                    //    try
+                    //    {
+                    //        ulong num2 = ulong.Parse(items.Trim(), System.Globalization.NumberStyles.AllowHexSpecifier);
+                    //
+                    //        var buf = BitConverter.GetBytes(num2);
+                    //        var num = BitConverter.ToDouble(buf, 0);
+                    //
+                    //        MessageBox.Show(num.ToString());
+                    //
+                    //    }
+                    //    catch
+                    //    {
+                    //
+                    //    }
+                    //}
                 }, this.Disposables);
             
 
@@ -302,6 +305,19 @@ namespace Terminal.ViewModels
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => player.PauseOrResume(), this.Disposables);
+
+            player.LogState
+                .ObserveOnUIDispatcher()
+                .Subscribe(y =>
+                {
+                    var prev = this.isLogFollowing;
+                    this.isLogFollowing = y;
+                    if (!prev && y)
+                    {
+                        this.ScrollToBottom(true);
+                    }
+                })
+                .AddTo(this.Disposables);
 
 
 
@@ -400,6 +416,7 @@ namespace Terminal.ViewModels
                 .AddTo(this.Disposables);
                 */
 
+            /*
             var downSampleFast = this.ScrollRequestSubject
                 .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast));
             var bufferedFast = this.ScrollRequestSubject
@@ -410,29 +427,30 @@ namespace Terminal.ViewModels
             var bufferedSlow = this.ScrollRequestSubject
                 .Throttle(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
                 .Select(_ => true);
-
-            //Observable.Merge(
-            //    Observable.Merge(downSampleFast, bufferedFast)
-            //    .Where(_ => !player.IsExecuting),
-            //    Observable.Merge(downSampleSlow, bufferedSlow)
-            //    .Where(_ => player.IsExecuting))
-            //    .ObserveOnUIDispatcher()
-            //    .Subscribe(y =>
-            //    {
-            //        this.ListScroller?.ScrollToBottom();
-            //    })
-            //    .AddTo(this.Disposables);
+            
             Observable.Merge(
                 Observable.Merge(downSampleFast, bufferedFast)
                 .Where(_ => !player.IsExecuting),
-                downSampleSlow
+                downSampleSlow//Observable.Merge(downSampleSlow, bufferedSlow)
                 .Where(_ => player.IsExecuting))
                 .ObserveOnUIDispatcher()
                 .Subscribe(y =>
                 {
                     this.ListScroller?.ScrollToBottom();
                 })
+                .AddTo(this.Disposables);*/
+
+            this.ScrollMode = this.ScrollRequestSubject
+                .TimeInterval()
+                .Select(y => y.Interval < TimeSpan.FromMilliseconds(200))
+                .Merge(this.ScrollRequestSubject.Throttle(TimeSpan.FromMilliseconds(300)).Select(y => false))
+                .DistinctUntilChanged()
+                .Select(y => y ? ScrollUnit.Item : ScrollUnit.Pixel)
+                .ObserveOnUIDispatcher()
+                .ToReactiveProperty(ScrollUnit.Pixel)
                 .AddTo(this.Disposables);
+
+
 
             //リストに空アイテムを追加
             this.FeedLine();
@@ -444,7 +462,6 @@ namespace Terminal.ViewModels
 
 
         }
-
 
         /// <summary>
         /// 末尾までスクロール
@@ -460,24 +477,33 @@ namespace Terminal.ViewModels
 
             if (this.ListScroller != null)
             {
-                var nearBottom = this.ListScroller.VerticalOffset > this.lastVerticalOffset - 2;
 
-                if (!nearBottom)
+                
+                if (this.isLogFollowing)
                 {
-                    this.autoScroll = false;
-                }
-                else if (this.ListScroller.ScrollableHeight - this.ListScroller.VerticalOffset
-                    < this.ListScroller.ActualHeight)
-                {
-                    this.autoScroll = true;
-                }
+                    var nearBottom = this.ListScroller.VerticalOffset > this.lastVerticalOffset - 2;
+                    //var nearBottom = this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2;
 
-                //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
-                if (force || this.autoScroll)//(nearBottom && this.autoScroll)
-                {
-                    this.lastVerticalOffset = this.ListScroller.VerticalOffset;
-                    this.ScrollRequestSubject.OnNext(true);
-                    //this.ListScroller.ScrollToBottom();
+                    //if (!nearBottom)
+                    //{
+                    //    //this.autoScroll = false;
+                    //    //this.autoScrollThreshold = 10;
+                    //}
+                    //else if (this.ListScroller.ScrollableHeight - this.ListScroller.VerticalOffset
+                    //    < this.autoScrollThreshold)
+                    //{
+                    //    this.autoScroll = true;
+                    //    //this.autoScrollThreshold = this.ListScroller.ActualHeight * 0.4;
+                    //}
+                    //this.autoScroll = nearBottom;
+
+                    //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
+                    if (force || nearBottom)//this.autoScroll)//(nearBottom && this.autoScroll)
+                    {
+                        this.lastVerticalOffset = this.ListScroller.VerticalOffset;
+                        this.ScrollRequestSubject.OnNext(true);
+                        this.ListScroller.ScrollToBottom();
+                    }
                 }
             }
         }
@@ -709,7 +735,7 @@ namespace Terminal.ViewModels
 
             var player = this.Core.MacroPlayer;
 
-            this.WriteNotice("Macro Loading", false, LogTypes.Notice);
+            //this.WriteNotice("Macro Loading", false, LogTypes.Notice);
 
             //var sc = new DelegateMacro("Macro01", null);
             var sc = new ScriptMacro(name, code);

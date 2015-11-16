@@ -30,6 +30,9 @@ namespace Terminal.Models.Macro
         private BehaviorSubject<bool> LockingSubject { get; }
         private BehaviorSubject<bool> CancelSubject { get; }
 
+        public IObservable<bool> LogState => this.LogStateSubject.AsObservable();
+        private Subject<bool> LogStateSubject { get; }
+
         public bool IsPausing => this.LockingSubject.Value;
 
         private string nextMessage;
@@ -67,7 +70,7 @@ namespace Terminal.Models.Macro
             this.LockingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
-
+            this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
         }
 
         /// <summary>
@@ -323,7 +326,7 @@ namespace Terminal.Models.Macro
         /// <param name="name"></param>
         public void Start(string name)
         {
-            this.StatusSubject.OnNext(new StatusItem($"Macro {name} start"));
+            this.StatusSubject.OnNext(new StatusItem($"Macro {name} loading"));
         }
 
         /// <summary>
@@ -377,6 +380,14 @@ namespace Terminal.Models.Macro
             this.CancelSubject.OnNext(true);
         }
 
+        /// <summary>
+        /// ログの追尾をセット
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetLogState(bool state)
+        {
+            this.LogStateSubject.OnNext(state);
+        }
 
 
         /// <summary>

@@ -52,6 +52,12 @@ namespace Terminal.Macro.Api
         Task SendAsync(string text, bool immediately);
 
         /// <summary>
+        /// ログの追尾をセット
+        /// </summary>
+        /// <param name="state"></param>
+        void SetLogState(bool state);
+
+        /// <summary>
         /// 何らかの返信が来るまで待つ
         /// </summary>
         /// <returns>受信した文字列</returns>
