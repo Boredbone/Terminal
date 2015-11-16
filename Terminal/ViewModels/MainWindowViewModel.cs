@@ -68,7 +68,7 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroPauseCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
-        private int scrollDelayTimeFast = 200;
+        private int scrollDelayTimeFast = 100;
         private int scrollDelayTimeSlow = 1000;
         private int scrollDelayTimeCurrent;
 
@@ -219,6 +219,24 @@ namespace Terminal.ViewModels
                         .Join(Environment.NewLine);
 
                     Clipboard.SetDataObject(items.ToString(), true);
+
+                    //if (!items.Contains("\n"))
+                    //{
+                    //    try
+                    //    {
+                    //        ulong num2 = ulong.Parse(items.Trim(), System.Globalization.NumberStyles.AllowHexSpecifier);
+                    //
+                    //        var buf = BitConverter.GetBytes(num2);
+                    //        var num = BitConverter.ToDouble(buf, 0);
+                    //
+                    //        MessageBox.Show(num.ToString());
+                    //
+                    //    }
+                    //    catch
+                    //    {
+                    //
+                    //    }
+                    //}
                 }, this.Disposables);
             
 
@@ -407,7 +425,7 @@ namespace Terminal.ViewModels
             Observable.Merge(
                 Observable.Merge(downSampleFast, bufferedFast)
                 .Where(_ => !player.IsExecuting),
-                downSampleSlow
+                downSampleSlow//Observable.Merge(downSampleSlow, bufferedSlow)
                 .Where(_ => player.IsExecuting))
                 .ObserveOnUIDispatcher()
                 .Subscribe(y =>

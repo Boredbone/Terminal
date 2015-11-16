@@ -26,7 +26,9 @@ namespace Terminal.Views
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            ((App)Application.Current).WindowPlacement.Register(this, "TerminalHeavensRock");
+
             this.ViewModel = new MainWindowViewModel();
             
             this.ViewModel.View = this;
@@ -38,6 +40,12 @@ namespace Terminal.Views
                 plugin.OpenWindowRequested = args =>
                 {
                     var window = new ModuleWindow();
+
+                    if (args.WindowId != null && args.WindowId.Length > 0)
+                    {
+                        ((App)Application.Current).WindowPlacement.Register(window, args.WindowId);
+                    }
+
                     window.Content = args.Content;
                     window.Title = args.Title ?? plugin.Name;
 
