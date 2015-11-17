@@ -23,5 +23,14 @@ namespace Terminal.Views
         {
             InitializeComponent();
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            var dc = this.Content as IDisposable;
+            if (dc != null)
+            {
+                dc.Dispose();
+            }
+        }
     }
 }
