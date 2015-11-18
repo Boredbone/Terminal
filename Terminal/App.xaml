@@ -9,5 +9,7 @@
              Exit="Application_Exit">
     <Application.Resources>
         <c:BoolInvertingConverter x:Key="oppositeConverter" />
+        <c:BooleanToVisibilityConverter x:Key="TrueToVisibleConverter" />
+        <c:BooleanToVisibilityConverter x:Key="FalseToVisibleConverter" IsReversed="True" />
     </Application.Resources>
 </Application>

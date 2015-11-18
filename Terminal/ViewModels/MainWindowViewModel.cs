@@ -32,6 +32,7 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
+        private int LogSize = 10000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -47,7 +48,8 @@ namespace Terminal.ViewModels
         public ReactiveProperty<bool> IsPortOpen { get; }
 
         public ObservableCollection<LogItem> Texts { get; }
-        public ObservableCollection<string> ReceivedTexts { get; }
+        public ReactiveCollection<LogItem> LimitedTexts { get; }
+        public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
 
         public ReactiveProperty<string> RequestedText { get; }
         public ReactiveProperty<int> TextHistoryIndex { get; }
@@ -57,7 +59,7 @@ namespace Terminal.ViewModels
         public ReactiveProperty<string> NoticeText { get; }
         public ReactiveProperty<bool> IsNoticeEnabled { get; }
 
-        public ReactiveProperty<ScrollUnit> ScrollMode { get; }
+        //public ReactiveProperty<ScrollUnit> ScrollMode { get; }
 
         public ReactiveCommand GetPortNamesCommand { get; }
         public ReactiveCommand OpenPortCommand { get; }
@@ -70,13 +72,13 @@ namespace Terminal.ViewModels
         public ReactiveCommand LaunchPluginCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
-        private int scrollDelayTimeFast = 100;
-        private int scrollDelayTimeSlow = 1000;
+        //private int scrollDelayTimeFast = 100;
+        //private int scrollDelayTimeSlow = 1000;
         //private int scrollDelayTimeCurrent;
 
         private bool isLogFollowing = true;
-        private bool autoScroll = true;
-        private double autoScrollThreshold = 10;
+        //private bool autoScroll = true;
+        //private double autoScrollThreshold = 10;
         private double lastVerticalOffset = 0;
 
         public ListView TextsList { get; set; }
@@ -98,6 +100,16 @@ namespace Terminal.ViewModels
             this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
             this.Texts = new ObservableCollection<LogItem>();
+            var logUpdated = this.Texts.ObserveAddChanged();
+            this.LimitedTexts = logUpdated.ToReactiveCollection().AddTo(this.Disposables);
+            logUpdated.Subscribe(y =>
+            {
+                if (this.LimitedTexts.Count > LogSize)
+                {
+                    this.LimitedTexts.RemoveAtOnScheduler(0);
+                }
+            }).AddTo(this.Disposables);
+
             this.TextHistory = new List<string>();
             this.InputText = "";
             this.TextHistoryIndex = new ReactiveProperty<int>(0).AddTo(this.Disposables);
@@ -108,7 +120,7 @@ namespace Terminal.ViewModels
                 .ToReactiveProperty()
                 .AddTo(this.Disposables);
 
-            this.ReceivedTexts = new ObservableCollection<string>();
+            //this.ReceivedTexts = new ObservableCollection<string>();
 
             this.NoticeText = new ReactiveProperty<string>().AddTo(this.Disposables);
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
@@ -156,11 +168,14 @@ namespace Terminal.ViewModels
 
 
             //一行受信
-            this.Connection
+            this.ReceivedTexts = this.Connection
                 .LineReceived
-                .ObserveOnUIDispatcher()
-                .Subscribe(this.ReceivedTexts.Add)
+                .ToReadOnlyReactiveCollection()
                 .AddTo(this.Disposables);
+
+                //.ObserveOnUIDispatcher()
+                //.Subscribe(this.ReceivedTexts.Add)
+                //.AddTo(this.Disposables);
 
 
 
@@ -212,7 +227,6 @@ namespace Terminal.ViewModels
 
 
             //文字列コピー
-
             this.CopyCommand = new ReactiveCommand()
                 .WithSubscribe(_ =>
                 {
@@ -223,24 +237,7 @@ namespace Terminal.ViewModels
                         .Join(Environment.NewLine);
 
                     Clipboard.SetDataObject(items.ToString(), true);
-
-                    //if (!items.Contains("\n"))
-                    //{
-                    //    try
-                    //    {
-                    //        ulong num2 = ulong.Parse(items.Trim(), System.Globalization.NumberStyles.AllowHexSpecifier);
-                    //
-                    //        var buf = BitConverter.GetBytes(num2);
-                    //        var num = BitConverter.ToDouble(buf, 0);
-                    //
-                    //        MessageBox.Show(num.ToString());
-                    //
-                    //    }
-                    //    catch
-                    //    {
-                    //
-                    //    }
-                    //}
+                    
                 }, this.Disposables);
             
 
@@ -365,96 +362,7 @@ namespace Terminal.ViewModels
 
 
 
-
-
-            //this.scrollDelayTimeCurrent = this.scrollDelayTimeFast;
-            //
-            ////var macroExecuting = false;
-            //player.IsExecutingChanged.Subscribe
-            //    (y =>
-            //    {
-            //        this.scrollDelayTimeCurrent =
-            //            y ? this.scrollDelayTimeSlow
-            //            : this.scrollDelayTimeFast;
-            //    })
-            //.AddTo(this.Disposables);
-            //
-            /*
-            Observable.Merge(
-                this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
-                .Where(_ => !player.IsExecuting),
-                this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
-                .Where(y => player.IsExecuting))
-                .ObserveOnUIDispatcher()
-                .Subscribe(y =>
-                {
-                    this.ListScroller?.ScrollToBottom();
-                })
-                .AddTo(this.Disposables);
-                */
-            /*
-            var downSampleFast = this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast));
-            var bufferedFast = this.ScrollRequestSubject
-                .Buffer(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
-                .Where(y => y.Count > 0)
-                .Select(_ => true);
-            var downSampleSlow = this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow));
-            var bufferedSlow = this.ScrollRequestSubject
-                .Buffer(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
-                .Where(y => y.Count > 0)
-                .Select(_ => true);
-
-            Observable.Merge(
-                Observable.Merge(downSampleFast, bufferedFast)
-                .Where(_ => !player.IsExecuting),
-                Observable.Merge(downSampleSlow, bufferedSlow)
-                .Where(_ => player.IsExecuting))
-                .ObserveOnUIDispatcher()
-                .Subscribe(y =>
-                {
-                    this.ListScroller?.ScrollToBottom();
-                })
-                .AddTo(this.Disposables);
-                */
-
-            /*
-            var downSampleFast = this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast));
-            var bufferedFast = this.ScrollRequestSubject
-                .Throttle(TimeSpan.FromMilliseconds(this.scrollDelayTimeFast))
-                .Select(_ => true);
-            var downSampleSlow = this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow));
-            var bufferedSlow = this.ScrollRequestSubject
-                .Throttle(TimeSpan.FromMilliseconds(this.scrollDelayTimeSlow))
-                .Select(_ => true);
             
-            Observable.Merge(
-                Observable.Merge(downSampleFast, bufferedFast)
-                .Where(_ => !player.IsExecuting),
-                downSampleSlow//Observable.Merge(downSampleSlow, bufferedSlow)
-                .Where(_ => player.IsExecuting))
-                .ObserveOnUIDispatcher()
-                .Subscribe(y =>
-                {
-                    this.ListScroller?.ScrollToBottom();
-                })
-                .AddTo(this.Disposables);*/
-
-            this.ScrollMode = this.ScrollRequestSubject
-                .TimeInterval()
-                .Select(y => y.Interval < TimeSpan.FromMilliseconds(200))
-                .Merge(this.ScrollRequestSubject.Throttle(TimeSpan.FromMilliseconds(300)).Select(y => false))
-                .DistinctUntilChanged()
-                .Select(y => y ? ScrollUnit.Item : ScrollUnit.Pixel)
-                .ObserveOnUIDispatcher()
-                .ToReactiveProperty(ScrollUnit.Pixel)
-                .AddTo(this.Disposables);
-
 
 
             //リストに空アイテムを追加
@@ -561,13 +469,33 @@ namespace Terminal.ViewModels
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
-                var count = this.Texts.Count;
-                if (this.Texts.ContainsIndex(count - 1) && this.Texts[count - 1].Text.Length <= 0)
+                int index = 0;
+
+                foreach (var item in texts)
                 {
-                    this.Texts.RemoveAt(count - 1);
+                    if (index == 0)
+                    {
+                        //最後の行が空白なら置き換え
+                        var count = this.Texts.Count;
+                        if (this.Texts.ContainsIndex(count - 1) && this.Texts[count - 1].Text.Length <= 0)
+                        {
+                            this.Texts[count - 1].Text = item;
+                            this.Texts[count - 1].LogType = type;
+                            //this.Texts.RemoveAt(count - 1);
+                        }
+                        else
+                        {
+                            this.AddLine(item, type);
+                        }
+                    }
+                    else
+                    {
+                        this.AddLine(item, type);
+                    }
+                    index++;
                 }
 
-                texts.ForEach(x => this.AddLine(x, type));
+                //texts.ForEach(x => this.AddLine(x, type));
 
                 this.FeedLine();
                 this.ScrollToBottom(forceScroll);

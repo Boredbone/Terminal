@@ -15,10 +15,11 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <!--
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>-->
 
         <StackPanel Grid.Row="0" Margin="2">
             
@@ -35,8 +36,10 @@
                       SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
                       IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
                 <!--<TextBlock Width="100" Text="{Binding PortName.Value}"/>-->
-                <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"/>
-                <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"/>
+                <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
+                <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>
                 <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
             </StackPanel>
             
@@ -45,7 +48,7 @@
             
         </StackPanel>
 
-        <ListView x:Name="textsList" ItemsSource="{Binding Texts}" Grid.Row="1"
+        <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}" Grid.Row="1"
                   Margin="2"
                   VirtualizingPanel.ScrollUnit="Pixel"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -88,6 +91,7 @@
         </Grid>
 
 
+        <!--
         <ListView ItemsSource="{Binding ReceivedTexts}"
                   Grid.RowSpan="3" Grid.Column="1"
                   Margin="2"
@@ -99,7 +103,7 @@
                                    TextWrapping="NoWrap" />
                 </DataTemplate>
             </ListView.ItemTemplate>
-        </ListView>
+        </ListView>-->
         
     </Grid>
 </Window>

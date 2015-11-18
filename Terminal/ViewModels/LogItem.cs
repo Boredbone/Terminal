@@ -49,7 +49,7 @@ namespace Terminal.ViewModels
         public Brush Color
         {
             get { return _fieldColor; }
-            set
+            private set
             {
                 if (_fieldColor != value)
                 {
