@@ -37,6 +37,49 @@ namespace Boredbone.Utility.Extensions
         }
 
 #if !WINDOWS_APP
+
+        private static System.Text.RegularExpressions.Regex regex
+            = new System.Text.RegularExpressions.Regex(@"[^0-9]");
+
+        /// <summary>
+        /// 文字列を数値に変換
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static double ToDouble(string text)
+        {
+            //doubleに変換
+            double num;
+            if (double.TryParse(text, out num))
+            {
+                return num;
+            }
+
+            //16進数整数に変換
+            if (text.StartsWith("0x"))
+            {
+                try
+                {
+                    var i = Convert.ToInt32(text, 16);
+                    return i;
+                }
+                catch
+                {
+                    //no operation
+                }
+            }
+
+            //数字のみを抜き出して整数に変換
+            int numi;
+            if (int.TryParse(regex.Replace(text, ""), out numi))
+            {
+                return numi;
+            }
+
+            return 0.0;
+        }
+
+
         /// <summary>
         /// 文字コードを判別する
         /// http://dobon.net/vb/dotnet/string/detectcode.html
