@@ -1,4 +1,5 @@
-﻿using System;
+#if !WINDOWS_APP && !WINDOWS_UWP
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,3 +44,5 @@ namespace Boredbone.XamlTools.Converters
         }
     }
 }
+
+#endif
