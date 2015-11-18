@@ -67,6 +67,7 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroCommand { get; }
         public ReactiveCommand MacroCancelCommand { get; }
         public ReactiveCommand MacroPauseCommand { get; }
+        public ReactiveCommand LaunchPluginCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
         private int scrollDelayTimeFast = 100;
@@ -254,6 +255,10 @@ namespace Terminal.ViewModels
                     names.ForEach(x => this.PortNames.Add(x));
                 }, this.Disposables);
 
+
+            //プラグインの起動
+            this.LaunchPluginCommand = new ReactiveCommand()
+                .WithSubscribe(y => this.LaunchPlugin(), this.Disposables);
 
 
 
@@ -750,6 +755,29 @@ namespace Terminal.ViewModels
             }
         }
 
+        /// <summary>
+        /// プラグインを選択して起動
+        /// </summary>
+        private void LaunchPlugin()
+        {
+            var plugins = this.Core.Plugins;
+
+            var listDialog = new SelectorWindow();
+            listDialog.Owner = this.View;
+            listDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            plugins.ForEach(y => listDialog.List.Add(y));
+
+            if (listDialog.ShowDialog() == true)
+            {
+                var index = listDialog.Index;
+
+                var plugin = plugins.FromIndexOrDefault(index);
+                if (plugin != null)
+                {
+                    this.Core.LaunchModuleUI(plugin);
+                }
+            }
+        }
 
     }
 }

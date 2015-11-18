@@ -37,6 +37,7 @@
                 <!--<TextBlock Width="100" Text="{Binding PortName.Value}"/>-->
                 <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"/>
                 <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"/>
+                <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
             </StackPanel>
             
             <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"

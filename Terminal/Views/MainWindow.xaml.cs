@@ -27,7 +27,8 @@ namespace Terminal.Views
         {
             InitializeComponent();
 
-            ((App)Application.Current).WindowPlacement.Register(this, "TerminalHeavensRock");
+            ((App)Application.Current).CoreData
+                .WindowPlacement.Register(this, "TerminalHeavensRock");
 
             this.ViewModel = new MainWindowViewModel();
             
@@ -35,34 +36,34 @@ namespace Terminal.Views
             this.ViewModel.TextsList = this.textsList;
             this.DataContext = this.ViewModel;
 
-            foreach (var plugin in ((App)Application.Current).CoreData.Plugins)
-            {
-                plugin.OpenWindowRequested = args =>
-                {
-                    var window = new ModuleWindow();
-
-                    if (args.WindowId != null && args.WindowId.Length > 0)
-                    {
-                        ((App)Application.Current).WindowPlacement.Register(window, args.WindowId);
-                    }
-
-                    window.Content = args.Content;
-                    window.Title = args.Title ?? plugin.Name;
-
-                    if (args.Width >= 64)
-                    {
-                        window.Width = args.Width;
-                    }
-                    if (args.Height >= 64)
-                    {
-                        window.Height = args.Height;
-                    }
-
-                    //window.Owner = this;
-                    window.Show();
-                    window.Activate();
-                };
-            }
+            //foreach (var plugin in app.CoreData.Plugins)
+            //{
+            //    plugin.OpenWindowRequested = args =>
+            //    {
+            //        var window = new ModuleWindow();
+            //
+            //        if (args.WindowId != null && args.WindowId.Length > 0)
+            //        {
+            //            app.WindowPlacement.Register(window, args.WindowId);
+            //        }
+            //
+            //        window.Content = args.Content;
+            //        window.Title = args.Title ?? plugin.Name;
+            //
+            //        if (args.Width >= 64)
+            //        {
+            //            window.Width = args.Width;
+            //        }
+            //        if (args.Height >= 64)
+            //        {
+            //            window.Height = args.Height;
+            //        }
+            //
+            //        //window.Owner = this;
+            //        window.Show();
+            //        window.Activate();
+            //    };
+            //}
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -114,9 +115,10 @@ namespace Terminal.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (var plugin in ((App)Application.Current).CoreData.Plugins)
+            var core = ((App)Application.Current).CoreData;
+            foreach (var plugin in core.Plugins)
             {
-                plugin.LaunchUI();
+                core.LaunchModuleUI(plugin);
             }
         }
     }

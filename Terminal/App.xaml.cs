@@ -16,18 +16,19 @@ namespace Terminal
     {
 
         public ApplicationCore CoreData { get; private set; }// = new ApplicationCore();
-        public RestoreWindowPlace.RestoreWindowPlace WindowPlacement { get; }
+        //public RestoreWindowPlace.RestoreWindowPlace WindowPlacement { get; }
 
         public App()
         {
-            this.WindowPlacement = new RestoreWindowPlace.RestoreWindowPlace("placement.config");
+            //this.WindowPlacement = new RestoreWindowPlace.RestoreWindowPlace("placement.config");
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            this.CoreData.Save();
             this.CoreData.Dispose();
             //ApplicationCore.Instance.Dispose();
-            this.WindowPlacement.Save();
+            //this.WindowPlacement.Save();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)

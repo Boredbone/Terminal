@@ -23,7 +23,7 @@ namespace Terminal.Macro.Api
         /// 
         /// </summary>
         /// <returns></returns>
-        bool LaunchUI();
+        bool LaunchUI(LaunchUIEventArgs args);
 
         /// <summary>
         /// 
