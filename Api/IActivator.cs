@@ -28,6 +28,6 @@ namespace Terminal.Macro.Api
         /// <summary>
         /// 
         /// </summary>
-        Action<OpenWindowRequestEventArgs> OpenWindowRequested { get; set; }
+        Func<OpenWindowRequestEventArgs, object> OpenWindowRequested { get; set; }
     }
 }

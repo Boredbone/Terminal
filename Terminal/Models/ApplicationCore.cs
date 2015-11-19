@@ -109,6 +109,8 @@ namespace Terminal.Models
                     //表示
                     window.Show();
                     window.Activate();
+
+                    return window;
                 };
             }
 
