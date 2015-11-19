@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SIMULATION</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;_SIMULATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -42,6 +42,9 @@
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\WebFormTemplate_11274.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -265,6 +268,9 @@
       <Project>{094a65b4-ffdb-4fb6-9548-55558b0c9e7a}</Project>
       <Name>Terminal.Macro.Api</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\WebFormTemplate_11274.ico" />
   </ItemGroup>
   <Import Project="..\Utility\Utility.projitems" Label="Shared" />
   <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Terminal"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="Terminal Heaven's Rock" Height="700" Width="800" Closing="Window_Closing">
+        Title="Terminal Heaven's Rock" Height="700" Width="800" Closing="Window_Closing"
+        Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico">
 
     
     <Grid Margin="6">
@@ -27,6 +28,7 @@
                 <Button Width="100" Content="Macro" Command="{Binding MacroCommand}"/>
                 <Button Width="100" Content="Cancel" Command="{Binding MacroCancelCommand}"/>
                 <Button Width="100" Content="{Binding PauseText.Value}" Command="{Binding MacroPauseCommand}"/>
+                <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
                 <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>
             </StackPanel>
             
@@ -40,7 +42,7 @@
                         Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
                 <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
                         Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>
-                <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
+                <Button Width="100" Content="Clear" Command="{Binding ClearCommand}"/>
             </StackPanel>
             
             <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"

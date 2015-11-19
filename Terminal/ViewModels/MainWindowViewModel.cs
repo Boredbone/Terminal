@@ -32,7 +32,7 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSize = 10000;
+        private int LogSize = 32700;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -70,6 +70,7 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroCancelCommand { get; }
         public ReactiveCommand MacroPauseCommand { get; }
         public ReactiveCommand LaunchPluginCommand { get; }
+        public ReactiveCommand ClearCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
         //private int scrollDelayTimeFast = 100;
@@ -238,6 +239,12 @@ namespace Terminal.ViewModels
 
                     Clipboard.SetDataObject(items.ToString(), true);
                     
+                }, this.Disposables);
+
+            this.ClearCommand = new ReactiveCommand()
+                .WithSubscribe(y =>
+                {
+                    this.LimitedTexts.ClearOnScheduler();
                 }, this.Disposables);
             
 
