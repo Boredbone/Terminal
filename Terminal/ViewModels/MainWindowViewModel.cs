@@ -32,7 +32,7 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSize = 32700;
+        private int LogSize = 10000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -102,10 +102,13 @@ namespace Terminal.ViewModels
 
             this.Texts = new ObservableCollection<LogItem>();
             var logUpdated = this.Texts.ObserveAddChanged();
-            this.LimitedTexts = logUpdated.ToReactiveCollection().AddTo(this.Disposables);
+            this.LimitedTexts = logUpdated
+                .Where(y => this.isLogFollowing || y.LogType == LogTypes.Error || y.LogType == LogTypes.MacroMessage)
+                .ToReactiveCollection().AddTo(this.Disposables);
+
             logUpdated.Subscribe(y =>
             {
-                if (this.LimitedTexts.Count > LogSize)
+                while (this.LimitedTexts.Count > LogSize)
                 {
                     this.LimitedTexts.RemoveAtOnScheduler(0);
                 }
@@ -321,6 +324,17 @@ namespace Terminal.ViewModels
                 {
                     var prev = this.isLogFollowing;
                     this.isLogFollowing = y;
+
+                    var length = this.Texts.Count - 1;
+                    if (length >= 0)
+                    {
+                        var lastItem = this.Texts[length];
+                        if (lastItem != this.LimitedTexts[this.LimitedTexts.Count - 1])
+                        {
+                            this.LimitedTexts.AddOnScheduler(lastItem);
+                        }
+                    }
+
                     if (!prev && y)
                     {
                         this.ScrollToBottom(true);
