@@ -14,40 +14,40 @@ namespace Terminal.Models.Macro
     public class DelegateMacro : IMacroCode
     {
         public string Name { get; }
-        private Func<IMacroEngine, IModuleManager, Task> AsyncFunc { get; }
+        private Func<IMacroEngine, IPluginManager, Task> AsyncFunc { get; }
 
         public DelegateMacro(string name,
-            Func<IMacroEngine, IModuleManager, Task> asyncFunc)
+            Func<IMacroEngine, IPluginManager, Task> asyncFunc)
         {
             this.Name = name;
             this.AsyncFunc = asyncFunc;
 #if SIMULATION
             if (asyncFunc == null)
             {
-                this.AsyncFunc = async (Macro, Modules) =>
+                this.AsyncFunc = async (Macro, Plugins) =>
                 {
 
 
-                    //Macro.Display(Modules.ToString());
+                    //Macro.Display(Plugins.ToString());
                     //
-                    //var module = Modules.Get<ModuleSample>();
+                    //var plugin = Plugins.Get<PluginSample>();
                     //
-                    //module.Parameter1 = 1;
-                    //module.Parameter2 = "text";
+                    //plugin.Parameter1 = 1;
+                    //plugin.Parameter2 = "text";
                     //
-                    //var currentParameter = module.Parameter3;
+                    //var currentParameter = plugin.Parameter3;
                     //
                     //
-                    //var result = await module.RunAsync();
+                    //var result = await plugin.RunAsync();
                     //return;
-                    //var module = Modules["Module0"];
+                    //var plugin = Plugins["Plugin0"];
                     //
-                    //module["parameter1"] = 1;
-                    //module["parameter2"] = "text";
+                    //plugin["parameter1"] = 1;
+                    //plugin["parameter2"] = "text";
                     //
-                    //var currentParameter = module["parameter3"];
+                    //var currentParameter = plugin["parameter3"];
                     //
-                    //var result = await module.RunAsync(null);
+                    //var result = await plugin.RunAsync(null);
 
                     Macro.Timeout = 0;
 
@@ -125,14 +125,14 @@ namespace Terminal.Models.Macro
         /// マクロ実行
         /// </summary>
         /// <param name="Macro"></param>
-        /// <param name="Modules"></param>
+        /// <param name="Plugins"></param>
         /// <returns></returns>
-        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, PluginManager Plugins)
         {
             //Macro.Start(this.Name);
             try
             {
-                await this.AsyncFunc(Macro, Modules);
+                await this.AsyncFunc(Macro, Plugins);
 
                 //送信バッファを空にする
                 await Macro.SendAsync(null);

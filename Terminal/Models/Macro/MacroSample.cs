@@ -12,7 +12,7 @@ namespace Terminal.Models.Macro
     class MacroSample
     {
         [Macro]
-        public async Task Sample(IMacroEngine Macro, IModuleManager Modules)
+        public async Task Sample(IMacroEngine Macro, IPluginManager Plugins)
         {
 
             Macro.Timeout = 0;
@@ -90,27 +90,27 @@ namespace Terminal.Models.Macro
             
         }
 
-        [Macro("Module")]
-        public async Task ModuleSample(IMacroEngine Macro, IModuleManager Modules)
+        [Macro("Plugin")]
+        public async Task PluginSample(IMacroEngine Macro, IPluginManager Plugins)
         {
 
 
-            var module = Modules.Get<ModuleSample>();
+            var pluin = Plugins.Get<PluginSample>();
 
-            Macro.Display(module.ToString());
+            Macro.Display(pluin.ToString());
 
-            module.Parameter1 = 1;
-            module.Parameter2 = "text";
+            pluin.Parameter1 = 1;
+            pluin.Parameter2 = "text";
             
-            var currentParameter = module.Parameter3;
+            var currentParameter = pluin.Parameter3;
             
 
-            var result = await module.RunAsync();
+            var result = await pluin.RunAsync();
             
         }
 
         [Macro]
-        public async Task Execute(IMacroEngine Macro, IModuleManager Modules)
+        public async Task Execute(IMacroEngine Macro, IPluginManager Plugins)
         {
             await Macro.DelayAsync(10);
         }

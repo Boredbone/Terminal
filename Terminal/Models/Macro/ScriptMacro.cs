@@ -29,9 +29,9 @@ namespace Terminal.Models.Macro
         /// マクロ実行
         /// </summary>
         /// <param name="Macro"></param>
-        /// <param name="Modules"></param>
+        /// <param name="Plugins"></param>
         /// <returns></returns>
-        public async Task RunAsync(IMacroEngine Macro, ModuleManager Modules)
+        public async Task RunAsync(IMacroEngine Macro, PluginManager Plugins)
         {
 
             //if (!initialized)
@@ -41,7 +41,7 @@ namespace Terminal.Models.Macro
             //}
 
 
-            var global = new MacroGlobal(Macro, Modules);
+            var global = new MacroGlobal(Macro, Plugins);
 
             var spaces = new[] {
                 "System",
@@ -51,17 +51,17 @@ namespace Terminal.Models.Macro
                 "System.Text",
                 "System.IO",
                 "System.Linq",
-                typeof(IModule).Namespace
+                typeof(IPlugin).Namespace
             }
-            .Union(Modules.NameSpaces);
+            .Union(Plugins.NameSpaces);
 
             var assemblies = new[] {
                 typeof(object).Assembly,
                 typeof(Enumerable).Assembly,
-                typeof(IModule).Assembly,
+                typeof(IPlugin).Assembly,
                 typeof(System.ComponentModel.INotifyPropertyChanged).Assembly
             }
-            .Union(Modules.Assemblies);
+            .Union(Plugins.Assemblies);
 
             var options = ScriptOptions.Default
                 .WithNamespaces(spaces)

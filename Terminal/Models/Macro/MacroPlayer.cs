@@ -20,12 +20,12 @@ namespace Terminal.Models.Macro
     public class MacroPlayer : ViewModelBase, IMacroPlayer
     {
         IMacroEngine IMacroPlayer.Engine => this.Engine;
-        IModuleManager IMacroPlayer.Modules => this.Modules;
+        IPluginManager IMacroPlayer.Plugins => this.Plugins;
 
         public MacroEngine Engine { get; private set; }
         private ConnectionBase Connaction { get; }
 
-        public ModuleManager Modules { get; }
+        public PluginManager Plugins { get; }
 
         private Subject<string> ErrorSubject { get; }
         public IObservable<string> Error => this.ErrorSubject.AsObservable();
@@ -57,7 +57,7 @@ namespace Terminal.Models.Macro
             this.IsPausingSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
 
-            this.Modules = new ModuleManager();
+            this.Plugins = new PluginManager();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Terminal.Models.Macro
             macro.Status.Subscribe(y => this.MessageSubject.OnNext(y)).AddTo(macroDisposables);
             macro.LogState.Subscribe(y => this.LogStateSubject.OnNext(y)).AddTo(macroDisposables);
 
-            this.Modules.Engine = macro;
+            this.Plugins.Engine = macro;
             
 
             //別スレッドで開始
@@ -92,7 +92,7 @@ namespace Terminal.Models.Macro
 
                 try
                 {
-                    await code.RunAsync(macro, this.Modules);
+                    await code.RunAsync(macro, this.Plugins);
                 }
                 catch (Exception e) when (e is TimeoutException || e is OperationCanceledException)
                 {
@@ -150,7 +150,7 @@ namespace Terminal.Models.Macro
         }
         
 
-        void IMacroPlayer.Start(string name, Func<IMacroEngine, IModuleManager, Task> asyncFunc)
+        void IMacroPlayer.Start(string name, Func<IMacroEngine, IPluginManager, Task> asyncFunc)
         {
             this.Start(new DelegateMacro(name, asyncFunc));
         }

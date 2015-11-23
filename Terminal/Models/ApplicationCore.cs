@@ -73,16 +73,16 @@ namespace Terminal.Models
                 activator.AddTo(this.Disposables);
                 
                 //モジュールを読み込み
-                var module = activator.Activate(this.MacroPlayer);
+                var plugin = activator.Activate(this.MacroPlayer);
 
                 //マクロから使えるように登録
-                this.MacroPlayer.Modules.Register(module);
+                this.MacroPlayer.Plugins.Register(plugin);
                 
                 //UI起動要求時の処理
                 activator.OpenWindowRequested = args =>
                 {
                     //ウィンドウ生成
-                    var window = new ModuleWindow()
+                    var window = new PluginWindow()
                     {
                         Content = args.Content,
                         Title = args.Title ?? activator.Name
@@ -114,10 +114,8 @@ namespace Terminal.Models
                 };
             }
 
-            //TODO module
-            this.MacroPlayer.Modules.Register(new ModuleSample(this.MacroPlayer));
-            //this.MacroPlayer.RegisterModule("Module2", null);
-            //this.MacroPlayer.RegisterModule("Module3", null);
+            //TODO plugin
+            this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
         }
 
         /// <summary>
@@ -129,18 +127,18 @@ namespace Terminal.Models
         }
 
 
-        private Type[] GetActiveModuleWindowTypes()
+        private Type[] GetActivePluginWindowTypes()
         {
             return Application.Current
                .Windows
-               .AsEnumerableWithSafeCast<ModuleWindow>()
+               .AsEnumerableWithSafeCast<PluginWindow>()
                .Select(y => y.Content.GetType())
                .ToArray();
         }
 
-        public bool LaunchModuleUI(IActivator plugin)
+        public bool LaunchPluginUI(IActivator plugin)
         {
-            var args = new LaunchUIEventArgs(this.GetActiveModuleWindowTypes());
+            var args = new LaunchUIEventArgs(this.GetActivePluginWindowTypes());
             return plugin.LaunchUI(args);
         }
     }

@@ -7,7 +7,7 @@ using Terminal.Macro.Api;
 
 namespace Terminal.Models.Macro
 {
-    public class ModuleSample : IModule
+    public class PluginSample : IPlugin
     {
         public IMacroPlayer Player { get; set; }
 
@@ -15,7 +15,7 @@ namespace Terminal.Models.Macro
         public string Parameter2 { get; set; }
         public int Parameter3 { get; set; }
 
-        public ModuleSample(IMacroPlayer player)
+        public PluginSample(IMacroPlayer player)
         {
             this.Player = player;
         }

@@ -40,7 +40,7 @@ namespace Terminal.Views
             //{
             //    plugin.OpenWindowRequested = args =>
             //    {
-            //        var window = new ModuleWindow();
+            //        var window = new PluginWindow();
             //
             //        if (args.WindowId != null && args.WindowId.Length > 0)
             //        {
@@ -118,7 +118,7 @@ namespace Terminal.Views
             var core = ((App)Application.Current).CoreData;
             foreach (var plugin in core.Plugins)
             {
-                core.LaunchModuleUI(plugin);
+                core.LaunchPluginUI(plugin);
             }
         }
     }

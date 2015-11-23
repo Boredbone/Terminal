@@ -8,33 +8,33 @@ using Terminal.Macro.Api;
 
 namespace Terminal.Models.Macro
 {
-    public class ModuleManager : IModuleManager
+    public class PluginManager : IPluginManager
     {
 
-        private Dictionary<string, IModule> Dictionary { get; }
+        private Dictionary<string, IPlugin> Dictionary { get; }
         public IMacroEngine Engine { get; set; }
 
         public HashSet<Assembly> Assemblies { get; }
         public HashSet<string> NameSpaces { get; }
 
-        public ModuleManager()
+        public PluginManager()
         {
-            this.Dictionary = new Dictionary<string, IModule>();
+            this.Dictionary = new Dictionary<string, IPlugin>();
             this.Assemblies = new HashSet<Assembly>();
             this.NameSpaces = new HashSet<string>();
         }
 
-        public T Get<T>() where T : IModule
+        public T Get<T>() where T : IPlugin
         {
             return (T)this.Dictionary[typeof(T).FullName];
 
-            //var module = this.Dictionary[typeof(T).FullName];
-            //module.Engine = this.Engine;
+            //var plugin = this.Dictionary[typeof(T).FullName];
+            //plugin.Engine = this.Engine;
             //
-            //return (T)module;
+            //return (T)plugin;
         }
 
-        public void Register(IModule value)
+        public void Register(IPlugin value)
         {
             var type = value.GetType();
 

@@ -51,8 +51,8 @@
     <Compile Include="IActivator.cs" />
     <Compile Include="IMacroEngine.cs" />
     <Compile Include="IMacroPlayer.cs" />
-    <Compile Include="IModule.cs" />
-    <Compile Include="IModuleManager.cs" />
+    <Compile Include="IPlugin.cs" />
+    <Compile Include="IPluginManager.cs" />
     <Compile Include="LaunchUIEventArgs.cs" />
     <Compile Include="MacroAttribute.cs" />
     <Compile Include="OpenWindowRequestEventArgs.cs" />

@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Terminal.Views
 {
     /// <summary>
-    /// ModuleWindow.xaml の相互作用ロジック
+    /// PluginWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class ModuleWindow : Window
+    public partial class PluginWindow : Window
     {
-        public ModuleWindow()
+        public PluginWindow()
         {
             InitializeComponent();
         }

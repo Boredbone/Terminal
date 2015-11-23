@@ -11,11 +11,11 @@ namespace Terminal.Macro.Api
     /// </summary>
     public class LaunchUIEventArgs
     {
-        public Type[] ActiveModuleWindowTypes { get; }
+        public Type[] ActivePluginWindowTypes { get; }
 
-        public LaunchUIEventArgs(Type[] activeModuleWindowTypes)
+        public LaunchUIEventArgs(Type[] activePluginWindowTypes)
         {
-            this.ActiveModuleWindowTypes = activeModuleWindowTypes;
+            this.ActivePluginWindowTypes = activePluginWindowTypes;
         }
     }
 }

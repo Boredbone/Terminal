@@ -107,8 +107,9 @@
       <HintPath>..\..\FrequencyResponseAnalyzer\packages\ReactiveProperty.2.2.7.1\lib\net45\ReactiveProperty.NET45.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestoreWindowPlace">
-      <HintPath>..\..\RestoreWindowPlace\RestoreWindowPlace\bin\Release\RestoreWindowPlace.dll</HintPath>
+    <Reference Include="RestoreWindowPlace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\FrequencyResponseAnalyzer\packages\RestoreWindowPlace.1.0.0.0\lib\net45\RestoreWindowPlace.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -192,8 +193,8 @@
     <Compile Include="Models\Macro\MacroEngine.cs" />
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\MacroPlayer.cs" />
-    <Compile Include="Models\Macro\ModuleManager.cs" />
-    <Compile Include="Models\Macro\ModuleSample.cs" />
+    <Compile Include="Models\Macro\PluginManager.cs" />
+    <Compile Include="Models\Macro\PluginSample.cs" />
     <Compile Include="Models\Macro\ScriptMacro.cs" />
     <Compile Include="Models\Macro\StatusItem.cs" />
     <Compile Include="Models\Macro\StatusType.cs" />
@@ -202,8 +203,8 @@
     <Compile Include="Models\Serial\SerialConnection.cs" />
     <Compile Include="Models\Serial\ConnectionSimulator.cs" />
     <Compile Include="ViewModels\LogItem.cs" />
-    <Compile Include="Views\ModuleWindow.xaml.cs">
-      <DependentUpon>ModuleWindow.xaml</DependentUpon>
+    <Compile Include="Views\PluginWindow.xaml.cs">
+      <DependentUpon>PluginWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SelectorWindow.xaml.cs">
       <DependentUpon>SelectorWindow.xaml</DependentUpon>
@@ -221,7 +222,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\ModuleWindow.xaml">
+    <Page Include="Views\PluginWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

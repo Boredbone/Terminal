@@ -87,8 +87,10 @@
                      HorizontalAlignment="Stretch"
                      Text="{Binding RequestedText.Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                      KeyDown="TextBox_KeyDown"
+                     IsEnabled="{Binding IsLogFollowing.Value}"
                      PreviewKeyDown="TextBox_PreviewKeyDown"/>
-            <Button Grid.Column="1" Width="100" Content="Send" Command="{Binding SendCommand}"/>
+            <Button Grid.Column="1" Width="100" Content="Send" Command="{Binding SendCommand}"
+                    IsEnabled="{Binding IsLogFollowing.Value}"/>
             
         </Grid>
 

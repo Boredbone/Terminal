@@ -17,7 +17,7 @@ namespace Terminal.Macro.Api
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        IModule Activate(IMacroPlayer player);
+        IPlugin Activate(IMacroPlayer player);
 
         /// <summary>
         /// 

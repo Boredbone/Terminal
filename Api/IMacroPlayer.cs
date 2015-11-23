@@ -16,7 +16,7 @@ namespace Terminal.Macro.Api
         /// <summary>
         /// 
         /// </summary>
-        IModuleManager Modules { get; }
+        IPluginManager Plugins { get; }
 
         /// <summary>
         /// 
@@ -43,6 +43,6 @@ namespace Terminal.Macro.Api
         /// </summary>
         /// <param name="name"></param>
         /// <param name="asyncFunc"></param>
-        void Start(string name, Func<IMacroEngine, IModuleManager, Task> asyncFunc);
+        void Start(string name, Func<IMacroEngine, IPluginManager, Task> asyncFunc);
     }
 }

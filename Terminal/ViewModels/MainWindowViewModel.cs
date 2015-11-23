@@ -77,7 +77,8 @@ namespace Terminal.ViewModels
         //private int scrollDelayTimeSlow = 1000;
         //private int scrollDelayTimeCurrent;
 
-        private bool isLogFollowing = true;
+        public ReactiveProperty<bool> IsLogFollowing { get; }
+        //private bool isLogFollowing = true;
         //private bool autoScroll = true;
         //private double autoScrollThreshold = 10;
         private double lastVerticalOffset = 0;
@@ -100,10 +101,12 @@ namespace Terminal.ViewModels
             this.ActionQueue = new ConcurrentQueue<Action>();
             this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
+            this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
+
             this.Texts = new ObservableCollection<LogItem>();
             var logUpdated = this.Texts.ObserveAddChanged();
             this.LimitedTexts = logUpdated
-                .Where(y => this.isLogFollowing || y.LogType == LogTypes.Error || y.LogType == LogTypes.MacroMessage)
+                .Where(y => this.IsLogFollowing.Value || y.LogType == LogTypes.Error || y.LogType == LogTypes.MacroMessage)
                 .ToReactiveCollection().AddTo(this.Disposables);
 
             logUpdated.Subscribe(y =>
@@ -322,8 +325,8 @@ namespace Terminal.ViewModels
                 .ObserveOnUIDispatcher()
                 .Subscribe(y =>
                 {
-                    var prev = this.isLogFollowing;
-                    this.isLogFollowing = y;
+                    var prev = this.IsLogFollowing.Value;
+                    this.IsLogFollowing.Value = y;
 
                     var length = this.Texts.Count - 1;
                     if (length >= 0)
@@ -413,7 +416,7 @@ namespace Terminal.ViewModels
             {
 
                 
-                if (this.isLogFollowing)
+                if (this.IsLogFollowing.Value)
                 {
                     var nearBottom = this.ListScroller.VerticalOffset > this.lastVerticalOffset - 2;
                     //var nearBottom = this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2;
@@ -723,7 +726,7 @@ namespace Terminal.ViewModels
                 var plugin = plugins.FromIndexOrDefault(index);
                 if (plugin != null)
                 {
-                    this.Core.LaunchModuleUI(plugin);
+                    this.Core.LaunchPluginUI(plugin);
                 }
             }
         }

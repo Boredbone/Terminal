@@ -13,12 +13,12 @@ namespace Terminal.Models.Macro
     public class MacroGlobal
     {
         public IMacroEngine Macro { get; }
-        public IModuleManager Modules { get; }
+        public IPluginManager Plugins { get; }
 
-        public MacroGlobal(IMacroEngine macro, IModuleManager modules)
+        public MacroGlobal(IMacroEngine macro, IPluginManager plugins)
         {
             this.Macro = macro;
-            this.Modules = modules;
+            this.Plugins = plugins;
         }
     }
 }
