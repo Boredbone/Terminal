@@ -35,6 +35,8 @@ namespace Terminal.Models.Macro
 
         public bool IsPausing => this.LockingSubject.Value;
 
+        private bool isCanceled = false;
+
         private string nextMessage;
 
 
@@ -377,7 +379,19 @@ namespace Terminal.Models.Macro
         /// </summary>
         public void Cancel()
         {
-            this.CancelSubject.OnNext(true);
+            if (!this.isCanceled)
+            {
+                this.isCanceled = true;
+                this.CancelSubject.OnNext(true);
+            }
+        }
+
+        /// <summary>
+        /// キャンセル状態の解除
+        /// </summary>
+        public void ClearCancellation()
+        {
+            this.CancelSubject.OnNext(false);
         }
 
         /// <summary>

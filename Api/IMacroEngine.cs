@@ -12,6 +12,10 @@ namespace Terminal.Macro.Api
         /// </summary>
         int Timeout { get; set; }
 
+        /// <summary>
+        /// キャンセル状態の解除
+        /// </summary>
+        void ClearCancellation();
 
         /// <summary>
         /// 指定時間待機
