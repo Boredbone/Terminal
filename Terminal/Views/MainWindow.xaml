@@ -22,6 +22,12 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>-->
 
+
+
+        <StackPanel Grid.Row="0" Margin="2" HorizontalAlignment="Right">
+            <Button Width="100" Content="About" Command="{Binding AboutCommand}"/>
+        </StackPanel>
+
         <StackPanel Grid.Row="0" Margin="2">
             
             <StackPanel Orientation="Horizontal" Margin="2">

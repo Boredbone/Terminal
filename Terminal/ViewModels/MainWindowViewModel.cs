@@ -71,6 +71,7 @@ namespace Terminal.ViewModels
         public ReactiveCommand MacroPauseCommand { get; }
         public ReactiveCommand LaunchPluginCommand { get; }
         public ReactiveCommand ClearCommand { get; }
+        public ReactiveCommand AboutCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
         //private int scrollDelayTimeFast = 100;
@@ -270,7 +271,15 @@ namespace Terminal.ViewModels
             this.LaunchPluginCommand = new ReactiveCommand()
                 .WithSubscribe(y => this.LaunchPlugin(), this.Disposables);
 
-
+            this.AboutCommand = new ReactiveCommand()
+                .WithSubscribe(y =>
+                {
+                    var window = new LicenseWindow();
+                    
+                    //表示
+                    window.Show();
+                    window.Activate();
+                }, this.Disposables);
 
             //マクロ関連
 

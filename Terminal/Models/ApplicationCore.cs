@@ -116,6 +116,8 @@ namespace Terminal.Models
 
             //TODO plugin
             this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
+
+            Task.Run(async () => await ScriptMacro.InitializeAsync());
         }
 
         /// <summary>
