@@ -11,5 +11,53 @@
         <c:BoolInvertingConverter x:Key="oppositeConverter" />
         <c:BooleanToVisibilityConverter x:Key="TrueToVisibleConverter" />
         <c:BooleanToVisibilityConverter x:Key="FalseToVisibleConverter" IsReversed="True" />
+
+        <ControlTemplate x:Key="flatButton" TargetType="{x:Type Button}">
+            <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="1" 
+                    CornerRadius="0" x:Name="Border" Padding="4">
+                <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="#FFE0E0E0" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
+                </Trigger>
+                <Trigger Property="IsPressed"  Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="#FFD0D0D0" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+
+        <ControlTemplate x:Key="flatButton2" TargetType="{x:Type Button}">
+            <Border Background="#FFE0E0E0" BorderBrush="Gray" BorderThickness="1" 
+                    CornerRadius="0" x:Name="Border" Padding="4">
+                <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="#FFD0D0D0" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
+                </Trigger>
+                <Trigger Property="IsPressed"  Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="#FFC0C0C0" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="Gray" />
+                </Trigger>
+                <Trigger Property="IsEnabled"  Value="False">
+                    <Setter TargetName="Border" Property="Background" Value="#FFEFEFEF" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="LightGray" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        
+
+        <Style TargetType="TextBlock" x:Key="disabledTextBlockStyle">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="LightGray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Application.Resources>
 </Application>

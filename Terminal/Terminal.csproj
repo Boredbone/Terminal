@@ -83,6 +83,7 @@
       <HintPath>..\..\FrequencyResponseAnalyzer\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.1.0-beta1-20150928-02\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Expression.Controls, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
       <Private>True</Private>
@@ -139,6 +140,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Reactive.Core, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\FrequencyResponseAnalyzer\packages\Rx-Core.2.3.0-beta2\lib\net46\System.Reactive.Core.dll</HintPath>
@@ -161,10 +163,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\FrequencyResponseAnalyzer\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Windows.Controls.Ribbon" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -203,6 +204,7 @@
     <Compile Include="Models\Serial\SerialConnection.cs" />
     <Compile Include="Models\Serial\ConnectionSimulator.cs" />
     <Compile Include="ViewModels\LogItem.cs" />
+    <Compile Include="Views\Behaviors\ImageGrayoutBehavior.cs" />
     <Compile Include="Views\LicenseWindow.xaml.cs">
       <DependentUpon>LicenseWindow.xaml</DependentUpon>
     </Compile>
@@ -211,6 +213,9 @@
     </Compile>
     <Compile Include="Views\SelectorWindow.xaml.cs">
       <DependentUpon>SelectorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ImageButton.xaml.cs">
+      <DependentUpon>ImageButton.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\LicenseWindow.xaml">
       <SubType>Designer</SubType>
@@ -234,6 +239,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImageButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -284,6 +293,29 @@
     <EmbeddedResource Include="Assets\Licenses\ReactiveExtensions.txt" />
     <EmbeddedResource Include="Assets\Licenses\ReactiveProperty.txt" />
     <EmbeddedResource Include="Assets\Licenses\roslyn.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Icons\action_Cancel_16xLG.png" />
+    <Resource Include="Assets\Icons\ClassIcon_32x.png" />
+    <Resource Include="Assets\Icons\refresh_16xLG.png" />
+    <Resource Include="Assets\Icons\setup-v_32x.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Complete_and_ok_16xLG_color.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Critical_16xLG_color.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Help_and_inconclusive_16xLG_color.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Pause_32xLG_color.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Play_32xLG_color.png" />
+    <Resource Include="Assets\Icons\StatusAnnotations_Stop_32xLG_color.png" />
+    <Resource Include="Assets\Icons\StepIn_6326.png" />
+    <Resource Include="Assets\Icons\Stepout_6327.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Icons\PencilAngled_32xLG_color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Icons\Open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Icons\Close.png" />
   </ItemGroup>
   <Import Project="..\Utility\Utility.projitems" Label="Shared" />
   <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />

@@ -4,14 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal"
+        xmlns:view="clr-namespace:Terminal.Views"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Title="Terminal Heaven's Rock" Height="700" Width="800" Closing="Window_Closing"
         Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico">
 
-    
-    <Grid Margin="6">
+    <Window.Resources>
+        <Style TargetType="Button" x:Key="iconButton">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -23,41 +33,256 @@
         </Grid.ColumnDefinitions>-->
 
 
+        <Border Background="#FFF8F8F8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
         <StackPanel Grid.Row="0" Margin="2" HorizontalAlignment="Right">
-            <Button Width="100" Content="About" Command="{Binding AboutCommand}"/>
+
+            <view:ImageButton
+                ButtonContent="/Assets/Icons/StatusAnnotations_Help_and_inconclusive_16xLG_color.png"
+                ButtonCommand="{Binding AboutCommand}"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                ToolTipService.ToolTip="About"/>
+
+            <!--
+            <Button Content="/Assets/Icons/StatusAnnotations_Help_and_inconclusive_16xLG_color.png"
+                    Style="{StaticResource iconButton}"
+                    Command="{Binding AboutCommand}">
+                <Button.ContentTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding}" Stretch="None" />
+                    </DataTemplate>
+                </Button.ContentTemplate>
+            </Button>
+            <Button Width="100" Content="About" Command="{Binding AboutCommand}"/>-->
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Margin="2">
-            
+        <StackPanel Grid.Row="0" Margin="4" >
+
             <StackPanel Orientation="Horizontal" Margin="2">
+
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock" x:Key="categorytext">
+                        <Setter Property="Foreground" Value="#FF808080"/>
+                        <Setter Property="TextAlignment" Value="Center"/>
+                    </Style>
+                </StackPanel.Resources>
+
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <view:ImageButton
+                            Width="96"
+                            ButtonContent="/Assets/Icons/PencilAngled_32xLG_color.png"
+                            ButtonCommand="{Binding MacroCommand}"
+                            Visibility="{Binding IsMacroPlaying.Value,Converter={StaticResource FalseToVisibleConverter}}"
+                            Text="Play Macro"/>
+
+                        <view:ImageButton
+                            Width="96"
+                            ButtonContent="/Assets/Icons/StatusAnnotations_Stop_32xLG_color.png"
+                            ButtonCommand="{Binding MacroCancelCommand}"
+                            Visibility="{Binding IsMacroPlaying.Value,Converter={StaticResource TrueToVisibleConverter}}"
+                            Text="Cancel"/>
+
+
+
+                        <view:ImageButton
+                            Width="64"
+                            ButtonContent="/Assets/Icons/StatusAnnotations_Play_32xLG_color.png"
+                            ButtonCommand="{Binding MacroPauseCommand}"
+                            Visibility="{Binding IsMacroPausing.Value,Converter={StaticResource TrueToVisibleConverter}}"
+                            Text="Resume"/>
+
+                        <view:ImageButton
+                            Width="64"
+                            ButtonContent="/Assets/Icons/StatusAnnotations_Pause_32xLG_color.png"
+                            ButtonCommand="{Binding MacroPauseCommand}"
+                            Visibility="{Binding IsMacroPausing.Value,Converter={StaticResource FalseToVisibleConverter}}"
+                            Text="Pause"/>
+
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="Macro" Style="{StaticResource categorytext}"/>
+                </Grid>
+
+                <Border Padding="2,4">
+                    <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
+                </Border>
+
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <view:ImageButton
+                            Width="64"
+                            ButtonContent="/Assets/Icons/ClassIcon_32x.png"
+                            ButtonCommand="{Binding LaunchPluginCommand}"
+                            Text="View"/>
+
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="Plugins" Style="{StaticResource categorytext}"/>
+                </Grid>
+
+                <Border Padding="2,4">
+                    <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
+                </Border>
+
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox Width="100" ItemsSource="{Binding PortNames}"
+                                  VerticalAlignment="Center"
+                                  SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
+                                  IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
+
+                                <!--
+                        <Button Width="100" Content="Port" Command="{Binding GetPortNamesCommand}"
+                                ToolTipService.ToolTip="Refresh"/>-->
+
+                                <view:ImageButton
+                            ButtonContent="/Assets/Icons/refresh_16xLG.png"
+                            ButtonCommand="{Binding GetPortNamesCommand}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            ToolTipService.ToolTip="Refresh"/>
+
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Image 
+                                Margin="4,0"
+                                Source="/Assets/Icons/StatusAnnotations_Complete_and_ok_16xLG_color.png"
+                                Stretch="None"
+                                Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <Image 
+                                Margin="4,0"
+                                Source="/Assets/Icons/StatusAnnotations_Critical_16xLG_color.png"
+                                Stretch="None"
+                                Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Row="1" Text="{Binding ConnectionText.Value}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                            </StackPanel>
+
+                            <!--
+                        <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
+                        <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>-->
+
+                        </StackPanel>
+
+
+                        <view:ImageButton
+                            Width="64"
+                            ButtonContent="/Assets/Icons/Open.png"
+                            ButtonCommand="{Binding OpenPortCommand}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"
+                            Text="Open"/>
+
+
+                        <view:ImageButton
+                            Width="64"
+                            ButtonContent="/Assets/Icons/Close.png"
+                            ButtonCommand="{Binding ClosePortCommand}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"
+                            Text="Close"/>
+
+
+
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="Connection" Style="{StaticResource categorytext}"/>
+                </Grid>
+
+                <Border Padding="2,4">
+                    <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
+                </Border>
+
+
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+
+                        <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>
+
+                        <view:ImageButton
+                            ButtonContent="/Assets/Icons/action_Cancel_16xLG.png"
+                            ButtonCommand="{Binding ClearCommand}"
+                            Orientation="Horizontal" HorizontalAlignment="Left"
+                            Text="Clear"/>
+
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="Log" Style="{StaticResource categorytext}"/>
+                </Grid>
+
+
+                <Border Padding="2,4">
+                    <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
+                </Border>
+                <!--
                 <Button Width="100" Content="Macro" Command="{Binding MacroCommand}"/>
                 <Button Width="100" Content="Cancel" Command="{Binding MacroCancelCommand}"/>
                 <Button Width="100" Content="{Binding PauseText.Value}" Command="{Binding MacroPauseCommand}"/>
                 <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
-                <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>
+                <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>-->
             </StackPanel>
-            
-            <StackPanel Orientation="Horizontal" Margin="2">
+
+            <!--<StackPanel Orientation="Horizontal" Margin="2">
                 <Button Width="100" Content="Port" Command="{Binding GetPortNamesCommand}"/>
                 <ComboBox Width="100" ItemsSource="{Binding PortNames}"
                       SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
                       IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
-                <!--<TextBlock Width="100" Text="{Binding PortName.Value}"/>-->
+                
                 <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"
                         Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
                 <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
                         Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>
                 <Button Width="100" Content="Clear" Command="{Binding ClearCommand}"/>
-            </StackPanel>
-            
-            <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
-                       Foreground="Green"/>
-            
+            </StackPanel>-->
+
+
         </StackPanel>
 
-        <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}" Grid.Row="1"
-                  Margin="2"
+
+        <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
+                       Foreground="Green" Grid.Row="1"/>
+
+        <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}" Grid.Row="2"
+                  Margin="4"
                   VirtualizingPanel.ScrollUnit="Pixel"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   HorizontalContentAlignment="Stretch"
@@ -84,7 +309,7 @@
 
         </ListView>
 
-        <Grid Grid.Row="2" Margin="2">
+        <Grid Grid.Row="3" Margin="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -95,9 +320,25 @@
                      KeyDown="TextBox_KeyDown"
                      IsEnabled="{Binding IsLogFollowing.Value}"
                      PreviewKeyDown="TextBox_PreviewKeyDown"/>
+            <!--
             <Button Grid.Column="1" Width="100" Content="Send" Command="{Binding SendCommand}"
-                    IsEnabled="{Binding IsLogFollowing.Value}"/>
-            
+                    IsEnabled="{Binding IsLogFollowing.Value}"/>-->
+
+
+            <Button Template="{StaticResource flatButton2}"
+                    Grid.Column="1" Width="100"
+                    Command="{Binding SendCommand}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    IsEnabled="{Binding IsLogFollowing.Value}">
+                <Button.Content>
+                    <TextBlock Text="Send" TextAlignment="Center"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Style="{StaticResource disabledTextBlockStyle}"/>
+                </Button.Content>
+            </Button>
+
+
         </Grid>
 
 
@@ -114,6 +355,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>-->
-        
+
     </Grid>
 </Window>

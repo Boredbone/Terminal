@@ -55,9 +55,13 @@ namespace Terminal.ViewModels
         public ReactiveProperty<int> TextHistoryIndex { get; }
 
         public ReactiveProperty<string> PauseText { get; }
+        public ReactiveProperty<string> ConnectionText { get; }
 
         public ReactiveProperty<string> NoticeText { get; }
         public ReactiveProperty<bool> IsNoticeEnabled { get; }
+
+        public ReactiveProperty<bool> IsMacroPlaying { get; }
+        public ReactiveProperty<bool> IsMacroPausing { get; }
 
         //public ReactiveProperty<ScrollUnit> ScrollMode { get; }
 
@@ -206,11 +210,17 @@ namespace Terminal.ViewModels
                 }, this.Disposables);
 
 
+
             //ポートを閉じる
             this.ClosePortCommand = this.IsPortOpen
                 .ToReactiveCommand()
                 .WithSubscribe(x => this.Connection.Close(), this.Disposables);
 
+
+            this.ConnectionText = this.IsPortOpen
+                .Select(y => y ? "Opened" : "Closed")
+                .ToReactiveProperty()
+                .AddTo(this.Disposables);
 
             //データ送信
             this.SendCommand = new ReactiveCommand()
@@ -284,6 +294,14 @@ namespace Terminal.ViewModels
             //マクロ関連
 
             var player = this.Core.MacroPlayer;
+
+            this.IsMacroPlaying = player.IsExecutingChanged
+                .ObserveOnUIDispatcher()
+                .ToReactiveProperty();
+            this.IsMacroPausing = player.IsPausing
+                .ObserveOnUIDispatcher()
+                .ToReactiveProperty();
+
 
             this.PauseText = player.IsPausing
                 .Select(y => y ? "Resume" : "Pause")
@@ -404,8 +422,20 @@ namespace Terminal.ViewModels
             //ポート一覧を取得
             this.GetPortNamesCommand.Execute();
             this.PortName.Value = this.PortNames.FirstOrDefault();
-            //this.OpenPortCommand.Execute();
 
+            if (this.PortNames.Count == 1)
+            {
+                this.OpenPortCommand.Execute();
+            }
+
+            this.PortName.Skip(1).Subscribe(name =>
+            {
+                if (!this.IsPortOpen.Value && name!=null && name.Length > 0)
+                {
+                    this.OpenPortCommand.Execute();
+                }
+            })
+            .AddTo(this.Disposables);
 
         }
 
