@@ -343,7 +343,7 @@ namespace Terminal.ViewModels
                         var lastItem = this.Texts[length];
                         if (lastItem != this.LimitedTexts[this.LimitedTexts.Count - 1])
                         {
-                            this.LimitedTexts.AddOnScheduler(lastItem);
+                            //this.LimitedTexts.AddOnScheduler(lastItem);
                         }
                     }
 

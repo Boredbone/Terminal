@@ -392,6 +392,7 @@ namespace Terminal.Models.Macro
         public void ClearCancellation()
         {
             this.CancelSubject.OnNext(false);
+            this.LockingSubject.OnNext(false);
         }
 
         /// <summary>
