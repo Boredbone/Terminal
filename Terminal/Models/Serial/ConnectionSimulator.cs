@@ -70,9 +70,19 @@ namespace Terminal.Models.Serial
         }
 
 
-        public override string[] GetPortNames()
+        //public override string[] GetPortNames()
+        //{
+        //    return new[] { this.ValidPortName, this.InvalidPortName };
+        //}
+
+        public override void RefreshPortNames()
         {
-            return new[] { this.ValidPortName, this.InvalidPortName };
+            this.portNames.Clear();
+            var names = new[] { this.ValidPortName, this.InvalidPortName };
+            foreach(var item in names)
+            {
+                this.portNames.Add(item);
+            }
         }
 
         protected override void OnClosing()

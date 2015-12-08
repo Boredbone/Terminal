@@ -102,6 +102,9 @@ namespace Terminal.Models.Serial
         public IObservable<string> DataIgnored => this.DataIgnoredSubject.AsObservable();
         private Subject<string> DataIgnoredSubject { get; }
 
+        protected ObservableCollection<string> portNames;
+        public ReadOnlyReactiveCollection<string> PortNames
+            => this.portNames.ToReadOnlyReactiveCollection();
         
         private CompositeDisposable Disposables { get; }
 
@@ -125,7 +128,8 @@ namespace Terminal.Models.Serial
 
             this.HistoryList = new List<string>();
             this.LineBuffer = "";
-            
+
+            this.portNames = new ObservableCollection<string>();
 
             this.DataReceivedWithSendingLine = this.DataReceivedSubject
                 .Merge(this.DataSentSubject.Select(x => this.ReceivingNewLine));
@@ -234,7 +238,9 @@ namespace Terminal.Models.Serial
         /// ポート名一覧取得
         /// </summary>
         /// <returns></returns>
-        public abstract string[] GetPortNames();
+        //public abstract string[] GetPortNames();
+
+        public abstract void RefreshPortNames();
 
 
         protected abstract void OnOpening(string name);

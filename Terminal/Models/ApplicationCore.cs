@@ -11,6 +11,8 @@ using Terminal.Models.Macro;
 using Terminal.Models.Serial;
 using Terminal.Views;
 using Boredbone.Utility.Extensions;
+using Boredbone.Utility;
+using System.Reactive.Linq;
 
 namespace Terminal.Models
 {
@@ -43,6 +45,23 @@ namespace Terminal.Models
         /// </summary>
         public RestoreWindowPlace.RestoreWindowPlace WindowPlacement { get; }
 
+        private ApplicationSettings Settings { get; set; }
+        private XmlSettingManager<ApplicationSettings> SettingsXml { get; }
+        
+        public string PortName
+        {
+            get { return this.Settings.PortName; }
+            set
+            {
+                if (this.Settings.PortName != value)
+                {
+                    this.Settings.PortName = value;
+                    RaisePropertyChanged(nameof(PortName));
+                }
+            }
+        }
+
+
 
         public ApplicationCore()
         {
@@ -56,6 +75,19 @@ namespace Terminal.Models
 #endif
             //通信の改行コードを設定
             this.Connection.LineCode = LineCodes.Lf;
+
+            //ストレージに保存する設定
+            this.SettingsXml = new XmlSettingManager<ApplicationSettings>("appsettinngs.config");
+            this.Settings = SettingsXml.LoadXml().Value;
+
+            //ポートオープン時に名前を保存
+            this.Connection.IsOpenChanged
+                .Where(y => y)
+                .Subscribe(y =>
+                {
+                    this.PortName = this.Connection.PortName;
+                })
+                .AddTo(this.Disposables);
 
             //マクロ
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
@@ -117,6 +149,27 @@ namespace Terminal.Models
             //TODO plugin
             this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
 
+            //ポート一覧を更新
+            this.Connection.RefreshPortNames();
+
+            //ポートオープン
+            var port = this.Connection.PortNames.FirstOrDefault(y => y.Equals(this.PortName));
+            if (port != null)
+            {
+                this.Connection.Open(port);
+            }
+            else
+            {
+                var name = this.Connection.PortNames.FirstOrDefault();
+
+                if (this.Connection.PortNames.Count == 1 && name != null)
+                {
+                    this.Connection.Open(name);
+                }
+            }
+
+
+
             Task.Run(async () => await ScriptMacro.InitializeAsync());
         }
 
@@ -126,6 +179,8 @@ namespace Terminal.Models
         public void Save()
         {
             this.WindowPlacement.Save();
+            this.SettingsXml.SaveXml(this.Settings);
+            
         }
 
 

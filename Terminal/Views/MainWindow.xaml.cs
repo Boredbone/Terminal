@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Reactive.Bindings.Extensions;
 using Terminal.ViewModels;
 
 namespace Terminal.Views
@@ -23,6 +26,8 @@ namespace Terminal.Views
             private set { this._viewModel = value; }
         }
 
+        private CompositeDisposable Disposables { get; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,11 +35,28 @@ namespace Terminal.Views
             ((App)Application.Current).CoreData
                 .WindowPlacement.Register(this, "TerminalHeavensRock");
 
-            this.ViewModel = new MainWindowViewModel();
+            this.Disposables = new CompositeDisposable();
+
+            this.ViewModel = new MainWindowViewModel().AddTo(this.Disposables);
             
             this.ViewModel.View = this;
             this.ViewModel.TextsList = this.textsList;
             this.DataContext = this.ViewModel;
+
+            var textChanged =
+                Observable.FromEvent<TextChangedEventHandler, TextChangedEventArgs>
+                (h => (sender, e) => h(e),
+                h => this.inputText.TextChanged += h,
+                h => this.inputText.TextChanged -= h);
+
+
+            this.ViewModel.TextHistoryIndex
+                .Buffer(textChanged.Where(y => this.inputText.Text.Length > 0))
+                .Where(y => y.Count > 0)
+                //.Delay(TimeSpan.FromMilliseconds(10))
+                //.ObserveOnUIDispatcher()
+                .Subscribe(y => this.inputText.Select(this.inputText.Text.Length, 0))
+                .AddTo(this.Disposables);
 
             //foreach (var plugin in app.CoreData.Plugins)
             //{
@@ -68,7 +90,7 @@ namespace Terminal.Views
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            this.ViewModel.Dispose();
+            this.Disposables.Dispose();
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)

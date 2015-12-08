@@ -43,7 +43,7 @@ namespace Terminal.ViewModels
         private string InputText { get; set; }
         private List<string> TextHistory { get; }
 
-        public ObservableCollection<string> PortNames { get; }
+        public ReadOnlyReactiveCollection<string> PortNames { get; }
         public ReactiveProperty<string> PortName { get; }
         public ReactiveProperty<bool> IsPortOpen { get; }
 
@@ -142,11 +142,18 @@ namespace Terminal.ViewModels
 
 
 
-            this.PortNames = new ObservableCollection<string>();
-            this.PortName = new ReactiveProperty<string>("").AddTo(this.Disposables);
-
-
             this.Connection = this.Core.Connection;
+
+            this.PortNames = this.Connection.PortNames.ToReadOnlyReactiveCollection();
+
+            this.PortName = this.Connection.IsOpenChanged
+                .Where(y => y)
+                .Select(y => this.Connection.PortName)
+                .ToReactiveProperty(this.Connection.PortName)
+                .AddTo(this.Disposables);
+            // new ReactiveProperty<string>("").AddTo(this.Disposables);
+
+
 
             this.IsPortOpen = this.Connection.IsOpenChanged.ToReactiveProperty().AddTo(this.Disposables);
 
@@ -232,9 +239,14 @@ namespace Terminal.ViewModels
 
                     this.Connection.WriteLine(text);
 
-                    if (text.Length > 0)
+                    if (text != null && text.Length > 0)
                     {
-                        this.TextHistory.Add(text);
+                        if (this.TextHistory.Count < 1
+                            || !this.TextHistory[this.TextHistory.Count - 1].Equals(text))
+                        {
+                            this.TextHistory.Add(text);
+                        }
+
                         this.TextHistoryIndex.Value = this.TextHistory.Count;
                     }
 
@@ -263,7 +275,7 @@ namespace Terminal.ViewModels
                 {
                     this.LimitedTexts.ClearOnScheduler();
                 }, this.Disposables);
-            
+
 
             //ポート名一覧を取得
             this.GetPortNamesCommand = this.IsPortOpen
@@ -271,10 +283,20 @@ namespace Terminal.ViewModels
                 .ToReactiveCommand()
                 .WithSubscribe(_ =>
                 {
-                    var names = this.Connection.GetPortNames();
-                    this.PortNames.Clear();
-                    names.ForEach(x => this.PortNames.Add(x));
+                    this.Connection.RefreshPortNames();
+                    //if (this.PortNames.Count > 0 && !this.Connection.IsOpen)
+                    //{
+                    //    this.PortName.Value = this.PortNames.First();
+                    //}
+
                 }, this.Disposables);
+
+                //.WithSubscribe(_ =>
+                //{
+                //    var names = this.Connection.GetPortNames();
+                //    this.PortNames.Clear();
+                //    names.ForEach(x => this.PortNames.Add(x));
+                //}, this.Disposables);
 
 
             //プラグインの起動
@@ -419,14 +441,25 @@ namespace Terminal.ViewModels
             //リストに空アイテムを追加
             this.FeedLine();
 
-            //ポート一覧を取得
-            this.GetPortNamesCommand.Execute();
-            this.PortName.Value = this.PortNames.FirstOrDefault();
-
-            if (this.PortNames.Count == 1)
-            {
-                this.OpenPortCommand.Execute();
-            }
+            ////ポート一覧を取得
+            //this.GetPortNamesCommand.Execute();
+            //
+            ////TODO Modelに移す
+            //var port = this.PortNames.FirstOrDefault(y => y.Equals(this.Core.PortName));
+            //if (port != null)
+            //{
+            //    this.PortName.Value = port;
+            //    this.OpenPortCommand.Execute();
+            //}
+            //else
+            //{
+            //    this.PortName.Value = this.PortNames.FirstOrDefault();
+            //
+            //    if (this.PortNames.Count == 1)
+            //    {
+            //        this.OpenPortCommand.Execute();
+            //    }
+            //}
 
             this.PortName.Skip(1).Subscribe(name =>
             {

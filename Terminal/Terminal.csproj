@@ -185,6 +185,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\ApplicationCore.cs" />
+    <Compile Include="Models\ApplicationSettings.cs" />
     <Compile Include="Models\Macro\CodeBlock.cs" />
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
@@ -316,6 +317,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Icons\Close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Assets\SplashScreen.png" />
   </ItemGroup>
   <Import Project="..\Utility\Utility.projitems" Label="Shared" />
   <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />

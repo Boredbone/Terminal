@@ -51,17 +51,34 @@ namespace Terminal.Models.Serial
             this.AddToDisposables(this.ConnectionDisposables);
         }
 
-        public override string[] GetPortNames()
+        //public override string[] GetPortNames()
+        //{
+        //    try
+        //    {
+        //        return SerialPort.GetPortNames();
+        //    }
+        //    catch//(Exception e)
+        //    {
+        //        return new string[0];
+        //        //return new string[] { e.ToString() };
+        //    }
+        //}
+        public override void RefreshPortNames()
         {
+            this.portNames.Clear();
             try
             {
-                return SerialPort.GetPortNames();
+                var names = SerialPort.GetPortNames();
+                foreach (var item in names)
+                {
+                    this.portNames.Add(item);
+                }
             }
             catch//(Exception e)
             {
-                return new string[0];
                 //return new string[] { e.ToString() };
             }
+
         }
 
         protected override void OnClosing()

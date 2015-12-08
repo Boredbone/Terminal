@@ -21,7 +21,7 @@ namespace Terminal.Views
     public partial class ImageButton : UserControl
     {
 
-        public Button Button => this.button;
+        //public Button Button => this.button;
 
         public string Text
         {
