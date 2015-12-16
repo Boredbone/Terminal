@@ -56,7 +56,7 @@
 
                     <view:ImageButton
                         Width="64"
-                        ButtonContent="/Assets/Icons/PencilAngled_32xLG_color.png"
+                        ButtonContent="/Assets/Icons/CustomActions_6334_32x.png"
                         ButtonCommand="{Binding MacroCommand}"
                         Visibility="{Binding IsMacroPlaying.Value,Converter={StaticResource FalseToVisibleConverter}}"
                         Text="Start"/>

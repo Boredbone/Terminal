@@ -111,7 +111,9 @@ namespace Terminal.ViewModels
             this.Texts = new ObservableCollection<LogItem>();
             var logUpdated = this.Texts.ObserveAddChanged();
             this.LimitedTexts = logUpdated
-                .Where(y => this.IsLogFollowing.Value || y.LogType == LogTypes.Error || y.LogType == LogTypes.MacroMessage)
+                .Where(y => this.IsLogFollowing.Value
+                    || y.LogType == LogTypes.Error
+                    || y.LogType == LogTypes.MacroMessage)
                 .ToReactiveCollection().AddTo(this.Disposables);
 
             logUpdated.Subscribe(y =>

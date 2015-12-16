@@ -321,6 +321,9 @@
   <ItemGroup>
     <SplashScreen Include="Assets\SplashScreen.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Icons\CustomActions_6334_32x.png" />
+  </ItemGroup>
   <Import Project="..\Utility\Utility.projitems" Label="Shared" />
   <Import Project="..\XamlTools\XamlTools.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
