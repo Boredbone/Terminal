@@ -195,7 +195,7 @@ namespace Terminal.Models
 
         public bool LaunchPluginUI(IActivator plugin)
         {
-            var args = new LaunchUIEventArgs(this.GetActivePluginWindowTypes());
+            var args = new LaunchUiArgs(this.GetActivePluginWindowTypes());
             return plugin.LaunchUI(args);
         }
     }

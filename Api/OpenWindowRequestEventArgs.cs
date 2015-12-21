@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Terminal.Macro.Api
 {
     /// <summary>
-    /// プラグインからのウインドウ表示要求イベント引数
+    /// プラグインからのウインドウ表示要求引数
     /// </summary>
-    public class OpenWindowRequestEventArgs
+    public class OpenWindowRequestArgs
     {
         /// <summary>
         /// ウインドウ内に表示するコントロール

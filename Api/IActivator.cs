@@ -24,11 +24,11 @@ namespace Terminal.Macro.Api
         /// </summary>
         /// <param name="args">イベント引数</param>
         /// <returns>表示の成否</returns>
-        bool LaunchUI(LaunchUIEventArgs args);
+        bool LaunchUI(LaunchUiArgs args);
 
         /// <summary>
         /// プラグインからウインドウを表示するためのデリゲート
         /// </summary>
-        Func<OpenWindowRequestEventArgs, object> OpenWindowRequested { get; set; }
+        Func<OpenWindowRequestArgs, object> OpenWindowRequested { get; set; }
     }
 }

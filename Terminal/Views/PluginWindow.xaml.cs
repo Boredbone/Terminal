@@ -25,12 +25,6 @@ namespace Terminal.Views
         }
 
         private void Window_Closed(object sender, EventArgs e)
-        {
-            var dc = this.Content as IDisposable;
-            if (dc != null)
-            {
-                dc.Dispose();
-            }
-        }
+            => (this.Content as IDisposable)?.Dispose();
     }
 }

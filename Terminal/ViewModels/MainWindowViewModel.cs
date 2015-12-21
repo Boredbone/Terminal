@@ -32,7 +32,8 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSize = 10000;
+        private int LogSizeMax = 10000;
+        private int LogSizeCompressed = 5000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -118,9 +119,12 @@ namespace Terminal.ViewModels
 
             logUpdated.Subscribe(y =>
             {
-                while (this.LimitedTexts.Count > LogSize)
+                if (this.LimitedTexts.Count > this.LogSizeMax)
                 {
-                    this.LimitedTexts.RemoveAtOnScheduler(0);
+                    while (this.LimitedTexts.Count > this.LogSizeCompressed)
+                    {
+                        this.LimitedTexts.RemoveAtOnScheduler(0);
+                    }
                 }
             }).AddTo(this.Disposables);
 

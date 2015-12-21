@@ -9,7 +9,7 @@ namespace Terminal.Macro.Api
     /// <summary>
     /// プラグインへのUI表示要求の引数
     /// </summary>
-    public class LaunchUIEventArgs
+    public class LaunchUiArgs
     {
         /// <summary>
         /// 現在表示中のウィンドウの型
@@ -20,7 +20,7 @@ namespace Terminal.Macro.Api
         /// プラグインへのUI表示要求の引数
         /// </summary>
         /// <param name="activePluginWindowTypes">現在表示中のウィンドウの型</param>
-        public LaunchUIEventArgs(Type[] activePluginWindowTypes)
+        public LaunchUiArgs(Type[] activePluginWindowTypes)
         {
             this.ActivePluginWindowTypes = activePluginWindowTypes;
         }
