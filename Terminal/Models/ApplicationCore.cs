@@ -13,6 +13,7 @@ using Terminal.Views;
 using Boredbone.Utility.Extensions;
 using Boredbone.Utility;
 using System.Reactive.Linq;
+using System.Resources;
 
 namespace Terminal.Models
 {
@@ -21,8 +22,11 @@ namespace Terminal.Models
     /// </summary>
     public class ApplicationCore : ViewModelBase
     {
-        //private static ApplicationCore _instance = new ApplicationCore();
-        //public static ApplicationCore Instance => _instance;
+
+
+        private const string DefaultSaveDirectoryName = @"\Boredbone\Terminal";
+        private const string settingsFileName = "appsettings.config";
+        private const string placementFileName = "placement.config";
 
         /// <summary>
         /// 通信
@@ -76,10 +80,31 @@ namespace Terminal.Models
             //通信の改行コードを設定
             this.Connection.LineCode = LineCodes.Lf;
 
-            //ストレージに保存する設定
-            this.SettingsXml = new XmlSettingManager<ApplicationSettings>("appsettinngs.config");
-            this.Settings = SettingsXml.LoadXml().Value;
+            var directoryName = DefaultSaveDirectoryName;
 
+            var str = this.GetResourceString("SaveDirectoryName");
+            if (str != null)
+            {
+                directoryName = str;
+            }
+
+            var saveDirectory = System.Environment.GetFolderPath
+                (Environment.SpecialFolder.LocalApplicationData) + directoryName;
+
+            if (!System.IO.Directory.Exists(saveDirectory))
+            {
+                System.IO.Directory.CreateDirectory(saveDirectory);
+            }
+
+            //ストレージに保存する設定
+            this.SettingsXml = new XmlSettingManager<ApplicationSettings>(settingsFileName);
+
+            this.SettingsXml.Directory = saveDirectory;
+
+            this.Settings = SettingsXml
+                .LoadXml(XmlLoadingOptions.IgnoreAllException)
+                .Value;
+            
             //ポートオープン時に名前を保存
             this.Connection.IsOpenChanged
                 .Where(y => y)
@@ -93,7 +118,7 @@ namespace Terminal.Models
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
             //ウィンドウ配置
-            this.WindowPlacement = new RestoreWindowPlace.RestoreWindowPlace("placement.config");
+            this.WindowPlacement = new RestoreWindowPlace.RestoreWindowPlace(placementFileName);
 
             //配下のフォルダからIActivatorを実装したプラグインのdllを読み込み
             this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
@@ -146,7 +171,7 @@ namespace Terminal.Models
                 };
             }
 
-            //TODO plugin
+            //Plugin
             this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
 
             //ポート一覧を更新
@@ -178,9 +203,16 @@ namespace Terminal.Models
         /// </summary>
         public void Save()
         {
-            this.WindowPlacement.Save();
-            this.SettingsXml.SaveXml(this.Settings);
-            
+            try
+            {
+                this.WindowPlacement.Save();
+                this.SettingsXml.SaveXml(this.Settings);
+            }
+            catch
+            {
+
+            }
+
         }
 
 
@@ -197,6 +229,22 @@ namespace Terminal.Models
         {
             var args = new LaunchUiArgs(this.GetActivePluginWindowTypes());
             return plugin.LaunchUI(args);
+        }
+
+
+        private string GetResourceString(string key)
+        {
+            try
+            {
+                using (var resxSet = new ResXResourceSet(@"Resources\SpecificResource.resx"))
+                {
+                    return resxSet.GetString(key);
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
