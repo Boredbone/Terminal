@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Reactive.Bindings;
 using System.Reactive.Subjects;
+using Windows.UI.Xaml;
 
 namespace Boredbone.XamlTools.Extensions
 {
@@ -90,5 +91,16 @@ namespace Boredbone.XamlTools.Extensions
             target.Value = newValue;
             return newValue;
         }
+
+
+        public static IObservable<SizeChangedEventArgs> SizeChangedAsObservable(this FrameworkElement target)
+            => Observable.FromEvent<SizeChangedEventHandler, SizeChangedEventArgs>
+                (h => (sender, e) => h(e), h => target.SizeChanged += h, h => target.SizeChanged -= h);
+
+
+
+        public static IObservable<RoutedEventArgs> LoadedAsObservable(this FrameworkElement target)
+            => Observable.FromEvent<RoutedEventHandler, RoutedEventArgs>
+                (h => (sender, e) => h(e), h => target.Loaded += h, h => target.Loaded -= h);
     }
 }
