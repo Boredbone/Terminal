@@ -21,6 +21,14 @@ namespace Boredbone.Utility
         static readonly string backUpNameHeader = "backup_";
         private string fileName;
 
+#if WINDOWS_APP || WINDOWS_UWP
+        
+#else
+        public string Directory { get; set; }
+        private string BasePath
+            => (this.Directory == null || this.Directory.Length <= 0) ? "" : this.Directory + @"\";
+#endif
+
         /// <summary>
         /// 保存するファイル名を指定してインスタンスを初期化
         /// </summary>
@@ -63,7 +71,7 @@ namespace Boredbone.Utility
                 using (var xw = XmlWriter.Create(stream,
 #else
                 //ライターを生成
-                using (var xw = XmlWriter.Create(this.fileName,
+                using (var xw = XmlWriter.Create(this.BasePath + this.fileName,
 #endif
                     new XmlWriterSettings
                     {
@@ -128,7 +136,7 @@ namespace Boredbone.Utility
 
                 var loaded = await this.LoadMainAsync(folder, file);
 #else
-                var loaded = this.LoadMain(this.fileName);
+                var loaded = this.LoadMain(this.BasePath + this.fileName);
 #endif
 
                 //自動バックアップを使用する場合、正常に読み込めたファイルを別名でコピー
@@ -140,7 +148,8 @@ namespace Boredbone.Utility
                         var copied = await file.CopyAsync
                             (folder, backUpNameHeader + this.fileName, NameCollisionOption.ReplaceExisting);
 #else
-                        File.Copy(this.fileName, backUpNameHeader + this.fileName, true);
+                        File.Copy(this.BasePath + this.fileName, 
+                            this.BasePath + backUpNameHeader + this.fileName, true);
 #endif
                     }
                     catch (Exception e)
@@ -243,7 +252,7 @@ namespace Boredbone.Utility
 
                 var loaded = await this.LoadMainAsync(folder, file);
 #else
-                var loaded = this.LoadMain(backUpNameHeader + fileName);
+                var loaded = this.LoadMain(this.BasePath + backUpNameHeader + fileName);
 #endif
 
                 return new LoadedObjectContainer<T>(loaded, errorMessage);
@@ -294,9 +303,9 @@ namespace Boredbone.Utility
             }
         }
 #else
-        private T LoadMain(string name)
+        private T LoadMain(string path)
         {
-            using (var xr = XmlReader.Create(name))
+            using (var xr = XmlReader.Create(path))
             {
                 var serializer = new DataContractSerializer(typeof(T));
                 var value = serializer.ReadObject(xr);
