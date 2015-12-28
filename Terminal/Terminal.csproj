@@ -108,8 +108,8 @@
       <HintPath>..\..\FrequencyResponseAnalyzer\packages\ReactiveProperty.2.3\lib\net46\ReactiveProperty.NET46.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestoreWindowPlace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\FrequencyResponseAnalyzer\packages\RestoreWindowPlace.1.0.0.0\lib\net45\RestoreWindowPlace.dll</HintPath>
+    <Reference Include="RestoreWindowPlace, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\FrequencyResponseAnalyzer\packages\RestoreWindowPlace.1.1.0.0\lib\net45\RestoreWindowPlace.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

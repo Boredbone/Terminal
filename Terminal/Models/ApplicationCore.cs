@@ -118,7 +118,8 @@ namespace Terminal.Models
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
             //ウィンドウ配置
-            this.WindowPlacement = new RestoreWindowPlace.RestoreWindowPlace(placementFileName);
+            this.WindowPlacement = new RestoreWindowPlace
+                .RestoreWindowPlace(saveDirectory + @"\" + placementFileName);
 
             //配下のフォルダからIActivatorを実装したプラグインのdllを読み込み
             this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
