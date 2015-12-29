@@ -53,39 +53,9 @@ namespace Terminal.Views
             this.ViewModel.TextHistoryIndex
                 .Buffer(textChanged.Where(y => this.inputText.Text.Length > 0))
                 .Where(y => y.Count > 0)
-                //.Delay(TimeSpan.FromMilliseconds(10))
-                //.ObserveOnUIDispatcher()
                 .Subscribe(y => this.inputText.Select(this.inputText.Text.Length, 0))
                 .AddTo(this.Disposables);
-
-            //foreach (var plugin in app.CoreData.Plugins)
-            //{
-            //    plugin.OpenWindowRequested = args =>
-            //    {
-            //        var window = new PluginWindow();
-            //
-            //        if (args.WindowId != null && args.WindowId.Length > 0)
-            //        {
-            //            app.WindowPlacement.Register(window, args.WindowId);
-            //        }
-            //
-            //        window.Content = args.Content;
-            //        window.Title = args.Title ?? plugin.Name;
-            //
-            //        if (args.Width >= 64)
-            //        {
-            //            window.Width = args.Width;
-            //        }
-            //        if (args.Height >= 64)
-            //        {
-            //            window.Height = args.Height;
-            //        }
-            //
-            //        //window.Owner = this;
-            //        window.Show();
-            //        window.Activate();
-            //    };
-            //}
+            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -137,11 +107,11 @@ namespace Terminal.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var core = ((App)Application.Current).CoreData;
-            foreach (var plugin in core.Plugins)
-            {
-                core.LaunchPluginUI(plugin);
-            }
+            //var core = ((App)Application.Current).CoreData;
+            //foreach (var plugin in core.Plugins)
+            //{
+            //    core.LaunchPluginUI(plugin);
+            //}
         }
     }
 }

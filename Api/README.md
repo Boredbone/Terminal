@@ -29,9 +29,10 @@ C#スクリプトにマクロ機能を提供します．
 |[WaitLineAsync(int)](#WaitLineAsync1)|返信が指定行数来るまで待つ|
 
 
+------
+
 ## プロパティ
 
-------
 
 <a name ="Timeout0">
 ### Macro.Timeout Property
@@ -64,17 +65,17 @@ try
 	// 返信待ち
 	await Macro.WaitAsync("Reply");
 }
-catch(TimeoutException)
+catch (TimeoutException)
 {
 	// 4.0秒以内に指定した返信が来なかった場合，以下の処理が実行されます
 	await Macro.SendAsync("Retry");
 }
 ```
 
+------
 
 ## 非同期メソッド
 
-------
 
 非同期メソッドを使用する際には，`await`演算子を適用します．
 
@@ -311,10 +312,10 @@ System.TimeoutException
 
 #### 解説
 
+------
 
 ## 同期メソッド
 
-------
 
 <a name ="History0">
 ### Macro.History Method

@@ -8,7 +8,7 @@
 ## 構成
 
 
-(1)\*.csファイルに，名前空間・クラス・メソッドを記述し，メソッドに`[Macro]`属性を付ける
+1)\*.csファイルに，名前空間・クラス・メソッドを記述し，メソッドに`[Macro]`属性を付ける
 
 or
 
@@ -33,6 +33,41 @@ public async Task MethodName(IMacroEngine Macro, IPluginManager Plugins)
 ## 文法
 
 コードはC#6.0の文法によって解釈されます．
+
+
+---
+
+## アセンブリの参照
+
+
+スクリプトからは，下記のアセンブリを参照することができます．
+
+```
+mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+```
+
+また，プラグインがロードされている場合はそのアセンブリを参照することができます．
+
+
+---
+
+## usingディレクティブ
+
+スクリプトでは，あらかじめ下記の名前空間のusingディレクティブに相当する設定がなされており，
+名前空間の記述を省略することができます．
+
+```cs
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+```
+
 
 ---
 
@@ -94,7 +129,7 @@ class MyClass
 
 ## 非同期メソッド
 
-マクロのAPIには，TaskまたはTask<T>を返すいくつかの非同期メソッドがあります．
+マクロのAPIには，TaskまたはTask&lt;T&gt;を返すいくつかの非同期メソッドがあります．
 これらの非同期メソッドを使用する際には，awaitキーワードを使用してメソッドの終了を待機してください．
 
 ```cs
@@ -109,7 +144,7 @@ await Macro.DelayAsync(1000);
 
 マクロ内でプラグインを使用することができます．
 
-まず，Plugins.Getメソッドによりプラグインのインスタンスを取得してください．
+Plugins.Getメソッドによりプラグインのインスタンスを取得します．
 
 ```cs
 var plugin = Plugins.Get<PluginNamespace.PluginType>();

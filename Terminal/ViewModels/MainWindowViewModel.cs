@@ -19,7 +19,6 @@ using Boredbone.XamlTools.ViewModel;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using Terminal.Macro.Api;
 using Terminal.Models;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;
@@ -446,26 +445,7 @@ namespace Terminal.ViewModels
 
             //リストに空アイテムを追加
             this.FeedLine();
-
-            ////ポート一覧を取得
-            //this.GetPortNamesCommand.Execute();
-            //
-            ////TODO Modelに移す
-            //var port = this.PortNames.FirstOrDefault(y => y.Equals(this.Core.PortName));
-            //if (port != null)
-            //{
-            //    this.PortName.Value = port;
-            //    this.OpenPortCommand.Execute();
-            //}
-            //else
-            //{
-            //    this.PortName.Value = this.PortNames.FirstOrDefault();
-            //
-            //    if (this.PortNames.Count == 1)
-            //    {
-            //        this.OpenPortCommand.Execute();
-            //    }
-            //}
+            
 
             this.PortName.Skip(1).Subscribe(name =>
             {

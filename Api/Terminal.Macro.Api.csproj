@@ -53,9 +53,9 @@
     <Compile Include="IMacroPlayer.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IPluginManager.cs" />
-    <Compile Include="LaunchUIEventArgs.cs" />
+    <Compile Include="LaunchUiArgs.cs" />
     <Compile Include="MacroAttribute.cs" />
-    <Compile Include="OpenWindowRequestEventArgs.cs" />
+    <Compile Include="OpenWindowRequestArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
