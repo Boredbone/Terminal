@@ -31,8 +31,8 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSizeMax = 10000;
-        private int LogSizeCompressed = 5000;
+        private int LogSizeMax = 5000;
+        private int LogSizeCompressed = 3000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
