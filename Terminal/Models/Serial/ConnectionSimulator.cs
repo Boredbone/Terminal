@@ -54,6 +54,22 @@ namespace Terminal.Models.Serial
                                 await Task.Delay(num);
                             }
                         }
+                        else if (cmds.Length >= 1 && cmds[0].Equals("immediately"))
+                        {
+                            await Task.Delay(10);
+                        }
+                        else if (cmds.Length >= 2 && cmds[0].Equals("lines"))
+                        {
+                            int num;
+                            if (int.TryParse(cmds[1], out num))
+                            {
+                                for (int c = 0; c < num; c++)
+                                {
+                                    this.DataReceivedSubject.OnNext($"Line:{c}\n");
+                                }
+                                await Task.Delay(100);
+                            }
+                        }
                         else
                         {
                             await Task.Delay(2000);

@@ -84,9 +84,11 @@ namespace Terminal.ViewModels
 
         public ReactiveProperty<bool> IsLogFollowing { get; }
         //private bool isLogFollowing = true;
-        //private bool autoScroll = true;
+        private bool isAutoScrollEnabled = true;
         //private double autoScrollThreshold = 10;
         private double lastVerticalOffset = 0;
+
+        //private Subject<bool> ScrollSubject { get; }
 
         public ListView TextsList { get; set; }
         public ScrollViewer ListScroller { get; set; }
@@ -118,12 +120,26 @@ namespace Terminal.ViewModels
 
             logUpdated.Subscribe(y =>
             {
+                var over = this.LimitedTexts.Count - this.LogSizeCompressed;
+
                 if (this.LimitedTexts.Count > this.LogSizeMax)
                 {
-                    while (this.LimitedTexts.Count > this.LogSizeCompressed)
-                    {
-                        this.LimitedTexts.RemoveAtOnScheduler(0);
-                    }
+                    var data = this.LimitedTexts.Skip(over).ToArray();
+                    this.LimitedTexts.ClearOnScheduler();
+                    this.LimitedTexts.AddRangeOnScheduler(data);
+
+                    //if (this.ListScroller != null)
+                    //{
+                    //    var scrollableHeight = this.ListScroller.ScrollableHeight;
+                    //    if (this.lastVerticalOffset > scrollableHeight)
+                    //    {
+                    //        this.lastVerticalOffset = scrollableHeight - 20;
+                    //    }
+                    //}
+                    //while (this.LimitedTexts.Count > this.LogSizeCompressed)
+                    //{
+                    //    this.LimitedTexts.RemoveAtOnScheduler(0);
+                    //}
                 }
             }).AddTo(this.Disposables);
 
@@ -144,6 +160,44 @@ namespace Terminal.ViewModels
 
 
             this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
+
+
+            var down = this.ScrollRequestSubject
+                .DownSample(TimeSpan.FromMilliseconds(1000));
+
+            var ct = this.ScrollRequestSubject
+                .Buffer(down)
+                .Select(y => y.Count);
+
+            var quick = this.ScrollRequestSubject
+                .CombineLatest(ct, (Value, Count) => new { Value, Count })
+                .Where(y => y.Count < 20)
+                .Select(y => y.Value);
+
+            this.ScrollRequestSubject
+                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Merge(down)
+                .Merge(quick)
+                //.Throttle(TimeSpan.FromMilliseconds(10))
+                .Buffer(TimeSpan.FromMilliseconds(10))
+                .Where(y => y.Count > 0)
+                .Select(y => y.Last())
+                .ObserveOnUIDispatcher()
+                .Subscribe(y => this.ScrollToBottomMain(y))
+                .AddTo(this.Disposables);
+
+            //this.ScrollRequestSubject
+            //    .Throttle(TimeSpan.FromMilliseconds(500))
+            //    .Merge(this.ScrollRequestSubject
+            //        .DownSample(TimeSpan.FromMilliseconds(1000)))
+            //    .Merge(this.ScrollRequestSubject
+            //        .Buffer(TimeSpan.FromMilliseconds(500))
+            //        .Where(y => y.Count <= 2 && y.Count > 0)
+            //        .Select(y => y.Last()))
+            //    .ObserveOnUIDispatcher()
+            //    .Subscribe(y => this.ScrollToBottomMain(y))
+            //    .AddTo(this.Disposables);
+
 
 
 
@@ -197,9 +251,9 @@ namespace Terminal.ViewModels
                 .ToReadOnlyReactiveCollection()
                 .AddTo(this.Disposables);
 
-                //.ObserveOnUIDispatcher()
-                //.Subscribe(this.ReceivedTexts.Add)
-                //.AddTo(this.Disposables);
+            //.ObserveOnUIDispatcher()
+            //.Subscribe(this.ReceivedTexts.Add)
+            //.AddTo(this.Disposables);
 
 
 
@@ -272,7 +326,7 @@ namespace Terminal.ViewModels
                         .Join(Environment.NewLine);
 
                     Clipboard.SetDataObject(items.ToString(), true);
-                    
+
                 }, this.Disposables);
 
             this.ClearCommand = new ReactiveCommand()
@@ -296,12 +350,12 @@ namespace Terminal.ViewModels
 
                 }, this.Disposables);
 
-                //.WithSubscribe(_ =>
-                //{
-                //    var names = this.Connection.GetPortNames();
-                //    this.PortNames.Clear();
-                //    names.ForEach(x => this.PortNames.Add(x));
-                //}, this.Disposables);
+            //.WithSubscribe(_ =>
+            //{
+            //    var names = this.Connection.GetPortNames();
+            //    this.PortNames.Clear();
+            //    names.ForEach(x => this.PortNames.Add(x));
+            //}, this.Disposables);
 
 
             //プラグインの起動
@@ -312,7 +366,7 @@ namespace Terminal.ViewModels
                 .WithSubscribe(y =>
                 {
                     var window = new LicenseWindow();
-                    
+
                     //表示
                     window.Show();
                     window.Activate();
@@ -413,7 +467,7 @@ namespace Terminal.ViewModels
                     {
                         //次の要求が来るまで待機
                         this.WaitHandle.WaitOne(-1);
-                        
+
 
                         //キューにリクエストがあれば実行
                         Action request;
@@ -440,16 +494,16 @@ namespace Terminal.ViewModels
 
 
 
-            
+
 
 
             //リストに空アイテムを追加
             this.FeedLine();
-            
+
 
             this.PortName.Skip(1).Subscribe(name =>
             {
-                if (!this.IsPortOpen.Value && name!=null && name.Length > 0)
+                if (!this.IsPortOpen.Value && name != null && name.Length > 0)
                 {
                     this.OpenPortCommand.Execute();
                 }
@@ -458,11 +512,22 @@ namespace Terminal.ViewModels
 
         }
 
+
+        private void ScrollToBottom(bool force)
+        {
+            if (this.ListScroller != null
+                && this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 10)
+            {
+                force = true;
+            }
+            this.ScrollRequestSubject.OnNext(force);
+        }
+
         /// <summary>
         /// 末尾までスクロール
         /// </summary>
         /// <param name="force"></param>
-        private void ScrollToBottom(bool force)
+        private void ScrollToBottomMain(bool force)
         {
             //return;
             if (this.ListScroller == null && this.TextsList != null)
@@ -473,11 +538,26 @@ namespace Terminal.ViewModels
             if (this.ListScroller != null)
             {
 
-                
+
                 if (this.IsLogFollowing.Value)
                 {
-                    var nearBottom = this.ListScroller.VerticalOffset > this.lastVerticalOffset - 2;
-                    //var nearBottom = this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2;
+
+                    var scrollableHeight = this.ListScroller.ScrollableHeight;
+                    var offset = this.ListScroller.VerticalOffset;
+                    var nearBottom = offset > this.lastVerticalOffset - 10;
+                    //var nearBottom = this.ListScroller.VerticalOffset > scrollableHeight - 10;
+
+                    if (this.lastVerticalOffset > scrollableHeight && this.isAutoScrollEnabled)
+                    {
+                        this.lastVerticalOffset = offset;// scrollableHeight - 20;
+                    }
+
+                    if (offset < this.lastVerticalOffset - 10)
+                    {
+                        nearBottom = false;
+                        this.isAutoScrollEnabled = false;
+                    }
+
 
                     //if (!nearBottom)
                     //{
@@ -492,11 +572,20 @@ namespace Terminal.ViewModels
                     //}
                     //this.autoScroll = nearBottom;
 
-                    //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
-                    if (force || nearBottom)//this.autoScroll)//(nearBottom && this.autoScroll)
+                    if (force || nearBottom)
                     {
-                        this.lastVerticalOffset = this.ListScroller.VerticalOffset;
-                        this.ScrollRequestSubject.OnNext(true);
+                        if (!this.isAutoScrollEnabled)
+                        {
+                            //this.lastVerticalOffset = this.ListScroller.VerticalOffset;
+                            this.isAutoScrollEnabled = true;
+                        }
+                    }
+
+                    //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
+                    if (this.isAutoScrollEnabled && offset < scrollableHeight)//this.autoScroll)//(nearBottom && this.autoScroll)
+                    {
+                        this.lastVerticalOffset = scrollableHeight;// this.ListScroller.VerticalOffset;
+                        //this.ScrollRequestSubject.OnNext(true);
                         this.ListScroller.ScrollToBottom();
                     }
                 }
@@ -515,14 +604,19 @@ namespace Terminal.ViewModels
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
                 var count = this.Texts.Count;
-                this.Texts[count - 1].Text = this.Texts[count - 1].Text + texts.First();
+                var added = this.Texts[count - 1].Text + texts.First();
+                this.Texts[count - 1].Text = added;
 
                 texts.Skip(1).ForEach(x => this.AddLine(x, LogTypes.Normal));
                 if (feed)
                 {
                     this.FeedLine();
                 }
-                this.ScrollToBottom(false);
+
+                if (feed || texts.Length > 1 || added.Length > 20)
+                {
+                    this.ScrollToBottom(false);
+                }
             });
             this.WaitHandle.Set();
         }
@@ -608,7 +702,7 @@ namespace Terminal.ViewModels
         {
             this.AddLine("", LogTypes.Normal);
         }
-        
+
 
 
         /// <summary>
