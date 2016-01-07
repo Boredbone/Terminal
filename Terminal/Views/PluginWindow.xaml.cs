@@ -19,6 +19,8 @@ namespace Terminal.Views
     /// </summary>
     public partial class PluginWindow : Window
     {
+        public string WindowId { get; set; }
+
         public PluginWindow()
         {
             InitializeComponent();

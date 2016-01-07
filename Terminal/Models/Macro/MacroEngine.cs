@@ -110,7 +110,7 @@ namespace Terminal.Models.Macro
                     bs.OnNext(true);
                 });
 
-            await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : {count} Lines"));
+            await this.WaitTriggerAsync(bs, trigger, new StatusItem($"Wait : {count} Lines"));
             
 
             return list.ToArray();
@@ -186,7 +186,7 @@ namespace Terminal.Models.Macro
                     bs.OnNext(true);
                 });
 
-            await this.WaitTrigger(bs, trigger, new StatusItem
+            await this.WaitTriggerAsync(bs, trigger, new StatusItem
                 ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
             
             return result;
@@ -205,7 +205,7 @@ namespace Terminal.Models.Macro
                 .Take(1)
                 .Subscribe(x => result = x, () => bs.OnNext(true));
 
-            await this.WaitTrigger(bs, trigger, new StatusItem($"Wait : Any responce"));
+            await this.WaitTriggerAsync(bs, trigger, new StatusItem($"Wait : Any responce"));
             
             return result;
         }
@@ -217,7 +217,7 @@ namespace Terminal.Models.Macro
         /// <param name="trigger"></param>
         /// <param name="status"></param>
         /// <returns></returns>
-        private async Task WaitTrigger(BehaviorSubject<bool> bs, IDisposable trigger, StatusItem status)
+        private async Task WaitTriggerAsync(BehaviorSubject<bool> bs, IDisposable trigger, StatusItem status)
         {
 
             await this.SendAsync(null);

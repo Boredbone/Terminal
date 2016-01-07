@@ -139,11 +139,23 @@ namespace Terminal.Models
                 //UI起動要求時の処理
                 activator.OpenWindowRequested = args =>
                 {
+                    var ids = Application.Current
+                        .Windows
+                        .AsEnumerableWithSafeCast<PluginWindow>()
+                        .Select(y => y.WindowId);
+
+                    if (args.WindowId != null && ids.Contains(args.WindowId))
+                    {
+                        return null;
+                    }
+
+
                     //ウィンドウ生成
                     var window = new PluginWindow()
                     {
                         Content = args.Content,
-                        Title = args.Title ?? activator.Name
+                        Title = args.Title ?? activator.Name,
+                        WindowId=args.WindowId,
                     };
 
                     //ウィンドウサイズが指定されている場合は反映
