@@ -205,7 +205,9 @@
     <Compile Include="Models\Serial\SerialConnection.cs" />
     <Compile Include="Models\Serial\ConnectionSimulator.cs" />
     <Compile Include="ViewModels\LogItem.cs" />
+    <Compile Include="Views\Behaviors\ColorChangeBehavior.cs" />
     <Compile Include="Views\Behaviors\ImageGrayoutBehavior.cs" />
+    <Compile Include="Views\Behaviors\InnerScrollViewerBehavior.cs" />
     <Compile Include="Views\LicenseWindow.xaml.cs">
       <DependentUpon>LicenseWindow.xaml</DependentUpon>
     </Compile>

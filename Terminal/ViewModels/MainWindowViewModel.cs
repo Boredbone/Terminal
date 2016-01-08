@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -31,8 +32,8 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSizeMax = 5000;
-        private int LogSizeCompressed = 3000;
+        private int LogSizeMax = 4000;
+        private int LogSizeCompressed = 2000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -112,11 +113,32 @@ namespace Terminal.ViewModels
 
             this.Texts = new ObservableCollection<LogItem>();
             var logUpdated = this.Texts.ObserveAddChanged();
-            this.LimitedTexts = logUpdated
-                .Where(y => this.IsLogFollowing.Value
-                    || y.LogType == LogTypes.Error
-                    || y.LogType == LogTypes.MacroMessage)
-                .ToReactiveCollection().AddTo(this.Disposables);
+
+
+            if (false)
+            {
+                this.LimitedTexts = new ReactiveCollection<LogItem>().AddTo(this.Disposables);
+                var margin = 8;
+                this.LimitedTexts
+                    .AddRangeOnScheduler(Enumerable.Range(0, margin)
+                        .Select(_ => new LogItem() { Index = -1 }));
+
+                logUpdated
+                    .Where(y => this.IsLogFollowing.Value
+                        || y.LogType == LogTypes.Error
+                        || y.LogType == LogTypes.MacroMessage)
+                    .Subscribe(y => this.LimitedTexts
+                        .InsertOnScheduler(Math.Max(0, this.LimitedTexts.Count - margin), y))
+                    .AddTo(this.Disposables);
+            }
+            else
+            {
+                this.LimitedTexts = logUpdated
+                    .Where(y => this.IsLogFollowing.Value
+                        || y.LogType == LogTypes.Error
+                        || y.LogType == LogTypes.MacroMessage)
+                    .ToReactiveCollection().AddTo(this.Disposables);
+            }
 
             logUpdated.Subscribe(y =>
             {
@@ -127,6 +149,8 @@ namespace Terminal.ViewModels
                     var data = this.LimitedTexts.Skip(over).ToArray();
                     this.LimitedTexts.ClearOnScheduler();
                     this.LimitedTexts.AddRangeOnScheduler(data);
+
+                    Debug.WriteLine("log over");
 
                     //if (this.ListScroller != null)
                     //{
@@ -159,6 +183,7 @@ namespace Terminal.ViewModels
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
 
 
+            // ログ画面スクロール要求
             this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
 
 
@@ -166,22 +191,30 @@ namespace Terminal.ViewModels
                 .DownSample(TimeSpan.FromMilliseconds(1000));
 
             var ct = this.ScrollRequestSubject
-                .Buffer(down)
-                .Select(y => y.Count);
+                .Buffer(TimeSpan.FromMilliseconds(500))//(down)
+                .Select(y => y.Count)
+                .ToReactiveProperty()
+                .AddTo(this.Disposables);
 
             var quick = this.ScrollRequestSubject
-                .CombineLatest(ct, (Value, Count) => new { Value, Count })
-                .Where(y => y.Count < 20)
-                .Select(y => y.Value);
+                .Where(y => ct.Value < 20);
+            //var quick = this.ScrollRequestSubject
+            //    .CombineLatest(ct, (Value, Count) => new { Value, Count })
+            //    .Where(y =>
+            //    {
+            //        Debug.WriteLine($"{y.Value}, {y.Count}");
+            //        return y.Count < 20;
+            //    })
+            //    .Select(y => y.Value);
 
             this.ScrollRequestSubject
-                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Throttle(TimeSpan.FromMilliseconds(300))
                 .Merge(down)
                 .Merge(quick)
                 //.Throttle(TimeSpan.FromMilliseconds(10))
                 .Buffer(TimeSpan.FromMilliseconds(10))
                 .Where(y => y.Count > 0)
-                .Select(y => y.Last())
+                .Select(y => y.Any(b => b))//.Last())
                 .ObserveOnUIDispatcher()
                 .Subscribe(y => this.ScrollToBottomMain(y))
                 .AddTo(this.Disposables);
@@ -321,6 +354,7 @@ namespace Terminal.ViewModels
                 {
                     var items = this.TextsList.SelectedItems
                         .AsEnumerableWithSafeCast<LogItem>()
+                        .Where(x => x.Index >= 0)
                         .OrderBy(x => x.Index)
                         .Select(x => x.Text)
                         .Join(Environment.NewLine);
@@ -436,15 +470,15 @@ namespace Terminal.ViewModels
                     var prev = this.IsLogFollowing.Value;
                     this.IsLogFollowing.Value = y;
 
-                    var length = this.Texts.Count - 1;
-                    if (length >= 0)
-                    {
-                        var lastItem = this.Texts[length];
-                        if (lastItem != this.LimitedTexts[this.LimitedTexts.Count - 1])
-                        {
-                            //this.LimitedTexts.AddOnScheduler(lastItem);
-                        }
-                    }
+                    //var length = this.Texts.Count - 1;
+                    //if (length >= 0)
+                    //{
+                    //    var lastItem = this.Texts[length];
+                    //    if (lastItem != this.LimitedTexts[this.LimitedTexts.Count - 1])
+                    //    {
+                    //        //this.LimitedTexts.AddOnScheduler(lastItem);
+                    //    }
+                    //}
 
                     if (!prev && y)
                     {
@@ -533,6 +567,16 @@ namespace Terminal.ViewModels
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
+
+                //if (this.ListScroller != null)
+                //{
+                //    var tx = this.ListScroller.Content as FrameworkElement;
+                //    if (tx != null)
+                //    {
+                //        tx.Margin = new Thickness(0, 0, 0, 64);
+                //    }
+                //    //var tx = this.ListScroller.Margin = new Thickness(0, 0, 0, 64);
+                //}
             }
 
             if (this.ListScroller != null)
@@ -587,6 +631,7 @@ namespace Terminal.ViewModels
                         this.lastVerticalOffset = scrollableHeight;// this.ListScroller.VerticalOffset;
                         //this.ScrollRequestSubject.OnNext(true);
                         this.ListScroller.ScrollToBottom();
+                        Debug.WriteLine(offset.ToString());
                     }
                 }
             }
@@ -679,7 +724,7 @@ namespace Terminal.ViewModels
             });
             this.WaitHandle.Set();
         }
-
+        
 
         /// <summary>
         /// 新しい行を追加して文字列を記入
@@ -687,11 +732,17 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void AddLine(string text, LogTypes type)
         {
+            if (this.Texts.Count > 0)
+            {
+                this.Texts[this.Texts.Count - 1].IsLast = false;
+            }
+
             this.Texts.Add(new LogItem()
             {
                 Text = text,
                 Index = this.Texts.Count,
-                LogType = type
+                LogType = type,
+                IsLast = true,
             });
         }
 

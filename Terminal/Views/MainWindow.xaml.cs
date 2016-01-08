@@ -41,6 +41,7 @@ namespace Terminal.Views
             
             this.ViewModel.View = this;
             this.ViewModel.TextsList = this.textsList;
+            this.ViewModel.ListScroller = this.listScroller;
             this.DataContext = this.ViewModel;
 
             var textChanged =

@@ -60,6 +60,7 @@ namespace Terminal.Models.Serial
                         }
                         else if (cmds.Length >= 2 && cmds[0].Equals("lines"))
                         {
+                            await Task.Delay(10);
                             int num;
                             if (int.TryParse(cmds[1], out num))
                             {

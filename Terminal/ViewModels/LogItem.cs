@@ -30,6 +30,21 @@ namespace Terminal.ViewModels
 
         public int Index { get; set; }
 
+        private bool _fieldIsLast;
+        public bool IsLast
+        {
+            get { return _fieldIsLast; }
+            set
+            {
+                if (_fieldIsLast != value)
+                {
+                    _fieldIsLast = value;
+                    RaisePropertyChanged(nameof(IsLast));
+                }
+            }
+        }
+
+
         private LogTypes _fieldLogType;
         public LogTypes LogType
         {

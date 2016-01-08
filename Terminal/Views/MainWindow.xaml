@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal"
         xmlns:view="clr-namespace:Terminal.Views"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:b="clr-namespace:Terminal.Views.Behaviors"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
@@ -67,21 +69,21 @@
                         ButtonCommand="{Binding MacroCancelCommand}"
                         Visibility="{Binding IsMacroPlaying.Value,Converter={StaticResource TrueToVisibleConverter}}"
                         Text="Cancel"/>
-                    
+
                     <view:ImageButton
                         Width="64"
                         ButtonContent="/Assets/Icons/StatusAnnotations_Play_32xLG_color.png"
                         ButtonCommand="{Binding MacroPauseCommand}"
                         Visibility="{Binding IsMacroPausing.Value,Converter={StaticResource TrueToVisibleConverter}}"
                         Text="Resume"/>
-                    
+
                     <view:ImageButton
                         Width="64"
                         ButtonContent="/Assets/Icons/StatusAnnotations_Pause_32xLG_color.png"
                         ButtonCommand="{Binding MacroPauseCommand}"
                         Visibility="{Binding IsMacroPausing.Value,Converter={StaticResource FalseToVisibleConverter}}"
                         Text="Pause"/>
-                    
+
                 </StackPanel>
 
                 <TextBlock Grid.Row="1" Text="Macro" Style="{StaticResource categorytext}"/>
@@ -133,8 +135,8 @@
                                 VerticalAlignment="Center"
                                 SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
                                 IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
-                            
-                            
+
+
                             <view:ImageButton
                                 ButtonContent="/Assets/Icons/refresh_16xLG.png"
                                 ButtonCommand="{Binding GetPortNamesCommand}"
@@ -151,14 +153,14 @@
                                 Stretch="None"
                                 Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            
+
                             <Image 
                                 Margin="4,0"
                                 Source="/Assets/Icons/StatusAnnotations_Critical_16xLG_color.png"
                                 Stretch="None"
                                 Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"
                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            
+
                             <TextBlock Grid.Row="1" Text="{Binding ConnectionText.Value}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
@@ -180,8 +182,8 @@
                         HorizontalAlignment="Center" VerticalAlignment="Center"
                         Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"
                         Text="Open"/>
-                    
-                    
+
+
                     <view:ImageButton
                         Width="64"
                         ButtonContent="/Assets/Icons/Close.png"
@@ -257,23 +259,80 @@
         <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
                        Foreground="Green" Grid.Row="1" Margin="4,0,0,0"/>
 
+        <Border Background="Transparent" BorderBrush="Gray" BorderThickness="1"
+                Grid.Row="2"
+                Margin="4">
+            <ScrollViewer x:Name="listScroller"
+                          VirtualizingPanel.ScrollUnit="Pixel"
+                          HorizontalScrollBarVisibility="Disabled"
+                          HorizontalContentAlignment="Stretch">
+                <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}"
+                          Margin="0,0,0,64"
+                          VirtualizingPanel.ScrollUnit="Pixel"
+                          HorizontalContentAlignment="Stretch"
+                          KeyDown="textsList_KeyDown">
+                    <ListView.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListView.Template>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <i:Interaction.Behaviors>
+                                    <b:ColorChangeBehavior
+                                        Flag="{Binding IsLast}" 
+                                        TrueColor="#FFF8F8F8" FalseColor="Transparent" />
+                                </i:Interaction.Behaviors>
+                                <TextBlock
+                                    Text="{Binding Text}"
+                                    Foreground="{Binding Color}"
+                                    TextWrapping="Wrap" 
+                                    HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+
+                </ListView>
+            </ScrollViewer>
+        </Border>
+
         <!-- Log List -->
-        <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}" Grid.Row="2"
-                  Margin="4"
+        <ListView x:Name="textsList2" ItemsSource="{Binding LimitedTexts}" Grid.Row="2"
+                  Margin="4" Visibility="Collapsed"
                   VirtualizingPanel.ScrollUnit="Pixel"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   HorizontalContentAlignment="Stretch"
                   KeyDown="textsList_KeyDown">
+            <!--
+            <i:Interaction.Behaviors>
+                <b:InnerScrollViewerBehavior />
+            </i:Interaction.Behaviors>-->
             <!--
                   VirtualizingPanel.ScrollUnit="{Binding ScrollMode.Value}"-->
 
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <i:Interaction.Behaviors>
+                            <b:ColorChangeBehavior Flag="{Binding IsLast}" 
+                                                   TrueColor="#FFE0E0E0" FalseColor="Transparent" />
+                        </i:Interaction.Behaviors>
                         <TextBlock Text="{Binding Text}"
                                    Foreground="{Binding Color}"
                                    TextWrapping="Wrap" 
-                                   HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="13.333"/>
+                                   HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14"/>
+                        <!--
+                        <Border HorizontalAlignment="Stretch" Height="64" Background="#FFF0F0F0"
+                                Visibility="{Binding IsLast,Converter={StaticResource TrueToVisibleConverter}}"/>-->
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
