@@ -259,6 +259,7 @@
         <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
                        Foreground="Green" Grid.Row="1" Margin="4,0,0,0"/>
 
+        <!-- Log List -->
         <Border Background="Transparent" BorderBrush="Gray" BorderThickness="1"
                 Grid.Row="2"
                 Margin="4">
@@ -283,7 +284,7 @@
                                 <i:Interaction.Behaviors>
                                     <b:ColorChangeBehavior
                                         Flag="{Binding IsLast}" 
-                                        TrueColor="#FFF8F8F8" FalseColor="Transparent" />
+                                        TrueColor="#FFF0F0F0" FalseColor="Transparent" />
                                 </i:Interaction.Behaviors>
                                 <TextBlock
                                     Text="{Binding Text}"
@@ -305,34 +306,24 @@
             </ScrollViewer>
         </Border>
 
-        <!-- Log List -->
+        <!--
         <ListView x:Name="textsList2" ItemsSource="{Binding LimitedTexts}" Grid.Row="2"
                   Margin="4" Visibility="Collapsed"
                   VirtualizingPanel.ScrollUnit="Pixel"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   HorizontalContentAlignment="Stretch"
                   KeyDown="textsList_KeyDown">
-            <!--
-            <i:Interaction.Behaviors>
-                <b:InnerScrollViewerBehavior />
-            </i:Interaction.Behaviors>-->
-            <!--
-                  VirtualizingPanel.ScrollUnit="{Binding ScrollMode.Value}"-->
-
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <i:Interaction.Behaviors>
                             <b:ColorChangeBehavior Flag="{Binding IsLast}" 
-                                                   TrueColor="#FFE0E0E0" FalseColor="Transparent" />
+                                                   TrueColor="#FFD0D0D0" FalseColor="Transparent" />
                         </i:Interaction.Behaviors>
                         <TextBlock Text="{Binding Text}"
                                    Foreground="{Binding Color}"
                                    TextWrapping="Wrap" 
                                    HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14"/>
-                        <!--
-                        <Border HorizontalAlignment="Stretch" Height="64" Background="#FFF0F0F0"
-                                Visibility="{Binding IsLast,Converter={StaticResource TrueToVisibleConverter}}"/>-->
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -343,7 +334,7 @@
                 </ContextMenu>
             </ListView.ContextMenu>
 
-        </ListView>
+        </ListView>-->
 
         <!-- Input Box -->
         <Grid Grid.Row="3" Margin="4,0,4,4">

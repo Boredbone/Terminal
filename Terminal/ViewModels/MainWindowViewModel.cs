@@ -342,6 +342,13 @@ namespace Terminal.ViewModels
                         this.TextHistoryIndex.Value = this.TextHistory.Count;
                     }
 
+                    if (this.RequestedText.Value.Length > 0)
+                    {
+                        Debug.WriteLine(this.RequestedText.Value);
+                    }
+
+                    this.RequestedText.Value = "";
+
                     this.ScrollToBottom(true);
 
                 }, this.Disposables);
