@@ -463,6 +463,7 @@ namespace Terminal.ViewModels
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => player.Cancel(), this.Disposables);
+            
 
             //マクロ一時停止・再開
             this.MacroPauseCommand = player.IsExecutingChanged

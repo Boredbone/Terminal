@@ -59,9 +59,8 @@ namespace Terminal.Models.Macro
             : Observable.Timer(TimeSpan.FromMilliseconds(this.Timeout))
             .Select(x => new WaitResultContainer(new TimeoutException($"Timeout {this.Timeout} [ms]")))
             .Merge(this.CancelObservable);
-        
 
-
+       
 
 
         public MacroEngine(ConnectionBase connection)
@@ -73,6 +72,8 @@ namespace Terminal.Models.Macro
             this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
+
+            //this.CancelObservable.Subscribe(_ => this.Display("canceled")).AddTo(this.Disposables);
         }
 
         /// <summary>
@@ -381,8 +382,11 @@ namespace Terminal.Models.Macro
         {
             if (!this.isCanceled)
             {
-                this.isCanceled = true;
-                this.CancelSubject.OnNext(true);
+                Task.Run(() =>
+                {
+                    this.isCanceled = true;
+                    this.CancelSubject.OnNext(true);
+                });
             }
         }
 

@@ -22,9 +22,11 @@ namespace Terminal.Views
         public LicenseWindow()
         {
             InitializeComponent();
+            
+            var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-
-            this.description.Text = @"This software is built using the open source software:
+            this.description.Text = ver.ToString() +"\n"+
+    @"This software is built using the open source software:
 - Reactive Extensions
 - ReactiveProperty
 - .NET Compiler Platform (""Roslyn"")";
