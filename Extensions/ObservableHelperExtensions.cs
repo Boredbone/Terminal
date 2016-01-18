@@ -5,7 +5,11 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Reactive.Bindings;
 using System.Reactive.Subjects;
+#if WINDOWS_APP || WINDOWS_UWP
 using Windows.UI.Xaml;
+#else
+using System.Windows;
+#endif
 
 namespace Boredbone.XamlTools.Extensions
 {
