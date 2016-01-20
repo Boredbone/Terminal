@@ -95,19 +95,21 @@ namespace Terminal.ViewModels
         public ScrollViewer ListScroller { get; set; }
         public Window View { get; set; }
 
-
+        /*
         private Task ProcessTask { get; }
         private CancellationTokenSource CancellationTokenSource { get; }
         private EventWaitHandle WaitHandle { get; }
         private ConcurrentQueue<Action> ActionQueue { get; }
+        */
+        private Subject<Action> ActionQueueSubject { get; }
 
 
         public MainWindowViewModel()
         {
             this.Core = ((App)Application.Current).CoreData;
 
-            this.ActionQueue = new ConcurrentQueue<Action>();
-            this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+            //this.ActionQueue = new ConcurrentQueue<Action>();
+            //this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
@@ -495,8 +497,15 @@ namespace Terminal.ViewModels
                 })
                 .AddTo(this.Disposables);
 
+            this.ActionQueueSubject = new Subject<Action>().AddTo(this.Disposables);
+            
 
+            this.ActionQueueSubject
+                .ObserveOnUIDispatcher()
+                .Subscribe(act => act())
+                .AddTo(this.Disposables);
 
+            /*
             //メッセージ表示タスクのキャンセル
             this.CancellationTokenSource = new CancellationTokenSource();//.AddTo(this.Disposables);
 
@@ -540,8 +549,8 @@ namespace Terminal.ViewModels
                     //throw;
                 }
             }, this.CancellationTokenSource.Token);
-
-
+            */
+    
 
 
 
@@ -658,7 +667,9 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void Write(string text, bool feed)
         {
-            this.ActionQueue.Enqueue(() =>
+
+            this.ActionQueueSubject.OnNext(() =>
+            //this.ActionQueue.Enqueue(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
@@ -678,7 +689,7 @@ namespace Terminal.ViewModels
                     this.ScrollToBottom(false);
                 }
             });
-            this.WaitHandle.Set();
+            //this.WaitHandle.Set();
         }
 
         /// <summary>
@@ -700,7 +711,8 @@ namespace Terminal.ViewModels
                 }
             }
 
-            this.ActionQueue.Enqueue(() =>
+            this.ActionQueueSubject.OnNext(() =>
+            //this.ActionQueue.Enqueue(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
@@ -737,7 +749,7 @@ namespace Terminal.ViewModels
                 this.ScrollToBottom(forceScroll);
 
             });
-            this.WaitHandle.Set();
+            //this.WaitHandle.Set();
         }
         
 
