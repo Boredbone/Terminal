@@ -498,7 +498,14 @@ namespace Terminal.ViewModels
 
 
             //メッセージ表示タスクのキャンセル
-            this.CancellationTokenSource = new CancellationTokenSource().AddTo(this.Disposables);
+            this.CancellationTokenSource = new CancellationTokenSource();//.AddTo(this.Disposables);
+
+            Disposable.Create(() =>
+            {
+                this.CancellationTokenSource.Cancel();
+                this.CancellationTokenSource.Dispose();
+            })
+            .AddTo(this.Disposables);
 
             //メッセージ表示リクエストを処理
             this.ProcessTask = Task.Run(() =>

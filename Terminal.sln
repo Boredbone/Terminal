@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio Express 14 for Windows Desktop
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terminal", "Terminal\Terminal.csproj", "{9D396AF5-DA6D-45EF-97A1-003F272068B5}"
 EndProject
@@ -15,6 +15,8 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		XamlTools\XamlTools.projitems*{19c859c2-cd1f-4a28-bbf5-615cc5f7427f}*SharedItemsImports = 13
 		Utility\Utility.projitems*{42ab21e2-202c-4001-9578-5e8d166b9b6c}*SharedItemsImports = 13
+		XamlTools\XamlTools.projitems*{9d396af5-da6d-45ef-97a1-003f272068b5}*SharedItemsImports = 4
+		Utility\Utility.projitems*{9d396af5-da6d-45ef-97a1-003f272068b5}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

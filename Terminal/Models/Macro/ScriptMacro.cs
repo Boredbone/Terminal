@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Scripting.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Terminal.Macro.Api;
 
 namespace Terminal.Models.Macro
@@ -46,7 +46,7 @@ namespace Terminal.Models.Macro
             this.Name = name;
             this.Code = code;
         }
-        
+
         /// <summary>
         /// マクロ実行
         /// </summary>
@@ -69,15 +69,16 @@ namespace Terminal.Models.Macro
             var assemblies = DefaultAssemblies.Union(Plugins.Assemblies);
 
             var options = ScriptOptions.Default
-                .WithNamespaces(spaces)
+                .WithImports(spaces)
                 .WithReferences(assemblies);
 
-            var script = CSharpScript.Create(this.Code, options, typeof(MacroGlobal));
+            //var script = CSharpScript.Create(this.Code, options, typeof(MacroGlobal));
 
             //Macro.Start(this.Name);
             try
             {
-                var state = await script.RunAsync(global);
+                await CSharpScript.RunAsync(this.Code, options, global, typeof(MacroGlobal));
+                //var state = await script.RunAsync(global);
 
                 //送信バッファを空にする
                 await Macro.SendAsync(null);
@@ -90,27 +91,28 @@ namespace Terminal.Models.Macro
 
         public static async Task InitializeAsync()
         {
-            
+
             var spaces = DefaultNamespaces;
             var assemblies = DefaultAssemblies;
 
             var options = ScriptOptions.Default
-                .WithNamespaces(spaces)
+                .WithImports(spaces)
                 .WithReferences(assemblies);
 
             var code = @"
             var array = new[] { 1.0, 2.0, 3.0 };
             var result = array.Select(y => y * 2.0).ToArray().Length;";
 
-            var script = CSharpScript.Create(code, options);
-            
-            try
-            {
-                var state = await script.RunAsync();
-            }
-            catch
-            {
-            }
+            //var script = CSharpScript.Create(code, options);
+
+            //try
+            //{
+            await CSharpScript.RunAsync(code, options);
+            //var state = await script.RunAsync();
+            //}
+            //catch
+            //{
+            //}
         }
     }
 }

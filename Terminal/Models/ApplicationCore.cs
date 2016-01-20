@@ -14,6 +14,7 @@ using Boredbone.Utility.Extensions;
 using Boredbone.Utility;
 using System.Reactive.Linq;
 using System.Resources;
+using RestoreWindowPlace;
 
 namespace Terminal.Models
 {
@@ -47,7 +48,7 @@ namespace Terminal.Models
         /// <summary>
         /// ウィンドウ配置
         /// </summary>
-        public RestoreWindowPlace.RestoreWindowPlace WindowPlacement { get; }
+        public WindowPlace WindowPlacement { get; }
 
         private ApplicationSettings Settings { get; set; }
         private XmlSettingManager<ApplicationSettings> SettingsXml { get; }
@@ -118,8 +119,7 @@ namespace Terminal.Models
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
             //ウィンドウ配置
-            this.WindowPlacement = new RestoreWindowPlace
-                .RestoreWindowPlace(saveDirectory + @"\" + placementFileName);
+            this.WindowPlacement = new WindowPlace(saveDirectory + @"\" + placementFileName);
 
             //配下のフォルダからIActivatorを実装したプラグインのdllを読み込み
             this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
