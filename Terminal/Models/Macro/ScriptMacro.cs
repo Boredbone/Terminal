@@ -89,11 +89,13 @@ namespace Terminal.Models.Macro
             }
         }
 
-        public static async Task InitializeAsync()
+        public static async Task<string> InitializeAsync(PluginManager Plugins)
         {
 
-            var spaces = DefaultNamespaces;
-            var assemblies = DefaultAssemblies;
+            var global = new MacroGlobal(null, Plugins);
+
+            var spaces = DefaultNamespaces.Union(Plugins.NameSpaces);
+            var assemblies = DefaultAssemblies.Union(Plugins.Assemblies);
 
             var options = ScriptOptions.Default
                 .WithImports(spaces)
@@ -101,13 +103,15 @@ namespace Terminal.Models.Macro
 
             var code = @"
             var array = new[] { 1.0, 2.0, 3.0 };
-            var result = array.Select(y => y * 2.0).ToArray().Length;";
+            var result = array.Select(y => y * 2.0).ToArray().Length;
+            ""Ready""";
 
             //var script = CSharpScript.Create(code, options);
 
             //try
             //{
-            await CSharpScript.RunAsync(code, options);
+            //await CSharpScript.RunAsync(code, options);
+            return await CSharpScript.EvaluateAsync<string>(code, options, global, typeof(MacroGlobal));
             //var state = await script.RunAsync();
             //}
             //catch

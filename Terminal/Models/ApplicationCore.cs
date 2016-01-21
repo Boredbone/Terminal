@@ -205,10 +205,14 @@ namespace Terminal.Models
                     this.Connection.Open(name);
                 }
             }
+            
 
-
-
-            Task.Run(async () => await ScriptMacro.InitializeAsync());
+            Task.Run(async () =>
+            {
+                //await Task.Delay(5000);
+                var result = await ScriptMacro.InitializeAsync(this.MacroPlayer.Plugins);
+                this.MacroPlayer.DisplayMessage($"Macro " + result);
+            });
         }
 
         /// <summary>

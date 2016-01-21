@@ -148,6 +148,11 @@ namespace Terminal.Models.Macro
             }
 
         }
+
+        internal void DisplayMessage(string text)
+        {
+            this.MessageSubject.OnNext(new StatusItem(text) { Type = StatusType.Normal });
+        }
         
 
         void IMacroPlayer.Start(string name, Func<IMacroEngine, IPluginManager, Task> asyncFunc)
