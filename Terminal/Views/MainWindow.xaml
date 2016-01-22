@@ -8,7 +8,6 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:b="clr-namespace:Terminal.Views.Behaviors"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
         Closing="Window_Closing"
         Title="Terminal Heaven's Rock" Height="700" Width="800"
         Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico">
@@ -231,25 +230,6 @@
             <Border Padding="2,4">
                 <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
             </Border>
-            <!--
-                <Button Width="100" Content="Macro" Command="{Binding MacroCommand}"/>
-                <Button Width="100" Content="Cancel" Command="{Binding MacroCancelCommand}"/>
-                <Button Width="100" Content="{Binding PauseText.Value}" Command="{Binding MacroPauseCommand}"/>
-                <Button Width="100" Content="Plugins" Command="{Binding LaunchPluginCommand}"/>
-                <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>-->
-
-            <!--<StackPanel Orientation="Horizontal" Margin="2">
-                <Button Width="100" Content="Port" Command="{Binding GetPortNamesCommand}"/>
-                <ComboBox Width="100" ItemsSource="{Binding PortNames}"
-                      SelectedItem="{Binding PortName.Value,Mode=TwoWay}"
-                      IsEnabled="{Binding IsPortOpen.Value,Converter={StaticResource oppositeConverter}}"/>
-                
-                <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"
-                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
-                <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
-                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>
-                <Button Width="100" Content="Clear" Command="{Binding ClearCommand}"/>
-            </StackPanel>-->
 
 
         </StackPanel>
@@ -270,8 +250,10 @@
                 <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}"
                           Margin="0,0,0,64"
                           VirtualizingPanel.ScrollUnit="Pixel"
-                          HorizontalContentAlignment="Stretch"
-                          KeyDown="textsList_KeyDown">
+                          HorizontalContentAlignment="Stretch">
+                    <ListView.InputBindings>
+                        <KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding CopyCommand}"/>
+                    </ListView.InputBindings>
                     <ListView.Template>
                         <ControlTemplate>
                             <ItemsPresenter/>
@@ -306,35 +288,6 @@
             </ScrollViewer>
         </Border>
 
-        <!--
-        <ListView x:Name="textsList2" ItemsSource="{Binding LimitedTexts}" Grid.Row="2"
-                  Margin="4" Visibility="Collapsed"
-                  VirtualizingPanel.ScrollUnit="Pixel"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  HorizontalContentAlignment="Stretch"
-                  KeyDown="textsList_KeyDown">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <i:Interaction.Behaviors>
-                            <b:ColorChangeBehavior Flag="{Binding IsLast}" 
-                                                   TrueColor="#FFD0D0D0" FalseColor="Transparent" />
-                        </i:Interaction.Behaviors>
-                        <TextBlock Text="{Binding Text}"
-                                   Foreground="{Binding Color}"
-                                   TextWrapping="Wrap" 
-                                   HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14"/>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
-                </ContextMenu>
-            </ListView.ContextMenu>
-
-        </ListView>-->
 
         <!-- Input Box -->
         <Grid Grid.Row="3" Margin="4,0,4,4">
@@ -346,9 +299,17 @@
                      x:Name="inputText"
                      HorizontalAlignment="Stretch"
                      Text="{Binding RequestedText.Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding IsLogFollowing.Value}">
+                <!--
                      KeyDown="TextBox_KeyDown"
-                     IsEnabled="{Binding IsLogFollowing.Value}"
-                     PreviewKeyDown="TextBox_PreviewKeyDown"/>
+                     PreviewKeyDown="TextBox_PreviewKeyDown"-->
+
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Up" Command="{Binding DecrementCommand}"/>
+                    <KeyBinding Key="Down" Command="{Binding IncrementCommand}"/>
+                    <KeyBinding Key="Return" Command="{Binding SendCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
 
             <Button Grid.Column="1" Width="100"
                     Command="{Binding SendCommand}"
@@ -357,37 +318,6 @@
                     IsEnabled="{Binding IsLogFollowing.Value}"
                     Content="Send"/>
 
-            <!--
-            <Button Template="{StaticResource flatButton2}"
-                    Grid.Column="1" Width="100"
-                    Command="{Binding SendCommand}"
-                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                    HorizontalContentAlignment="Center"
-                    IsEnabled="{Binding IsLogFollowing.Value}">
-                <Button.Content>
-                    <TextBlock Text="Send" TextAlignment="Center"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{StaticResource disabledTextBlockStyle}"/>
-                </Button.Content>
-            </Button>-->
-
-
         </Grid>
-
-
-        <!--
-        <ListView ItemsSource="{Binding ReceivedTexts}"
-                  Grid.RowSpan="3" Grid.Column="1"
-                  Margin="2"
-                  VirtualizingPanel.ScrollUnit="Pixel">
-
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                        <TextBlock Text="{Binding}"
-                                   TextWrapping="NoWrap" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
-
     </Grid>
 </Window>

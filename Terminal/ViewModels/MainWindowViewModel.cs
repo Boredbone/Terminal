@@ -78,6 +78,10 @@ namespace Terminal.ViewModels
         public ReactiveCommand ClearCommand { get; }
         public ReactiveCommand AboutCommand { get; }
 
+
+        public ReactiveCommand IncrementCommand { get; }
+        public ReactiveCommand DecrementCommand { get; }
+
         private Subject<bool> ScrollRequestSubject { get; }
         //private int scrollDelayTimeFast = 100;
         //private int scrollDelayTimeSlow = 1000;
@@ -372,11 +376,18 @@ namespace Terminal.ViewModels
 
                 }, this.Disposables);
 
+            // ログのクリア
             this.ClearCommand = new ReactiveCommand()
                 .WithSubscribe(y =>
                 {
                     this.LimitedTexts.ClearOnScheduler();
                 }, this.Disposables);
+
+            // 入力履歴操作
+            this.IncrementCommand = new ReactiveCommand()
+                .WithSubscribe(_ => this.IncrementHistoryIndex(), this.Disposables);
+            this.DecrementCommand = new ReactiveCommand()
+                .WithSubscribe(_ => this.DecrementHistoryIndex(), this.Disposables);
 
 
             //ポート名一覧を取得
@@ -781,12 +792,32 @@ namespace Terminal.ViewModels
             this.AddLine("", LogTypes.Normal);
         }
 
+        /// <summary>
+        /// TextBoxの内容が変化したときにカーソルを末尾に移動させる
+        /// </summary>
+        /// <param name="textBox"></param>
+        public void SubscribeTextChanged(TextBox textBox)
+        {
+
+            var textChanged =
+                Observable.FromEvent<TextChangedEventHandler, TextChangedEventArgs>
+                (h => (sender, e) => h(e),
+                h => textBox.TextChanged += h,
+                h => textBox.TextChanged -= h);
+
+
+            this.TextHistoryIndex
+                .Buffer(textChanged.Where(y => textBox.Text.Length > 0))
+                .Where(y => y.Count > 0)
+                .Subscribe(y => textBox.Select(textBox.Text.Length, 0))
+                .AddTo(this.Disposables);
+        }
 
 
         /// <summary>
         /// 入力履歴を進める
         /// </summary>
-        public void IncrementHistoryIndex()
+        private void IncrementHistoryIndex()
         {
             if (this.InputText.Length > 0)
             {
@@ -821,7 +852,7 @@ namespace Terminal.ViewModels
         /// <summary>
         /// 入力履歴をさかのぼる
         /// </summary>
-        public void DecrementHistoryIndex()
+        private void DecrementHistoryIndex()
         {
             if (this.TextHistoryIndex.Value == this.TextHistory.Count)
             {
