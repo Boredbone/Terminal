@@ -18,13 +18,8 @@ namespace Terminal.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        private MainWindowViewModel _viewModel;
-        public MainWindowViewModel ViewModel
-        {
-            get { return this._viewModel; }
-            private set { this._viewModel = value; }
-        }
+        
+        private MainWindowViewModel ViewModel { get; set; }
 
         private CompositeDisposable Disposables { get; }
 

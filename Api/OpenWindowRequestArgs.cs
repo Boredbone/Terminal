@@ -35,5 +35,10 @@ namespace Terminal.Macro.Api
         /// ウインドウに固有のID
         /// </summary>
         public string WindowId { get; set; }
+
+        /// <summary>
+        /// ウインドウを表示しない
+        /// </summary>
+        public bool IsHidden { get; set; }
     }
 }

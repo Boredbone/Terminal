@@ -168,18 +168,21 @@ namespace Terminal.Models
                         window.Height = args.Height;
                     }
 
-                    //前回終了時の配置が保存されている場合は復元
-                    if (args.WindowId != null && args.WindowId.Length > 0)
+                    if (!args.IsHidden)
                     {
-                        this.WindowPlacement.Register(window, args.WindowId);
+                        //前回終了時の配置が保存されている場合は復元
+                        if (args.WindowId != null && args.WindowId.Length > 0)
+                        {
+                            this.WindowPlacement.Register(window, args.WindowId);
+                        }
+
+                        //window.Owner = this;
+
+                        //表示
+                        window.Show();
+                        window.Activate();
+
                     }
-
-                    //window.Owner = this;
-
-                    //表示
-                    window.Show();
-                    window.Activate();
-
                     return window;
                 };
             }
