@@ -155,7 +155,7 @@ namespace Terminal.Models
                     {
                         Content = args.Content,
                         Title = args.Title ?? activator.Name,
-                        WindowId=args.WindowId,
+                        WindowId = args.WindowId,
                     };
 
                     //ウィンドウサイズが指定されている場合は反映
@@ -175,13 +175,10 @@ namespace Terminal.Models
                         {
                             this.WindowPlacement.Register(window, args.WindowId);
                         }
-
-                        //window.Owner = this;
-
+                        
                         //表示
                         window.Show();
                         window.Activate();
-
                     }
                     return window;
                 };
@@ -212,7 +209,6 @@ namespace Terminal.Models
 
             Task.Run(async () =>
             {
-                //await Task.Delay(5000);
                 var result = await ScriptMacro.InitializeAsync(this.MacroPlayer.Plugins);
                 this.MacroPlayer.DisplayMessage($"Macro " + result);
             });
