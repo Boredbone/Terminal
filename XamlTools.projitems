@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DisposableBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DependencyObjectExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ObservableHelperExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NotificationBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModel\ViewModelBase.cs" />
   </ItemGroup>
 </Project>
