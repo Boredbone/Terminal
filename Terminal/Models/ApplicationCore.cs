@@ -185,7 +185,7 @@ namespace Terminal.Models
             }
 
             //Plugin
-            this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
+            //this.MacroPlayer.Plugins.Register(new PluginSample(this.MacroPlayer));
 
             //ポート一覧を更新
             this.Connection.RefreshPortNames();

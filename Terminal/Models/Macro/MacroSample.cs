@@ -90,24 +90,24 @@ namespace Terminal.Models.Macro
             
         }
 
-        [Macro("Plugin")]
-        public async Task PluginSample(IMacroEngine Macro, IPluginManager Plugins)
-        {
-
-
-            var pluin = Plugins.Get<PluginSample>();
-
-            Macro.Display(pluin.ToString());
-
-            pluin.Parameter1 = 1;
-            pluin.Parameter2 = "text";
-            
-            var currentParameter = pluin.Parameter3;
-            
-
-            var result = await pluin.RunAsync();
-            
-        }
+        //[Macro("Plugin")]
+        //public async Task PluginSample(IMacroEngine Macro, IPluginManager Plugins)
+        //{
+        //
+        //
+        //    var pluin = Plugins.Get<PluginSample>();
+        //
+        //    Macro.Display(pluin.ToString());
+        //
+        //    pluin.Parameter1 = 1;
+        //    pluin.Parameter2 = "text";
+        //    
+        //    var currentParameter = pluin.Parameter3;
+        //    
+        //
+        //    var result = await pluin.RunAsync();
+        //    
+        //}
 
         [Macro]
         public async Task Execute(IMacroEngine Macro, IPluginManager Plugins)

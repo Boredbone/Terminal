@@ -159,7 +159,6 @@
     <Compile Include="Models\Macro\MacroGlobal.cs" />
     <Compile Include="Models\Macro\MacroPlayer.cs" />
     <Compile Include="Models\Macro\PluginManager.cs" />
-    <Compile Include="Models\Macro\PluginSample.cs" />
     <Compile Include="Models\Macro\ScriptMacro.cs" />
     <Compile Include="Models\Macro\StatusItem.cs" />
     <Compile Include="Models\Macro\StatusType.cs" />
