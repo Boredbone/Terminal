@@ -38,12 +38,13 @@ namespace PluginSample
             {
                 throw new InvalidOperationException("Already activated");
             }
-            //メインモデルを生成してアナライザを返却
+            //メインモデルを生成
             this.Core = new CoreModel(player);
 
             //プラグイン側からのウインドウ表示要求
             this.Core.OpenWindowRequested += args => this.OpenWindowRequested?.Invoke(args);
 
+            //マクロ用のプラグインを返却
             return this.Core.Plugin;
         }
 

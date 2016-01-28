@@ -23,8 +23,7 @@ namespace PluginSample.ViewModels
         [Required(ErrorMessage = "Required")]
         public ReactiveProperty<string> Word { get; }
         public ReadOnlyReactiveProperty<string> WordErrorMessage { get; }
-
-        [Required(ErrorMessage = "Required")]
+        
         [Range(1, int.MaxValue, ErrorMessage = "must be positive")]
         public ReactiveProperty<int> Loop { get; }
         public ReadOnlyReactiveProperty<string> LoopErrorMessage { get; }
