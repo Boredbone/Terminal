@@ -40,5 +40,16 @@ namespace Terminal.Macro.Api
         /// ウインドウを表示しない
         /// </summary>
         public bool IsHidden { get; set; }
+
+        /// <summary>
+        /// ウインドウ高さをコンテンツに合わせる
+        /// </summary>
+        public bool SizeToHeight { get; set; }
+
+        /// <summary>
+        /// ウインドウ幅をコンテンツに合わせる
+        /// </summary>
+        public bool SizeToWidth { get; set; }
+
     }
 }

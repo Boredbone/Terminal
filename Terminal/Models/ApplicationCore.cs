@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Boredbone.XamlTools.ViewModel;
+using Boredbone.Utility;
+using Boredbone.Utility.Extensions;
+using Boredbone.XamlTools;
 using Reactive.Bindings.Extensions;
+using RestoreWindowPlace;
 using Terminal.Macro.Api;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;
 using Terminal.Views;
-using Boredbone.Utility.Extensions;
-using Boredbone.Utility;
-using System.Reactive.Linq;
-using System.Resources;
-using RestoreWindowPlace;
 
 namespace Terminal.Models
 {
     /// <summary>
     /// アプリケーションのメインモデル
     /// </summary>
-    public class ApplicationCore : ViewModelBase
+    public class ApplicationCore : NotificationBase
     {
 
 
@@ -167,6 +167,12 @@ namespace Terminal.Models
                     {
                         window.Height = args.Height;
                     }
+
+                    window.SizeToContent
+                        = (args.SizeToHeight && args.SizeToWidth) ? SizeToContent.WidthAndHeight
+                        : (args.SizeToHeight) ? SizeToContent.Height
+                        : (args.SizeToWidth) ? SizeToContent.Width
+                        : SizeToContent.Manual;
 
                     if (!args.IsHidden)
                     {
