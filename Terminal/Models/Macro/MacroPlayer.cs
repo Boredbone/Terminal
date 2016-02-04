@@ -94,14 +94,14 @@ namespace Terminal.Models.Macro
                 {
                     await code.RunAsync(macro, this.Plugins);
                 }
-                catch (Exception e) when (e is TimeoutException || e is OperationCanceledException)
+                catch (Exception e)// when (e is TimeoutException || e is OperationCanceledException)
                 {
                     this.ErrorSubject.OnNext(e.GetType().FullName + ": " + e.Message);
                 }
-                catch (Exception e)
-                {
-                    this.ErrorSubject.OnNext(e.ToString());
-                }
+                //catch (Exception e)
+                //{
+                //    this.ErrorSubject.OnNext(e.ToString());
+                //}
                 finally
                 {
                     macro.End(code.Name);

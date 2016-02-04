@@ -251,7 +251,10 @@ namespace Terminal.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        this.WriteNotice("Exception : " + ex.ToString(), false, LogTypes.Error);
+                        this.WriteNotice
+                            ("Exception : " + ex.GetType().FullName + ": " + ex.Message,
+                            false, LogTypes.Error);
+                        //this.WriteNotice("Exception : " + ex.ToString(), false, LogTypes.Error);
                     }
                 }, this.Disposables);
 
