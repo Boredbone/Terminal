@@ -9,7 +9,7 @@
         xmlns:b="clr-namespace:Terminal.Views.Behaviors"
         mc:Ignorable="d"
         Closing="Window_Closing"
-        Title="Terminal Heaven's Rock" Height="700" Width="800"
+        Title="Warabimochi Terminal" Height="700" Width="800"
         Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico">
 
     <Window.Resources>
