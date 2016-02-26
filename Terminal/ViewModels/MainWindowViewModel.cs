@@ -522,33 +522,20 @@ namespace Terminal.ViewModels
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
-
-                //if (this.ListScroller != null)
-                //{
-                //    var tx = this.ListScroller.Content as FrameworkElement;
-                //    if (tx != null)
-                //    {
-                //        tx.Margin = new Thickness(0, 0, 0, 64);
-                //    }
-                //    //var tx = this.ListScroller.Margin = new Thickness(0, 0, 0, 64);
-                //}
             }
 
             if (this.ListScroller != null)
             {
-
-
                 if (this.IsLogFollowing.Value)
                 {
 
                     var scrollableHeight = this.ListScroller.ScrollableHeight;
                     var offset = this.ListScroller.VerticalOffset;
                     var nearBottom = offset > this.lastVerticalOffset - 10;
-                    //var nearBottom = this.ListScroller.VerticalOffset > scrollableHeight - 10;
 
                     if (this.lastVerticalOffset > scrollableHeight && this.isAutoScrollEnabled)
                     {
-                        this.lastVerticalOffset = offset;// scrollableHeight - 20;
+                        this.lastVerticalOffset = offset;
                     }
 
                     if (offset < this.lastVerticalOffset - 10)
@@ -556,37 +543,20 @@ namespace Terminal.ViewModels
                         nearBottom = false;
                         this.isAutoScrollEnabled = false;
                     }
-
-
-                    //if (!nearBottom)
-                    //{
-                    //    //this.autoScroll = false;
-                    //    //this.autoScrollThreshold = 10;
-                    //}
-                    //else if (this.ListScroller.ScrollableHeight - this.ListScroller.VerticalOffset
-                    //    < this.autoScrollThreshold)
-                    //{
-                    //    this.autoScroll = true;
-                    //    //this.autoScrollThreshold = this.ListScroller.ActualHeight * 0.4;
-                    //}
-                    //this.autoScroll = nearBottom;
+                    
 
                     if (force || nearBottom)
                     {
                         if (!this.isAutoScrollEnabled)
                         {
-                            //this.lastVerticalOffset = this.ListScroller.VerticalOffset;
                             this.isAutoScrollEnabled = true;
                         }
                     }
-
-                    //if (force || this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 2)
-                    if (this.isAutoScrollEnabled && offset < scrollableHeight)//this.autoScroll)//(nearBottom && this.autoScroll)
+                    
+                    if (this.isAutoScrollEnabled && offset < scrollableHeight)
                     {
-                        this.lastVerticalOffset = scrollableHeight;// this.ListScroller.VerticalOffset;
-                        //this.ScrollRequestSubject.OnNext(true);
+                        this.lastVerticalOffset = scrollableHeight;
                         this.ListScroller.ScrollToBottom();
-                        Debug.WriteLine(offset.ToString());
                     }
                 }
             }
@@ -867,15 +837,9 @@ namespace Terminal.ViewModels
                 name = blocks[index].Name;
                 code = blocks[index].Code;
             }
-
-
-
+            
 
             var player = this.Core.MacroPlayer;
-
-            //this.WriteNotice("Macro Loading", false, LogTypes.Notice);
-
-            //var sc = new DelegateMacro("Macro01", null);
             var sc = new ScriptMacro(name, code);
 
             try
