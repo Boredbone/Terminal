@@ -33,6 +33,9 @@ namespace Terminal.Models.Macro
         public IObservable<bool> LogState => this.LogStateSubject.AsObservable();
         private Subject<bool> LogStateSubject { get; }
 
+
+        public IObservable<string> LineReceived => this.Connection.LineReceived;
+
         public bool IsPausing => this.LockingSubject.Value;
 
         private bool isCanceled = false;
@@ -48,7 +51,8 @@ namespace Terminal.Models.Macro
         /// </summary>
         private IObservable<WaitResultContainer> CancelObservable
             => this.CancelSubject.Where(x => x)
-            .Select(x => new WaitResultContainer(new OperationCanceledException("Macro was canceled")));
+            .Select(x => new WaitResultContainer(new OperationCanceledException("Macro was canceled")))
+            .Publish().RefCount();
 
 
         /// <summary>
@@ -58,7 +62,8 @@ namespace Terminal.Models.Macro
             => (this.Timeout <= 0) ? this.CancelObservable
             : Observable.Timer(TimeSpan.FromMilliseconds(this.Timeout))
             .Select(x => new WaitResultContainer(new TimeoutException($"Timeout {this.Timeout} [ms]")))
-            .Merge(this.CancelObservable);
+            .Merge(this.CancelObservable)
+            .Publish().RefCount();
 
        
 

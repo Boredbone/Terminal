@@ -58,6 +58,11 @@ namespace Terminal.Models.Serial
                         {
                             await Task.Delay(10);
                         }
+                        else if (cmds.Length >= 1 && cmds[0].Equals("text"))
+                        {
+                            this.DataReceivedSubject.OnNext(command.Replace("text,","").Replace(@"\n","\n")+"\n");
+                            return;
+                        }
                         else if (cmds.Length >= 2 && cmds[0].Equals("lines"))
                         {
                             await Task.Delay(10);
@@ -73,10 +78,14 @@ namespace Terminal.Models.Serial
                         }
                         else
                         {
+                            return;
                             await Task.Delay(2000);
                         }
+
                         reply = "echo:" + command + "\n>";
+
                     }
+
                     this.DataReceivedSubject.OnNext(reply);
 
                 }));

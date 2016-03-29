@@ -568,6 +568,10 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void Write(string text, bool feed)
         {
+            if (!this.IsLogFollowing.Value)
+            {
+                return;
+            }
 
             this.ActionQueueSubject.OnNext(() =>
             //this.ActionQueue.Enqueue(() =>
@@ -601,6 +605,10 @@ namespace Terminal.ViewModels
         /// <param name="type"></param>
         private void WriteNotice(string text, bool forceScroll, LogTypes type)
         {
+            if (!this.IsLogFollowing.Value)
+            {
+                return;
+            }
             if (type == LogTypes.Notice)
             {
                 Application.Current.Dispatcher.Invoke
@@ -660,6 +668,10 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void AddLine(string text, LogTypes type)
         {
+            if (!this.IsLogFollowing.Value)
+            {
+                return;
+            }
             if (this.Texts.Count > 0)
             {
                 this.Texts[this.Texts.Count - 1].IsLast = false;

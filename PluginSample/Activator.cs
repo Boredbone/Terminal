@@ -18,6 +18,8 @@ namespace PluginSample
         private string name = "Plugin Sample";
         public string Name => this.name;
 
+        public string SaveDirectoryName { get; set; }
+
         public Func<OpenWindowRequestArgs, object> OpenWindowRequested { get; set; }
 
         private CoreModel Core { get; set; }

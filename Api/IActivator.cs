@@ -13,6 +13,11 @@ namespace Terminal.Macro.Api
         string Name { get; }
 
         /// <summary>
+        /// 設定を保存する場所
+        /// </summary>
+        string SaveDirectoryName { get; set; }
+
+        /// <summary>
         /// プラグインの起動
         /// </summary>
         /// <param name="player">マクロの実行環境</param>

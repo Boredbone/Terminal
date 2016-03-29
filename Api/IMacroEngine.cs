@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Terminal.Macro.Api
 {
@@ -11,6 +12,8 @@ namespace Terminal.Macro.Api
         /// タイムアウト時間(ミリ秒)，0の場合タイムアウトなし
         /// </summary>
         int Timeout { get; set; }
+
+        IObservable<string> LineReceived { get; }
 
         /// <summary>
         /// キャンセル状態の解除

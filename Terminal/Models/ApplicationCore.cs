@@ -25,9 +25,12 @@ namespace Terminal.Models
     {
 
 
-        private const string DefaultSaveDirectoryName = @"\Boredbone\Terminal";
+        private const string defaultCompanyName = @"\Boredbone";
+        private const string productName = @"\Terminal";
         private const string settingsFileName = "appsettings.config";
         private const string placementFileName = "placement.config";
+
+        private string saveDirectoryName = "";
 
         /// <summary>
         /// 通信
@@ -81,13 +84,16 @@ namespace Terminal.Models
             //通信の改行コードを設定
             this.Connection.LineCode = LineCodes.Lf;
 
-            var directoryName = DefaultSaveDirectoryName;
+            var companyName = defaultCompanyName;
 
-            var str = this.GetResourceString("SaveDirectoryName");
+            var str = this.GetResourceString("CompanyName");
             if (str != null)
             {
-                directoryName = str;
+                companyName = str;
             }
+            this.saveDirectoryName = companyName;
+
+            var directoryName = this.saveDirectoryName + productName;
 
             var saveDirectory = System.Environment.GetFolderPath
                 (Environment.SpecialFolder.LocalApplicationData) + directoryName;
@@ -129,6 +135,8 @@ namespace Terminal.Models
             foreach(var activator in this.Plugins)
             {
                 activator.AddTo(this.Disposables);
+
+                activator.SaveDirectoryName = this.saveDirectoryName;
                 
                 //モジュールを読み込み
                 var plugin = activator.Activate(this.MacroPlayer);
