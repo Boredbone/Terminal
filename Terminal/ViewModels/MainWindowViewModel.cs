@@ -63,8 +63,7 @@ namespace Terminal.ViewModels
 
         public ReactiveProperty<bool> IsMacroPlaying { get; }
         public ReactiveProperty<bool> IsMacroPausing { get; }
-
-        //public ReactiveProperty<ScrollUnit> ScrollMode { get; }
+        
 
         public ReactiveCommand GetPortNamesCommand { get; }
         public ReactiveCommand OpenPortCommand { get; }
@@ -77,43 +76,30 @@ namespace Terminal.ViewModels
         public ReactiveCommand LaunchPluginCommand { get; }
         public ReactiveCommand ClearCommand { get; }
         public ReactiveCommand AboutCommand { get; }
+        public ReactiveCommand ConnectionConfigCommand { get; }
 
 
         public ReactiveCommand IncrementCommand { get; }
         public ReactiveCommand DecrementCommand { get; }
 
         private Subject<bool> ScrollRequestSubject { get; }
-        //private int scrollDelayTimeFast = 100;
-        //private int scrollDelayTimeSlow = 1000;
-        //private int scrollDelayTimeCurrent;
 
         public ReactiveProperty<bool> IsLogFollowing { get; }
-        //private bool isLogFollowing = true;
         private bool isAutoScrollEnabled = true;
-        //private double autoScrollThreshold = 10;
         private double lastVerticalOffset = 0;
-
-        //private Subject<bool> ScrollSubject { get; }
+        
 
         public ListView TextsList { get; set; }
         public ScrollViewer ListScroller { get; set; }
         public Window View { get; set; }
-
-        /*
-        private Task ProcessTask { get; }
-        private CancellationTokenSource CancellationTokenSource { get; }
-        private EventWaitHandle WaitHandle { get; }
-        private ConcurrentQueue<Action> ActionQueue { get; }
-        */
+        
         private Subject<Action> ActionQueueSubject { get; }
 
 
         public MainWindowViewModel()
         {
             this.Core = ((App)Application.Current).CoreData;
-
-            //this.ActionQueue = new ConcurrentQueue<Action>();
-            //this.WaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+            
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
@@ -151,8 +137,7 @@ namespace Terminal.ViewModels
                 .Select(x => this.TextHistory.FromIndexOrDefault(x) ?? this.InputText)
                 .ToReactiveProperty()
                 .AddTo(this.Disposables);
-
-            //this.ReceivedTexts = new ObservableCollection<string>();
+            
 
             this.NoticeText = new ReactiveProperty<string>().AddTo(this.Disposables);
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
@@ -254,7 +239,6 @@ namespace Terminal.ViewModels
                         this.WriteNotice
                             ("Exception : " + ex.GetType().FullName + ": " + ex.Message,
                             false, LogTypes.Error);
-                        //this.WriteNotice("Exception : " + ex.ToString(), false, LogTypes.Error);
                     }
                 }, this.Disposables);
 
@@ -355,6 +339,19 @@ namespace Terminal.ViewModels
                     window.Activate();
                 }, this.Disposables);
 
+            //接続の設定
+            this.ConnectionConfigCommand = new ReactiveCommand()
+                .WithSubscribe(x =>
+                {
+                    new SettingWindow()
+                    {
+                        Owner = this.View,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    }
+                    .ShowDialog();
+                }, this.Disposables);
+
+
             //マクロ関連
 
             var player = this.Core.MacroPlayer;
@@ -400,6 +397,7 @@ namespace Terminal.ViewModels
                 .ToReactiveCommand()
                 .WithSubscribe(x => this.StartMacro(), this.Disposables);
 
+
             //マクロ終了
             this.MacroCancelCommand = player.IsExecutingChanged
                 .ObserveOnUIDispatcher()
@@ -436,55 +434,6 @@ namespace Terminal.ViewModels
                 .Subscribe(act => act())
                 .AddTo(this.Disposables);
 
-            /*
-            //メッセージ表示タスクのキャンセル
-            this.CancellationTokenSource = new CancellationTokenSource();//.AddTo(this.Disposables);
-
-            Disposable.Create(() =>
-            {
-                this.CancellationTokenSource.Cancel();
-                this.CancellationTokenSource.Dispose();
-            })
-            .AddTo(this.Disposables);
-
-            //メッセージ表示リクエストを処理
-            this.ProcessTask = Task.Run(() =>
-            {
-                try
-                {
-                    while (true)
-                    {
-                        //次の要求が来るまで待機
-                        this.WaitHandle.WaitOne(-1);
-
-
-                        //キューにリクエストがあれば実行
-                        Action request;
-                        while (this.ActionQueue.TryDequeue(out request))
-                        {
-                            this.CancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                            if (request == null)
-                            {
-                                continue;
-                            }
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                request();
-                            });//,System.Windows.Threading.DispatcherPriority.Render);
-                        }
-                    }
-                }
-                catch
-                {
-                    //throw;
-                }
-            }, this.CancellationTokenSource.Token);
-            */
-    
-
-
-
 
             //リストに空アイテムを追加
             this.FeedLine();
@@ -518,7 +467,6 @@ namespace Terminal.ViewModels
         /// <param name="force"></param>
         private void ScrollToBottomMain(bool force)
         {
-            //return;
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
@@ -574,7 +522,6 @@ namespace Terminal.ViewModels
             }
 
             this.ActionQueueSubject.OnNext(() =>
-            //this.ActionQueue.Enqueue(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
@@ -594,7 +541,6 @@ namespace Terminal.ViewModels
                     this.ScrollToBottom(false);
                 }
             });
-            //this.WaitHandle.Set();
         }
 
         /// <summary>
@@ -621,7 +567,6 @@ namespace Terminal.ViewModels
             }
 
             this.ActionQueueSubject.OnNext(() =>
-            //this.ActionQueue.Enqueue(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
@@ -638,7 +583,6 @@ namespace Terminal.ViewModels
                         {
                             this.Texts[count - 1].Text = item;
                             this.Texts[count - 1].LogType = type;
-                            //this.Texts.RemoveAt(count - 1);
                         }
                         else
                         {
@@ -651,14 +595,12 @@ namespace Terminal.ViewModels
                     }
                     index++;
                 }
-
-                //texts.ForEach(x => this.AddLine(x, type));
+                
 
                 this.FeedLine();
                 this.ScrollToBottom(forceScroll);
 
             });
-            //this.WaitHandle.Set();
         }
         
 
@@ -793,7 +735,6 @@ namespace Terminal.ViewModels
         {
 
             var dialog = new OpenFileDialog();
-            //dialog.Title = "Open File";
             dialog.Filter = "C# code(*.cs)|*.cs|All Files(*.*)|*.*";
             if (dialog.ShowDialog() != true)
             {
@@ -802,8 +743,7 @@ namespace Terminal.ViewModels
 
 
             var path = dialog.FileName;
-
-            //CodeBlock[] blocks;
+            
             var text = "";
 
             try

@@ -49,20 +49,33 @@ namespace Terminal.Models.Serial
         {
             this.ConnectionDisposables = new CompositeDisposable();
             this.AddToDisposables(this.ConnectionDisposables);
-        }
 
-        //public override string[] GetPortNames()
-        //{
-        //    try
-        //    {
-        //        return SerialPort.GetPortNames();
-        //    }
-        //    catch//(Exception e)
-        //    {
-        //        return new string[0];
-        //        //return new string[] { e.ToString() };
-        //    }
-        //}
+
+
+            this.Settings.Add(nameof(this.BaudRate), new SettingAccessor(
+                x =>
+                {
+                    int number;
+                    if(int.TryParse(x,out number))
+                    {
+                        this.BaudRate = number;
+                    }
+                },
+                () => this.BaudRate.ToString()));
+
+
+            this.Settings.Add(nameof(this.DataBits), new SettingAccessor(
+                x =>
+                {
+                    int number;
+                    if (int.TryParse(x, out number))
+                    {
+                        this.DataBits = number;
+                    }
+                },
+                () => this.DataBits.ToString()));
+        }
+        
         public override void RefreshPortNames()
         {
             this.portNames.Clear();
@@ -74,9 +87,9 @@ namespace Terminal.Models.Serial
                     this.portNames.Add(item);
                 }
             }
-            catch//(Exception e)
+            catch
             {
-                //return new string[] { e.ToString() };
+                //no operation
             }
 
         }
@@ -92,8 +105,6 @@ namespace Terminal.Models.Serial
                 this.Port.Dispose();
                 this.Port = null;
             }
-            //this.PortName = "";
-            //this.IsOpenProperty.Value = false;
             this.ConnectionDisposables.Clear();
         }
 
@@ -111,7 +122,6 @@ namespace Terminal.Models.Serial
                 port.RtsEnable = true;
                 port.Encoding = this.Encoding;
                 port.NewLine = this.SendingNewLine;
-                //port.ReadBufferSize = 1024;
 
                 //データ受信時の動作を登録
                 Observable.FromEvent<SerialDataReceivedEventHandler, SerialDataReceivedEventArgs>(
@@ -120,11 +130,6 @@ namespace Terminal.Models.Serial
                     h => port.DataReceived -= h)
                     .Select(x =>
                     {
-                        //var pt1 = (SerialPort)pt;
-                        //var buf = new byte[1024];
-                        //var len = port.Read(buf, 0, 1024);
-                        //var s = Encoding.GetEncoding("Shift_JIS").GetString(buf, 0, len);
-                        //return s;
                         return port.ReadExisting()
                             .Replace("\0", "")
                             .Replace(this.IgnoredNewLine, "");
@@ -133,8 +138,6 @@ namespace Terminal.Models.Serial
                     .AddTo(this.ConnectionDisposables);
 
                 this.Port = port;
-                //this.PortName = name;
-                //this.IsOpenProperty.Value = true;
             }
             catch
             {

@@ -93,13 +93,15 @@ namespace Terminal.Models.Serial
             this.AddToDisposables(this.IsOpenChanged.Where(y => y)
                 .Delay(TimeSpan.FromMilliseconds(10))
                 .Subscribe(y => this.DataReceivedSubject.OnNext(">")));
+
+
+            this.Settings.Add(nameof(this.ValidPortName), new SettingAccessor(
+                x => this.ValidPortName = x, () => this.ValidPortName));
+            this.Settings.Add(nameof(this.InvalidPortName), new SettingAccessor(
+                x => this.InvalidPortName = x, () => this.InvalidPortName));
         }
 
-
-        //public override string[] GetPortNames()
-        //{
-        //    return new[] { this.ValidPortName, this.InvalidPortName };
-        //}
+        
 
         public override void RefreshPortNames()
         {
@@ -113,18 +115,11 @@ namespace Terminal.Models.Serial
 
         protected override void OnClosing()
         {
-            //this.IsOpenProperty.Value = false;
         }
 
         protected override void OnOpening(string name)
         {
-            if (name.Equals(this.ValidPortName))
-            {
-                //this.PortName = name;
-                //this.IsOpenProperty.Value = true;
-                //this.DataReceivedSubject.OnNext(">");
-            }
-            else
+            if (!name.Equals(this.ValidPortName))
             {
                 throw new ArgumentException("Invalid name");
             }

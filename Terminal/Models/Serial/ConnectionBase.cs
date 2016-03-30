@@ -55,7 +55,7 @@ namespace Terminal.Models.Serial
         private List<string> HistoryList { get; }
         private string LineBuffer { get; set; }
         
-
+        protected Dictionary<string,SettingAccessor> Settings { get; }
 
         /// <summary>
         /// ポート変更通知
@@ -86,8 +86,11 @@ namespace Terminal.Models.Serial
         /// 一行受信
         /// </summary>
         public IObservable<string> LineReceived
-            => this.LineReceivedSubject.Buffer(this.DataReceivedWithSendingLine).SelectMany(y => y);
-        //this.LineReceivedSubject.AsObservable();
+            => this.LineReceivedSubject
+            .Buffer(this.DataReceivedWithSendingLine)
+            .SelectMany(y => y)
+            .Publish()
+            .RefCount();
         private Subject<string> LineReceivedSubject { get; }
 
         /// <summary>
@@ -130,6 +133,21 @@ namespace Terminal.Models.Serial
             this.LineBuffer = "";
 
             this.portNames = new ObservableCollection<string>();
+
+            this.Settings = new Dictionary<string, SettingAccessor>();
+
+            this.Settings.Add(nameof(this.Encoding), new SettingAccessor(
+                x =>
+                {
+                    try
+                    {
+                        var encoding = Encoding.GetEncoding(x);
+                        this.Encoding = encoding;
+                    }
+                    catch { }
+                },
+                () => this.Encoding.WebName));
+
 
             this.DataReceivedWithSendingLine = this.DataReceivedSubject
                 .Merge(this.DataSentSubject.Select(x => this.ReceivingNewLine));
@@ -233,6 +251,44 @@ namespace Terminal.Models.Serial
             this.IsOpenProperty.Value = false;
         }
 
+        public IEnumerable<KeyValuePair<string, string>> GetSettings()
+            => this.Settings.ToDictionary(x => x.Key, x => x.Value.Value);
+
+        public string GetSetting(string key)
+        {
+            if (key == null)
+            {
+                return null;
+            }
+
+            SettingAccessor item = null;
+            if (this.Settings.TryGetValue(key, out item))
+            {
+                if (item != null)
+                {
+                    return item.Value;
+                }
+            }
+            return null;
+        }
+
+        public void SetSetting(string key, string value)
+        {
+            if (value == null)
+            {
+                return;
+            }
+            SettingAccessor item = null;
+            if (this.Settings.TryGetValue(key, out item))
+            {
+                if (item != null)
+                {
+                    item.Value = value;
+                }
+            }
+        }
+            
+        
 
         /// <summary>
         /// ポート名一覧取得
@@ -254,6 +310,22 @@ namespace Terminal.Models.Serial
             disposable.AddTo(this.Disposables);
         }
         
+        protected class SettingAccessor
+        {
+            private Action<string> setter;
+            private Func<string> getter;
 
+            public string Value
+            {
+                get { return this.getter(); }
+                set { this.setter(value); }
+            }
+
+            public SettingAccessor(Action<string> setter, Func<string> getter)
+            {
+                this.setter = setter;
+                this.getter = getter;
+            }
+        }
     }
 }

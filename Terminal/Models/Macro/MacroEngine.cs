@@ -77,8 +77,7 @@ namespace Terminal.Models.Macro
             this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
-
-            //this.CancelObservable.Subscribe(_ => this.Display("canceled")).AddTo(this.Disposables);
+            
         }
 
         /// <summary>
@@ -104,7 +103,6 @@ namespace Terminal.Models.Macro
             var trigger = this.Connection.LineReceived
                 .Skip(1)
                 .Take(count)
-                //.Delay(TimeSpan.FromMilliseconds(10))
                 .Subscribe(x =>
                 {
                     list.Add(x);

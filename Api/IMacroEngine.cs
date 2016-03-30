@@ -13,6 +13,9 @@ namespace Terminal.Macro.Api
         /// </summary>
         int Timeout { get; set; }
 
+        /// <summary>
+        /// 一行受信
+        /// </summary>
         IObservable<string> LineReceived { get; }
 
         /// <summary>
