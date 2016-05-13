@@ -132,18 +132,18 @@ namespace Terminal.Models
             this.Plugins = this.PluginLoader.Plugins.ToArray();
 
             //各プラグインを初期化
-            foreach(var activator in this.Plugins)
+            foreach (var activator in this.Plugins)
             {
                 activator.AddTo(this.Disposables);
 
                 activator.SaveDirectoryName = this.saveDirectoryName;
-                
+
                 //モジュールを読み込み
                 var plugin = activator.Activate(this.MacroPlayer);
 
                 //マクロから使えるように登録
                 this.MacroPlayer.Plugins.Register(plugin);
-                
+
                 //UI起動要求時の処理
                 activator.OpenWindowRequested = args =>
                 {
@@ -182,14 +182,14 @@ namespace Terminal.Models
                         : (args.SizeToWidth) ? SizeToContent.Width
                         : SizeToContent.Manual;
 
+                    //前回終了時の配置が保存されている場合は復元
+                    if (args.WindowId != null && args.WindowId.Length > 0)
+                    {
+                        this.WindowPlacement.Register(window, args.WindowId);
+                    }
                     if (!args.IsHidden)
                     {
-                        //前回終了時の配置が保存されている場合は復元
-                        if (args.WindowId != null && args.WindowId.Length > 0)
-                        {
-                            this.WindowPlacement.Register(window, args.WindowId);
-                        }
-                        
+
                         //表示
                         window.Show();
                         window.Activate();
