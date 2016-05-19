@@ -63,7 +63,7 @@ namespace Terminal.ViewModels
 
         public ReactiveProperty<bool> IsMacroPlaying { get; }
         public ReactiveProperty<bool> IsMacroPausing { get; }
-        
+
 
         public ReactiveCommand GetPortNamesCommand { get; }
         public ReactiveCommand OpenPortCommand { get; }
@@ -87,19 +87,19 @@ namespace Terminal.ViewModels
         public ReactiveProperty<bool> IsLogFollowing { get; }
         private bool isAutoScrollEnabled = true;
         private double lastVerticalOffset = 0;
-        
+
 
         public ListView TextsList { get; set; }
         public ScrollViewer ListScroller { get; set; }
         public Window View { get; set; }
-        
+
         private Subject<Action> ActionQueueSubject { get; }
 
 
         public MainWindowViewModel()
         {
             this.Core = ((App)Application.Current).CoreData;
-            
+
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
@@ -112,7 +112,7 @@ namespace Terminal.ViewModels
                     || y.LogType == LogTypes.Error
                     || y.LogType == LogTypes.MacroMessage)
                 .ToReactiveCollection().AddTo(this.Disposables);
-            
+
 
             logUpdated.Subscribe(y =>
             {
@@ -137,7 +137,7 @@ namespace Terminal.ViewModels
                 .Select(x => this.TextHistory.FromIndexOrDefault(x) ?? this.InputText)
                 .ToReactiveProperty()
                 .AddTo(this.Disposables);
-            
+
 
             this.NoticeText = new ReactiveProperty<string>().AddTo(this.Disposables);
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
@@ -169,7 +169,7 @@ namespace Terminal.ViewModels
                 .ObserveOnUIDispatcher()
                 .Subscribe(y => this.ScrollToBottomMain(y))
                 .AddTo(this.Disposables);
-            
+
 
 
 
@@ -182,7 +182,7 @@ namespace Terminal.ViewModels
                 .Select(y => this.Connection.PortName)
                 .ToReactiveProperty(this.Connection.PortName)
                 .AddTo(this.Disposables);
-            
+
 
             this.IsPortOpen = this.Connection.IsOpenChanged.ToReactiveProperty().AddTo(this.Disposables);
 
@@ -220,7 +220,7 @@ namespace Terminal.ViewModels
                 .LineReceived
                 .ToReadOnlyReactiveCollection()
                 .AddTo(this.Disposables);
-            
+
 
 
 
@@ -323,7 +323,7 @@ namespace Terminal.ViewModels
                 .Select(x => !x)
                 .ToReactiveCommand()
                 .WithSubscribe(_ => this.Connection.RefreshPortNames(), this.Disposables);
-            
+
 
             //プラグインの起動
             this.LaunchPluginCommand = new ReactiveCommand()
@@ -403,7 +403,7 @@ namespace Terminal.ViewModels
                 .ObserveOnUIDispatcher()
                 .ToReactiveCommand()
                 .WithSubscribe(x => player.Cancel(), this.Disposables);
-            
+
 
             //マクロ一時停止・再開
             this.MacroPauseCommand = player.IsExecutingChanged
@@ -417,7 +417,7 @@ namespace Terminal.ViewModels
                 {
                     var prev = this.IsLogFollowing.Value;
                     this.IsLogFollowing.Value = y;
-                    
+
 
                     if (!prev && y)
                     {
@@ -427,7 +427,7 @@ namespace Terminal.ViewModels
                 .AddTo(this.Disposables);
 
             this.ActionQueueSubject = new Subject<Action>().AddTo(this.Disposables);
-            
+
 
             this.ActionQueueSubject
                 .ObserveOnUIDispatcher()
@@ -491,7 +491,7 @@ namespace Terminal.ViewModels
                         nearBottom = false;
                         this.isAutoScrollEnabled = false;
                     }
-                    
+
 
                     if (force || nearBottom)
                     {
@@ -500,7 +500,7 @@ namespace Terminal.ViewModels
                             this.isAutoScrollEnabled = true;
                         }
                     }
-                    
+
                     if (this.isAutoScrollEnabled && offset < scrollableHeight)
                     {
                         this.lastVerticalOffset = scrollableHeight;
@@ -595,14 +595,14 @@ namespace Terminal.ViewModels
                     }
                     index++;
                 }
-                
+
 
                 this.FeedLine();
                 this.ScrollToBottom(forceScroll);
 
             });
         }
-        
+
 
         /// <summary>
         /// 新しい行を追加して文字列を記入
@@ -743,7 +743,7 @@ namespace Terminal.ViewModels
 
 
             var path = dialog.FileName;
-            
+
             var text = "";
 
             try
@@ -789,7 +789,7 @@ namespace Terminal.ViewModels
                 name = blocks[index].Name;
                 code = blocks[index].Code;
             }
-            
+
 
             var player = this.Core.MacroPlayer;
             var sc = new ScriptMacro(name, code);
@@ -818,12 +818,19 @@ namespace Terminal.ViewModels
 
             if (listDialog.ShowDialog() == true)
             {
-                var index = listDialog.Index;
-
-                var plugin = plugins.FromIndexOrDefault(index);
-                if (plugin != null)
+                try
                 {
-                    this.Core.LaunchPluginUI(plugin);
+                    var index = listDialog.Index;
+
+                    var plugin = plugins.FromIndexOrDefault(index);
+                    if (plugin != null)
+                    {
+                        this.Core.LaunchPluginUI(plugin);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
                 }
             }
         }

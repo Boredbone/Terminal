@@ -18,6 +18,8 @@ namespace Terminal
 
         public App()
         {
+            AppDomain.CurrentDomain.UnhandledException
+                += CurrentDomain_UnhandledException;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -29,6 +31,26 @@ namespace Terminal
         {
             this.CoreData.Save();
             this.CoreData.Dispose();
+        }
+
+
+        private void CurrentDomain_UnhandledException(
+                        object sender,
+                        UnhandledExceptionEventArgs e)
+        {
+            var exception = e.ExceptionObject as Exception;
+            if (exception == null)
+            {
+                MessageBox.Show("Unknown Exception");
+                return;
+            }
+
+            //var errorMember = exception.TargetSite.Name;
+            //var errorMessage = exception.Message;
+            var message = string.Format(exception.ToString());
+            MessageBox.Show(message, "UnhandledException",
+                            MessageBoxButton.OK, MessageBoxImage.Stop);
+            Environment.Exit(0);
         }
     }
 }

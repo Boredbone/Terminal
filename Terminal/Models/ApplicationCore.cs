@@ -147,54 +147,62 @@ namespace Terminal.Models
                 //UI起動要求時の処理
                 activator.OpenWindowRequested = args =>
                 {
-                    var ids = Application.Current
-                        .Windows
-                        .AsEnumerableWithSafeCast<PluginWindow>()
-                        .Select(y => y.WindowId);
-
-                    if (args.WindowId != null && ids.Contains(args.WindowId))
+                    try
                     {
+                        var ids = Application.Current
+                            .Windows
+                            .AsEnumerableWithSafeCast<PluginWindow>()
+                            .Select(y => y.WindowId);
+
+                        if (args.WindowId != null && ids.Contains(args.WindowId))
+                        {
+                            return null;
+                        }
+
+
+                        //ウィンドウ生成
+                        var window = new PluginWindow()
+                        {
+                            Content = args.Content,
+                            Title = args.Title ?? activator.Name,
+                            WindowId = args.WindowId,
+                        };
+
+                        //ウィンドウサイズが指定されている場合は反映
+                        if (args.Width >= 64)
+                        {
+                            window.Width = args.Width;
+                        }
+                        if (args.Height >= 64)
+                        {
+                            window.Height = args.Height;
+                        }
+
+                        window.SizeToContent
+                            = (args.SizeToHeight && args.SizeToWidth) ? SizeToContent.WidthAndHeight
+                            : (args.SizeToHeight) ? SizeToContent.Height
+                            : (args.SizeToWidth) ? SizeToContent.Width
+                            : SizeToContent.Manual;
+
+                        //前回終了時の配置が保存されている場合は復元
+                        if (args.WindowId != null && args.WindowId.Length > 0)
+                        {
+                            this.WindowPlacement.Register(window, args.WindowId);
+                        }
+                        if (!args.IsHidden)
+                        {
+
+                            //表示
+                            window.Show();
+                            window.Activate();
+                        }
+                        return window;
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.ToString());
                         return null;
                     }
-
-
-                    //ウィンドウ生成
-                    var window = new PluginWindow()
-                    {
-                        Content = args.Content,
-                        Title = args.Title ?? activator.Name,
-                        WindowId = args.WindowId,
-                    };
-
-                    //ウィンドウサイズが指定されている場合は反映
-                    if (args.Width >= 64)
-                    {
-                        window.Width = args.Width;
-                    }
-                    if (args.Height >= 64)
-                    {
-                        window.Height = args.Height;
-                    }
-
-                    window.SizeToContent
-                        = (args.SizeToHeight && args.SizeToWidth) ? SizeToContent.WidthAndHeight
-                        : (args.SizeToHeight) ? SizeToContent.Height
-                        : (args.SizeToWidth) ? SizeToContent.Width
-                        : SizeToContent.Manual;
-
-                    //前回終了時の配置が保存されている場合は復元
-                    if (args.WindowId != null && args.WindowId.Length > 0)
-                    {
-                        this.WindowPlacement.Register(window, args.WindowId);
-                    }
-                    if (!args.IsHidden)
-                    {
-
-                        //表示
-                        window.Show();
-                        window.Activate();
-                    }
-                    return window;
                 };
             }
 
