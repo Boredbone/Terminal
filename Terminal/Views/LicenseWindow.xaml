@@ -32,8 +32,16 @@
 
                     <StackPanel>
 
-
-                        <!-- セクション 1 ボディ -->
+                        <TextBlock Style="{StaticResource smallTextStyle}">
+                            <Run Text="Version "/>
+                            <Run Name="versionText" Text="1.0"/>
+                        </TextBlock>
+                        <!--
+                        <TextBlock Style="{StaticResource smallTextStyle}">
+                            <Run Text="Date "/>
+                            <Run Name="buildDate" Text="1.0"/>
+                        </TextBlock>-->
+                        
                         <TextBlock x:Name="description" Style="{StaticResource smallTextStyle}"/>
 
 

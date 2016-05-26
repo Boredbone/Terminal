@@ -22,14 +22,19 @@ namespace Terminal.Views
         public LicenseWindow()
         {
             InitializeComponent();
-            
-            var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-            this.description.Text = ver.ToString() +"\n"+
-    @"This software is built using the open source software:
-- Reactive Extensions
-- ReactiveProperty
-- .NET Compiler Platform (""Roslyn"")";
+            var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+            this.versionText.Text = ver.ToString();
+
+            var buildDateTime = new DateTime(2000, 1, 1, 0, 0, 0);
+            buildDateTime = buildDateTime.AddDays(ver.Build);
+            buildDateTime = buildDateTime.AddSeconds(ver.Revision * 2);
+            //this.buildDate.Text = buildDateTime.ToString();
+
+
+            this.description.Text = @"This software is built using the open source software:"
+                + "\n- Reactive Extensions\n- ReactiveProperty\n- .NET Compiler Platform (\"Roslyn\")";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
