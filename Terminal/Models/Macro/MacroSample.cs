@@ -17,7 +17,7 @@ namespace Terminal.Models.Macro
 
             Macro.Timeout = 0;
 
-            await Macro.SendAsync("cs1");
+            await Macro.SendLineAsync("cs1");
 
             await Macro.WaitAsync("\n>");
 
@@ -27,12 +27,12 @@ namespace Terminal.Models.Macro
 
 
 
-            await Macro.SendAsync("cs2");
+            await Macro.SendLineAsync("cs2");
 
             await Macro.WaitLineAsync();
 
 
-            await Macro.SendAsync("cs3");
+            await Macro.SendLineAsync("cs3");
 
             //Macro.Pause();
             //await Task.Delay(2000);
@@ -69,7 +69,7 @@ namespace Terminal.Models.Macro
 
             Macro.Timeout = 4000;
 
-            await Macro.SendAsync("cs4");
+            await Macro.SendLineAsync("cs4");
 
             try
             {
@@ -78,13 +78,13 @@ namespace Terminal.Models.Macro
             catch (TimeoutException)
             {
                 Macro.Display("timeout");
-                await Macro.SendAsync("retry");
+                await Macro.SendLineAsync("retry");
             }
 
 
             await Macro.DelayAsync(3000);
 
-            await Macro.SendAsync("cs5");
+            await Macro.SendLineAsync("cs5");
 
             await Macro.WaitAsync("\ny>");
             

@@ -92,9 +92,9 @@ class MyClass
   [Macro]
   public async Task MacroMethod(IMacroEngine Macro, IPluginManager Plugins)
   {
-      await Macro.SendAsync(value1);
+      await Macro.SendLineAsync(value1);
 
-      await Macro.SendAsync(TestMethod1());
+      await Macro.SendLineAsync(TestMethod1());
   }
 }
 ```
@@ -118,9 +118,9 @@ class MyClass
         return "def";
     };
 
-    await Macro.SendAsync(value1);
+    await Macro.SendLineAsync(value1);
 
-    await Macro.SendAsync(TestMethod1());
+    await Macro.SendLineAsync(TestMethod1());
   }
 }
 ```
@@ -133,7 +133,7 @@ class MyClass
 これらの非同期メソッドを使用する際には，awaitキーワードを使用してメソッドの終了を待機してください．
 
 ```cs
-await Macro.SendAsync("abc");
+await Macro.SendLineAsync("abc");
 await Macro.WaitAsync("def");
 await Macro.DelayAsync(1000);
 ```

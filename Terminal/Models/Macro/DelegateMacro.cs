@@ -51,7 +51,7 @@ namespace Terminal.Models.Macro
 
                     Macro.Timeout = 0;
 
-                    await Macro.SendAsync("text1");
+                    await Macro.SendLineAsync("text1");
 
                     await Macro.WaitAsync("\n>");
 
@@ -60,12 +60,12 @@ namespace Terminal.Models.Macro
 
 
 
-                    await Macro.SendAsync("text2");
+                    await Macro.SendLineAsync("text2");
 
                     await Macro.WaitLineAsync();
 
 
-                    await Macro.SendAsync("text3");
+                    await Macro.SendLineAsync("text3");
 
                     //Macro.Pause();
                     //await Task.Delay(2000);
@@ -98,7 +98,7 @@ namespace Terminal.Models.Macro
 
                     Macro.Timeout = 4000;
 
-                    await Macro.SendAsync("text4");
+                    await Macro.SendLineAsync("text4");
 
                     try
                     {
@@ -107,13 +107,13 @@ namespace Terminal.Models.Macro
                     catch (TimeoutException)
                     {
                         Macro.Display("timeout");
-                        await Macro.SendAsync("retry");
+                        await Macro.SendLineAsync("retry");
                     }
 
 
                     await Macro.DelayAsync(3000);
 
-                    await Macro.SendAsync("text5");
+                    await Macro.SendLineAsync("text5");
 
                     await Macro.WaitAsync("\ny>");
                 };
@@ -135,7 +135,7 @@ namespace Terminal.Models.Macro
                 await this.AsyncFunc(Macro, Plugins);
 
                 //送信バッファを空にする
-                await Macro.SendAsync(null);
+                await Macro.SendLineAsync(null);
             }
             finally
             {

@@ -224,7 +224,7 @@ namespace Terminal.Models.Macro
         private async Task WaitTriggerAsync(BehaviorSubject<bool> bs, IDisposable trigger, StatusItem status)
         {
 
-            await this.SendAsync(null);
+            await this.SendLineAsync(null);
 
             this.StatusSubject.OnNext(status);
 
@@ -252,7 +252,7 @@ namespace Terminal.Models.Macro
         /// <returns></returns>
         public async Task DelayAsync(int timeMillisec)
         {
-            await this.SendAsync(null);
+            await this.SendLineAsync(null);
 
             this.StatusSubject.OnNext(new StatusItem($"Wait : {timeMillisec} [ms]"));
             await Task.Delay(timeMillisec);
@@ -266,7 +266,16 @@ namespace Terminal.Models.Macro
         /// <param name="text"></param>
         public async Task SendAsync(string text)
         {
-            await this.SendAsync(text, false);
+            throw new NotImplementedException($"Method \"{nameof(IMacroEngine.SendAsync)}\" is not implemented.");
+        }
+
+        /// <summary>
+        /// 文字列を送信
+        /// </summary>
+        /// <param name="text"></param>
+        public async Task SendLineAsync(string text)
+        {
+            await this.SendLineAsync(text, false);
         }
 
         /// <summary>
@@ -274,7 +283,7 @@ namespace Terminal.Models.Macro
         /// </summary>
         /// <param name="text"></param>
         /// <param name="immediately"></param>
-        public async Task SendAsync(string text, bool immediately)
+        public async Task SendLineAsync(string text, bool immediately)
         {
             if (this.nextMessage != null)
             {

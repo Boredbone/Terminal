@@ -56,10 +56,18 @@ namespace Terminal.Macro.Api
         /// 文字列を送信
         /// </summary>
         /// <param name="text">送信する文字列</param>
+        /// <returns>タスク</returns>
+        /// <exception cref="System.OperationCanceledException">ユーザー操作によるマクロ実行のキャンセル</exception>
+        Task SendLineAsync(string text);
+
+        /// <summary>
+        /// 文字列を送信
+        /// </summary>
+        /// <param name="text">送信する文字列</param>
         /// <param name="immediately">待機トリガの設定を行わず，すぐに送信を開始する場合はtrue</param>
         /// <returns>タスク</returns>
         /// <exception cref="System.OperationCanceledException">ユーザー操作によるマクロ実行のキャンセル</exception>
-        Task SendAsync(string text, bool immediately);
+        Task SendLineAsync(string text, bool immediately);
 
         /// <summary>
         /// ログの追尾をセット

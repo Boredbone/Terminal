@@ -81,7 +81,7 @@ namespace Terminal.Models.Macro
                 //var state = await script.RunAsync(global);
 
                 //送信バッファを空にする
-                await Macro.SendAsync(null);
+                await Macro.SendLineAsync(null);
             }
             finally
             {

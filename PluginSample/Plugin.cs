@@ -77,7 +77,7 @@ namespace PluginSample
 
         private async Task SendAndWait(IMacroEngine Macro, string text, int timems)
         {
-            await Macro.SendAsync(text);
+            await Macro.SendLineAsync(text);
             await Macro.WaitAsync("\n>", ">> ?", "\n/>");
             await Macro.DelayAsync(timems);
         }

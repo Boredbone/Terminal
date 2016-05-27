@@ -92,9 +92,9 @@ class MyClass
   [Macro]
   public async Task MacroMethod(IMacroEngine Macro, IPluginManager Plugins)
   {
-      await Macro.SendAsync(value1);
+      await Macro.SendLineAsync(value1);
 
-      await Macro.SendAsync(TestMethod1());
+      await Macro.SendLineAsync(TestMethod1());
   }
 }
 ```
@@ -118,9 +118,9 @@ class MyClass
         return "def";
     };
 
-    await Macro.SendAsync(value1);
+    await Macro.SendLineAsync(value1);
 
-    await Macro.SendAsync(TestMethod1());
+    await Macro.SendLineAsync(TestMethod1());
   }
 }
 ```
@@ -133,7 +133,7 @@ class MyClass
 これらの非同期メソッドを使用する際には，awaitキーワードを使用してメソッドの終了を待機してください．
 
 ```cs
-await Macro.SendAsync("abc");
+await Macro.SendLineAsync("abc");
 await Macro.WaitAsync("def");
 await Macro.DelayAsync(1000);
 ```
@@ -174,8 +174,8 @@ C#スクリプトにマクロ機能を提供します．
 |[DelayAsync(int)](#DelayAsync0)|指定時間遅延|
 |[Display(string)](#Display0)|画面に文字列を表示|
 |[History(int)](#History0)|受信履歴を行ごとに取得|
-|[SendAsync(string)](#SendAsync0)|文字列を送信|
-|[SendAsync(string, bool)](#SendAsync1)|文字列を送信|
+|[SendLineAsync(string)](#SendLineAsync0)|文字列を送信|
+|[SendLineAsync(string, bool)](#SendLineAsync1)|文字列を送信|
 |[SetLogState(bool)](#SetLogState0)|ログの追尾をセット|
 |[WaitAsync()](#WaitAsync1)|受信を待機|
 |[WaitAsync(params string[])](#WaitAsync0)|受信を待機|
@@ -212,7 +212,7 @@ Macro.Timeout = 0;
 Macro.Timeout = 4000;
 
 // コマンドを送信
-await Macro.SendAsync("Command");
+await Macro.SendLineAsync("Command");
 
 try
 {
@@ -222,7 +222,7 @@ try
 catch (TimeoutException)
 {
 	// 4.0秒以内に指定した返信が来なかった場合，以下の処理が実行されます
-	await Macro.SendAsync("Retry");
+	await Macro.SendLineAsync("Retry");
 }
 ```
 
@@ -241,10 +241,10 @@ catch (TimeoutException)
 
 ------
 
-<a name ="SendAsync0">
-### Macro.SendAsync Method
+<a name ="SendLineAsync0">
+### Macro.SendLineAsync Method
 ```cs
-Task SendAsync(string text)
+Task SendLineAsync(string text)
 ```
 文字列を送信します．
 
@@ -267,10 +267,10 @@ System.OperationCanceledException
 
 ------
 
-<a name ="SendAsync1">
-### Macro.SendAsync Method
+<a name ="SendLineAsync1">
+### Macro.SendLineAsync Method
 ```cs
-Task SendAsync(string text, bool immediately)
+Task SendLineAsync(string text, bool immediately)
 ```
 文字列を送信します．
 
@@ -389,7 +389,7 @@ System.TimeoutException
 // 1個のキーワードを待機
 
 // コマンドを送信
-await Macro.SendAsync("Command");
+await Macro.SendLineAsync("Command");
 
 // 返信待ち
 await Macro.WaitAsync("Reply");
@@ -398,7 +398,7 @@ await Macro.WaitAsync("Reply");
 // 2個以上のキーワードを待機
 
 // コマンドを送信
-await Macro.SendAsync("Command");
+await Macro.SendLineAsync("Command");
 
 // 返信待ち
 var result = await Macro.WaitAsync("Reply0", "Reply1", "Reply2");
