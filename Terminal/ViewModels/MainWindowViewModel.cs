@@ -48,7 +48,7 @@ namespace Terminal.ViewModels
         public ReactiveProperty<string> PortName { get; }
         public ReactiveProperty<bool> IsPortOpen { get; }
 
-        public LogHistory<LogItem> Log { get; }
+        public LimitedLog<LogItem> Log { get; }
         //public ObservableCollection<LogItem> Texts { get; }
         //public ReactiveCollection<LogItem> LimitedTexts { get; }
         //public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
@@ -104,33 +104,7 @@ namespace Terminal.ViewModels
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
-            this.Log = new LogHistory<LogItem>(this.LogSizeMax, this.LogSizeMax);
-            /*
-            this.Texts = new ObservableCollection<LogItem>();
-            var logUpdated = this.Texts.ObserveAddChanged();
-
-
-            this.LimitedTexts = logUpdated
-                .Where(y => this.IsLogFollowing.Value
-                    || y.LogType == LogTypes.Error
-                    || y.LogType == LogTypes.MacroMessage)
-                .ToReactiveCollection().AddTo(this.Disposables);
-
-
-            logUpdated.Subscribe(y =>
-            {
-                var over = this.LimitedTexts.Count - this.LogSizeCompressed;
-
-                if (this.LimitedTexts.Count > this.LogSizeMax)
-                {
-                    var data = this.LimitedTexts.Skip(over).ToArray();
-                    this.LimitedTexts.Clear();
-                    data.ForEach(x => this.LimitedTexts.Add(x));
-                    //this.LimitedTexts.AddRange(data);
-
-                    Debug.WriteLine("log over");
-                }
-            }).AddTo(this.Disposables);*/
+            this.Log = new LimitedLog<LogItem>(this.LogSizeMax, this.LogSizeMax);
 
             this.TextHistory = new List<string>();
             this.InputText = "";

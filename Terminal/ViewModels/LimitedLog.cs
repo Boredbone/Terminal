@@ -11,7 +11,7 @@ using Boredbone.Utility.Extensions;
 
 namespace Terminal.ViewModels
 {
-    public class LogHistory<T> : INotifyCollectionChanged, IEnumerable<T>
+    public class LimitedLog<T> : INotifyCollectionChanged, IEnumerable<T>
     {
 
         public int MaxCapacity { get; set; }
@@ -22,7 +22,7 @@ namespace Terminal.ViewModels
 
         private ConcurrentQueue<T> history;
 
-        public LogHistory(int maxCapacity, int compressedCapacity)
+        public LimitedLog(int maxCapacity, int compressedCapacity)
         {
             this.MaxCapacity = maxCapacity;
             this.CompressedCapacity = compressedCapacity;

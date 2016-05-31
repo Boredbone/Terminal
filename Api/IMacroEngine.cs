@@ -110,5 +110,18 @@ namespace Terminal.Macro.Api
         Task<string[]> WaitLineAsync(int count);
 
 
+        /// <summary>
+        /// 接続設定を取得
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        string GetSetting(string key);
+
+        /// <summary>
+        /// 接続設定を書き換え
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        void SetSetting(string key, string value);
     }
 }
