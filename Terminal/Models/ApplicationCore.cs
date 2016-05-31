@@ -274,7 +274,7 @@ namespace Terminal.Models
         {
             try
             {
-                using (var resxSet = new ResXResourceSet(@"Resources\SpecificResource.resx"))
+                using (var resxSet = new ResXResourceSet(@"SpecificResources\SpecificResource.resx"))
                 {
                     return resxSet.GetString(key);
                 }

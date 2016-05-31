@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -115,7 +116,6 @@ namespace Terminal.Models.Macro
                 });
 
             await this.WaitTriggerAsync(bs, trigger, new StatusItem($"Wait : {count} Lines"));
-            
 
             return list.ToArray();
         }
@@ -142,29 +142,16 @@ namespace Terminal.Models.Macro
             var bs = new BehaviorSubject<bool>(false);
 
             var list = new List<string>();
-            
+            var stringBuilder = new System.Text.StringBuilder();
+
             var trigger = this.Connection.DataReceivedWithSendingLine
-                .Do(x => list.Add(x))
+                .Do(x => stringBuilder.Append(x))
                 .Where(str => keywords.Any(kw => str.Contains(kw.Last())))
                 .Select(_ =>
                 {
 
-                    var textLength = 0;
-                    var invIndex = 0;
-
-                    //キーワード判定のために必要な受信データの数を調べる
-                    for (int i = list.Count - 1; i >= 0; i--)
-                    {
-                        textLength += list[i].Length;
-                        if (textLength >= wordSize)
-                        {
-                            invIndex = i;
-                            break;
-                        }
-                    }
-
-                    //新しい受信データのうち必要な分を結合
-                    var str = list.Skip(invIndex).Join();
+                    //受信データを結合
+                    var str = stringBuilder.ToString();
 
                     //キーワードが含まれているか
                     for (int i = 0; i < keywords.Length; i++)
@@ -266,7 +253,9 @@ namespace Terminal.Models.Macro
         /// <param name="text"></param>
         public async Task SendAsync(string text)
         {
-            throw new NotImplementedException($"Method \"{nameof(IMacroEngine.SendAsync)}\" is not implemented.");
+            throw new NotImplementedException
+                ($"Method \"{nameof(IMacroEngine.SendAsync)}\" is not implemented."
+                + $" Use \"{nameof(IMacroEngine.SendLineAsync)}\"");
         }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace Terminal.ViewModels
 
         public ObservableCollection<LogItem> Texts { get; }
         public ReactiveCollection<LogItem> LimitedTexts { get; }
-        public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
+        //public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
 
         public ReactiveProperty<string> RequestedText { get; }
         public ReactiveProperty<int> TextHistoryIndex { get; }
@@ -121,8 +121,9 @@ namespace Terminal.ViewModels
                 if (this.LimitedTexts.Count > this.LogSizeMax)
                 {
                     var data = this.LimitedTexts.Skip(over).ToArray();
-                    this.LimitedTexts.ClearOnScheduler();
-                    this.LimitedTexts.AddRangeOnScheduler(data);
+                    this.LimitedTexts.Clear();
+                    data.ForEach(x => this.LimitedTexts.Add(x));
+                    //this.LimitedTexts.AddRange(data);
 
                     Debug.WriteLine("log over");
                 }
@@ -215,11 +216,11 @@ namespace Terminal.ViewModels
                 .AddTo(this.Disposables);
 
 
-            //一行受信
-            this.ReceivedTexts = this.Connection
-                .LineReceived
-                .ToReadOnlyReactiveCollection()
-                .AddTo(this.Disposables);
+            ////一行受信
+            //this.ReceivedTexts = this.Connection
+            //    .LineReceived
+            //    .ToReadOnlyReactiveCollection()
+            //    .AddTo(this.Disposables);
 
 
 
