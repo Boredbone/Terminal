@@ -411,6 +411,23 @@ namespace Terminal.Models.Macro
 
 
         /// <summary>
+        /// 接続設定を取得
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetSetting(string key)
+            => this.Connection.GetSetting(key);
+
+        /// <summary>
+        /// 接続設定を書き換え
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetSetting(string key, string value)
+            => this.Connection.SetSetting(key, value);
+
+
+        /// <summary>
         /// 待機結果のコンテナ
         /// </summary>
         private class WaitResultContainer

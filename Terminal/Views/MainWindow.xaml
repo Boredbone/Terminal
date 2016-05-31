@@ -254,7 +254,7 @@
                           VirtualizingPanel.ScrollUnit="Pixel"
                           HorizontalScrollBarVisibility="Disabled"
                           HorizontalContentAlignment="Stretch">
-                <ListView x:Name="textsList" ItemsSource="{Binding LimitedTexts}"
+                <ListView x:Name="textsList" ItemsSource="{Binding Log}"
                           Margin="0,0,0,64"
                           VirtualizingPanel.ScrollUnit="Pixel"
                           HorizontalContentAlignment="Stretch">

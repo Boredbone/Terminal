@@ -108,5 +108,7 @@ namespace Terminal.Macro.Api
         /// <exception cref="System.TimeoutException">指定時間内に条件が達成されなかった</exception>
         /// <exception cref="System.OperationCanceledException">ユーザー操作によるマクロ実行のキャンセル</exception>
         Task<string[]> WaitLineAsync(int count);
+
+
     }
 }

@@ -32,8 +32,8 @@ namespace Terminal.ViewModels
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private int LogSizeMax = 4000;
-        private int LogSizeCompressed = 2000;
+        private int LogSizeMax = 3000;
+        //private int LogSizeCompressed = 3000;
 
         private string[] splitter = new[] { "\n" };
         private string ignoredNewLine = "\r";
@@ -48,8 +48,9 @@ namespace Terminal.ViewModels
         public ReactiveProperty<string> PortName { get; }
         public ReactiveProperty<bool> IsPortOpen { get; }
 
-        public ObservableCollection<LogItem> Texts { get; }
-        public ReactiveCollection<LogItem> LimitedTexts { get; }
+        public LogHistory<LogItem> Log { get; }
+        //public ObservableCollection<LogItem> Texts { get; }
+        //public ReactiveCollection<LogItem> LimitedTexts { get; }
         //public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
 
         public ReactiveProperty<string> RequestedText { get; }
@@ -103,6 +104,8 @@ namespace Terminal.ViewModels
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
+            this.Log = new LogHistory<LogItem>(this.LogSizeMax, this.LogSizeMax);
+            /*
             this.Texts = new ObservableCollection<LogItem>();
             var logUpdated = this.Texts.ObserveAddChanged();
 
@@ -127,7 +130,7 @@ namespace Terminal.ViewModels
 
                     Debug.WriteLine("log over");
                 }
-            }).AddTo(this.Disposables);
+            }).AddTo(this.Disposables);*/
 
             this.TextHistory = new List<string>();
             this.InputText = "";
@@ -307,10 +310,7 @@ namespace Terminal.ViewModels
 
             // ログのクリア
             this.ClearCommand = new ReactiveCommand()
-                .WithSubscribe(y =>
-                {
-                    this.LimitedTexts.ClearOnScheduler();
-                }, this.Disposables);
+                .WithSubscribe(y => this.Log.Clear(), this.Disposables);
 
             // 入力履歴操作
             this.IncrementCommand = new ReactiveCommand()
@@ -527,9 +527,8 @@ namespace Terminal.ViewModels
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
-                var count = this.Texts.Count;
-                var added = this.Texts[count - 1].Text + texts.First();
-                this.Texts[count - 1].Text = added;
+                var added = this.Log.Last.Text + texts.First();
+                this.Log.Last.Text = added;
 
                 texts.Skip(1).ForEach(x => this.AddLine(x, LogTypes.Normal));
                 if (feed)
@@ -579,11 +578,12 @@ namespace Terminal.ViewModels
                     if (index == 0)
                     {
                         //最後の行が空白なら置き換え
-                        var count = this.Texts.Count;
-                        if (this.Texts.ContainsIndex(count - 1) && this.Texts[count - 1].Text.Length <= 0)
+                        var last = this.Log.Last;
+                        //var count = this.Texts.Count;
+                        if (last != null && last.Text.Length <= 0)
                         {
-                            this.Texts[count - 1].Text = item;
-                            this.Texts[count - 1].LogType = type;
+                            last.Text = item;
+                            last.LogType = type;
                         }
                         else
                         {
@@ -611,19 +611,23 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void AddLine(string text, LogTypes type)
         {
-            if (!this.IsLogFollowing.Value)
+            if (!this.IsLogFollowing.Value
+                || type == LogTypes.Error
+                || type == LogTypes.MacroMessage)
             {
                 return;
             }
-            if (this.Texts.Count > 0)
+
+            var last = this.Log.Last;
+            if (last != null)//this.Texts.Count > 0)
             {
-                this.Texts[this.Texts.Count - 1].IsLast = false;
+                last.IsLast = false;
             }
 
-            this.Texts.Add(new LogItem()
+            this.Log.Add(new LogItem()
             {
                 Text = text,
-                Index = this.Texts.Count,
+                Index = this.Log.Count,
                 LogType = type,
                 IsLast = true,
             });
