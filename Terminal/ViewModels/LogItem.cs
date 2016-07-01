@@ -74,9 +74,41 @@ namespace Terminal.ViewModels
             }
         }
 
+        public int BoldStart
+        {
+            get { return _fieldBoldStart; }
+            set
+            {
+                if (_fieldBoldStart != value)
+                {
+                    _fieldBoldStart = value;
+                    RaisePropertyChanged(nameof(BoldStart));
+                }
+            }
+        }
+        private int _fieldBoldStart;
+
+        public int BoldCount
+        {
+            get { return _fieldBoldCount; }
+            set
+            {
+                if (_fieldBoldCount != value)
+                {
+                    _fieldBoldCount = value;
+                    RaisePropertyChanged(nameof(BoldCount));
+                }
+            }
+        }
+        private int _fieldBoldCount;
+
+
+
         public LogItem()
         {
             this.LogType = LogTypes.Normal;
+            this.BoldStart = 0;
+            this.BoldCount = 0;
             this.SetColor();
         }
 
@@ -104,6 +136,23 @@ namespace Terminal.ViewModels
                     break;
                 default:
                     break;
+            }
+        }
+
+        public void AddText(string text, bool isBold)
+        {
+            var oldLength = this.Text.Length;
+
+            var added = this.Text + text;
+            this.Text = added;
+
+            if (isBold)
+            {
+                if (this.BoldStart <= 0 || this.BoldCount <= 0)
+                {
+                    this.BoldStart = oldLength;
+                }
+                this.BoldCount = this.Text.Length - this.BoldStart;
             }
         }
     }

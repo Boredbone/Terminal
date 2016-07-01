@@ -183,7 +183,7 @@ namespace Terminal.ViewModels
             //データ送信時のエコー
             this.Connection
                 .DataSent
-                .Subscribe(str => this.Write(str, true))
+                .Subscribe(str => this.Write(str, true, true))
                 .AddTo(this.Disposables);
 
             //データが送信されなかった
@@ -489,7 +489,7 @@ namespace Terminal.ViewModels
         /// コンソールに文字列を表示
         /// </summary>
         /// <param name="text"></param>
-        private void Write(string text, bool feed)
+        private void Write(string text, bool feed, bool isBold = false)
         {
             if (!this.IsLogFollowing.Value)
             {
@@ -501,10 +501,12 @@ namespace Terminal.ViewModels
                 var fixedText = text.Replace(this.ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
-                var added = this.Log.Last.Text + texts.First();
-                this.Log.Last.Text = added;
+                this.Log.Last.AddText(texts.First(), isBold);
+                var added = this.Log.Last.Text;
+                //var added = this.Log.Last.Text + texts.First();
+                //this.Log.Last.Text = added;
 
-                texts.Skip(1).ForEach(x => this.AddLine(x, LogTypes.Normal));
+                texts.Skip(1).ForEach(x => this.AddLine(x, LogTypes.Normal, isBold));
                 if (feed)
                 {
                     this.FeedLine();
@@ -583,7 +585,7 @@ namespace Terminal.ViewModels
         /// 新しい行を追加して文字列を記入
         /// </summary>
         /// <param name="text"></param>
-        private void AddLine(string text, LogTypes type)
+        private void AddLine(string text, LogTypes type, bool isBold = false)
         {
             if (!this.IsLogFollowing.Value
                 || type == LogTypes.Error
@@ -597,13 +599,14 @@ namespace Terminal.ViewModels
             {
                 last.IsLast = false;
             }
-
+            
             this.Log.Add(new LogItem()
             {
                 Text = text,
                 Index = this.Log.Count,
                 LogType = type,
                 IsLast = true,
+                BoldCount = text.Length,
             });
         }
 

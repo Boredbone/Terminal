@@ -270,16 +270,28 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLast}" Value="True">
+                                                <Setter Property="Background" Value="#FFF0F0F0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <!--
                                 <i:Interaction.Behaviors>
                                     <b:ColorChangeBehavior
                                         Flag="{Binding IsLast}" 
                                         TrueColor="#FFF0F0F0" FalseColor="Transparent" />
-                                </i:Interaction.Behaviors>
+                                </i:Interaction.Behaviors>-->
                                 <TextBlock
                                     Text="{Binding Text}"
                                     Foreground="{Binding Color}"
-                                    TextWrapping="Wrap" 
-                                    HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14"/>
+                                    TextWrapping="Wrap"
+                                    HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14">
+                                </TextBlock>
 
                             </Grid>
                         </DataTemplate>
