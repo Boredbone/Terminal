@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal.Views"
         mc:Ignorable="d" Loaded="Window_Loaded"
-        Title="License" Height="500" Width="400">
+        Title="License" Height="500" Width="400"
+        UseLayoutRounding="True">
     <Window.Resources>
         <Style x:Key="titleTextStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="0"/>

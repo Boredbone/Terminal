@@ -59,5 +59,11 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+
+        <Style TargetType="Window">
+            <Setter Property="UseLayoutRounding" Value="True"/>
+        </Style>
+        
     </Application.Resources>
 </Application>

@@ -10,7 +10,8 @@
         mc:Ignorable="d"
         Closing="Window_Closing"
         Title="Warabimochi Terminal" Height="700" Width="800"
-        Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico">
+        Icon="/Terminal;component/Resources/WebFormTemplate_11274.ico"
+        UseLayoutRounding="True">
 
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="categorytext">

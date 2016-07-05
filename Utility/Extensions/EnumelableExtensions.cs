@@ -706,5 +706,20 @@ namespace Boredbone.Utility.Extensions
                 }
             }
         }
+
+        public static int FindLastIndex<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        {
+            var index = 0;
+            var result = -1;
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                {
+                    result = index;
+                }
+                index++;
+            }
+            return result;
+        }
     }
 }
