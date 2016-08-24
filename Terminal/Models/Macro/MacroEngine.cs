@@ -138,6 +138,8 @@ namespace Terminal.Models.Macro
             //キーワードの最大文字数
             var wordSize = keywords.Select(x => x.Length).Max();
 
+            var kwLastChar = keywords.Select(x => x.Last()).Distinct();
+
             int result = -1;
             var bs = new BehaviorSubject<bool>(false);
 
@@ -145,10 +147,16 @@ namespace Terminal.Models.Macro
             var stringBuilder = new System.Text.StringBuilder();
 
             var trigger = this.Connection.DataReceivedWithSendingLine
-                .Do(x => stringBuilder.Append(x))
-                .Where(str => keywords.Any(kw => str.Contains(kw.Last())))
-                .Select(_ =>
+                //.Do(x => stringBuilder.Append(x))
+                //.Where(str => kwLastChar.Any(c => str.Contains(c)))
+                .Select(x =>
                 {
+                    stringBuilder.Append(x);
+
+                    if (kwLastChar.All(c => !x.Contains(c)))
+                    {
+                        return -1;
+                    }
 
                     //受信データを結合
                     var str = stringBuilder.ToString();

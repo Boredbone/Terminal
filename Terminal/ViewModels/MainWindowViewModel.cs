@@ -284,7 +284,7 @@ namespace Terminal.ViewModels
 
             // ログのクリア
             this.ClearCommand = new ReactiveCommand()
-                .WithSubscribe(y => this.Log.Clear(), this.Disposables);
+                .WithSubscribe(y => this.Clear(), this.Disposables);
 
             // 入力履歴操作
             this.IncrementCommand = new ReactiveCommand()
@@ -423,6 +423,16 @@ namespace Terminal.ViewModels
             })
             .AddTo(this.Disposables);
 
+        }
+
+        /// <summary>
+        /// ログのクリア
+        /// </summary>
+        private void Clear()
+        {
+            this.Log.Clear();
+            //リストに空アイテムを追加
+            this.FeedLine();
         }
 
 
@@ -587,9 +597,9 @@ namespace Terminal.ViewModels
         /// <param name="text"></param>
         private void AddLine(string text, LogTypes type, bool isBold = false)
         {
-            if (!this.IsLogFollowing.Value
-                || type == LogTypes.Error
-                || type == LogTypes.MacroMessage)
+            if (!this.IsLogFollowing.Value)
+                //|| type == LogTypes.Error
+                //|| type == LogTypes.MacroMessage)
             {
                 return;
             }

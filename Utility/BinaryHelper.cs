@@ -19,13 +19,13 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="value"></param>
-        public static void WriteDouble(FileStream stream,double value)
+        public static void WriteDouble(FileStream stream, double value, bool isBigEndian)
         {
 
             var byteArray = BitConverter.GetBytes(value);
 
             //Big endian
-            stream.Write((BitConverter.IsLittleEndian) ? byteArray.Reverse().ToArray() : byteArray,
+            stream.Write((BitConverter.IsLittleEndian ^ isBigEndian) ? byteArray : byteArray.Reverse().ToArray(),
                 0, byteArray.Length);
         }
 
@@ -34,13 +34,13 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="value"></param>
-        public static void WriteInt32(FileStream stream, int value)
+        public static void WriteInt32(FileStream stream, int value, bool isBigEndian)
         {
 
             var byteArray = BitConverter.GetBytes(value);
 
             //Big endian
-            stream.Write((BitConverter.IsLittleEndian) ? byteArray.Reverse().ToArray() : byteArray,
+            stream.Write((BitConverter.IsLittleEndian ^ isBigEndian) ? byteArray : byteArray.Reverse().ToArray(),
                 0, byteArray.Length);
         }
 
@@ -49,25 +49,17 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static double ReadDouble(FileStream stream)
+        public static double ReadDouble(FileStream stream, bool isBigEndian)
         {
             var length = sizeof(double);
             var buf = new byte[length];
             stream.Read(buf, 0, length);
 
-            var value = BitConverter.ToDouble((BitConverter.IsLittleEndian) ? buf.Reverse().ToArray() : buf, 0);
+            var value = BitConverter.ToDouble((BitConverter.IsLittleEndian ^ isBigEndian)
+                ? buf : buf.Reverse().ToArray(), 0);
 
             return value;
         }
-
-
-        //public static IEnumerable<double> ReadDoubleArray(FileStream stream,int count)
-        //{
-        //    for (int i = 0; i < count; i++)
-        //    {
-        //        yield return BinaryHelper.ReadDouble(stream);
-        //    }
-        //}
 
 
         /// <summary>
@@ -75,15 +67,22 @@ namespace Boredbone.Utility
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static int ReadInt32(FileStream stream)
+        public static int ReadInt32(FileStream stream, bool isBigEndian)
         {
             var length = sizeof(Int32);
             var buf = new byte[length];
             stream.Read(buf, 0, length);
 
-            var value = BitConverter.ToInt32((BitConverter.IsLittleEndian) ? buf.Reverse().ToArray() : buf, 0);
+            var value = BitConverter.ToInt32((BitConverter.IsLittleEndian ^ isBigEndian)
+                ? buf : buf.Reverse().ToArray(), 0);
 
             return value;
+        }
+
+        public static int ToggleEndian(int value)
+        {
+            var byteArray = BitConverter.GetBytes(value);
+            return BitConverter.ToInt32(byteArray.Reverse().ToArray(), 0);
         }
 
     }

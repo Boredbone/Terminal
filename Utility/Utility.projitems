@@ -15,7 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Directions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ConcurrentExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EnumelableExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\MathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileSizeConverter.cs" />
