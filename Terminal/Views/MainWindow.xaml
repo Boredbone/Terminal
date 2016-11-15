@@ -167,12 +167,6 @@
 
                         </StackPanel>
 
-                        <!--
-                        <Button Width="100" Content="Open" Command="{Binding OpenPortCommand}"
-                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource FalseToVisibleConverter}}"/>
-                        <Button Width="100" Content="Close" Command="{Binding ClosePortCommand}"
-                        Visibility="{Binding IsPortOpen.Value,Converter={StaticResource TrueToVisibleConverter}}"/>-->
-
                     </StackPanel>
 
 
@@ -223,7 +217,6 @@
 
                     <CheckBox IsChecked="{Binding IsNoticeEnabled.Value,Mode=TwoWay}" Content="Notice" Margin="2,0"/>
 
-                    
                     <view:ImageButton
                             ButtonContent="/Assets/Icons/action_Cancel_16xLG.png"
                             ButtonCommand="{Binding ClearCommand}"
@@ -241,77 +234,22 @@
                 <Border Background="LightGray" Width="1" VerticalAlignment="Stretch"/>
             </Border>
 
-
         </StackPanel>
-
 
         <!-- Status -->
         <TextBlock HorizontalAlignment="Stretch" Text="{Binding NoticeText.Value}"
                        Foreground="Green" Grid.Row="1" Margin="4,0,0,0"/>
 
-        <!-- Log List -->
-        <!--
-        <Border Background="Transparent" BorderBrush="Gray" BorderThickness="1"
-                Grid.Row="2"
-                Margin="4">
-            <ScrollViewer x:Name="listScroller"
-                          VirtualizingPanel.ScrollUnit="Pixel"
-                          HorizontalScrollBarVisibility="Disabled"
-                          HorizontalContentAlignment="Stretch">
-                <ListView x:Name="textsList" ItemsSource="{Binding Log}"
-                          Margin="0,0,0,64"
-                          VirtualizingPanel.ScrollUnit="Pixel"
-                          HorizontalContentAlignment="Stretch">
-                    <ListView.InputBindings>
-                        <KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding CopyCommand}"/>
-                    </ListView.InputBindings>
-                    <ListView.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter/>
-                        </ControlTemplate>
-                    </ListView.Template>
-
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Setter Property="Background" Value="Transparent"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsLast}" Value="True">
-                                                <Setter Property="Background" Value="#FFF0F0F0"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
-                                <TextBlock
-                                    Text="{Binding Text}"
-                                    Foreground="{Binding Color}"
-                                    TextWrapping="Wrap"
-                                    HorizontalAlignment="Stretch" FontFamily="Consolas" FontSize="14">
-                                </TextBlock>
-
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Copy" Command="{Binding CopyCommand}"/>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-
-                </ListView>
-            </ScrollViewer>
-        </Border>-->
-
+        <!-- Text -->
         <cc:AppendableText
             x:Name="mainText"
             BorderThickness="1" BorderBrush="Gray"
             Grid.Row="2" Margin="4"
             Controller="{Binding AppendableTextController}"
-            LastLineBrush="#FFF0F0F0"/>
-        
+            LastLineBrush="#FFF0F0F0"
+            FontFamily="Consolas"
+            FontSize="14"/>
+
         <!-- Input Box -->
         <Grid Grid.Row="3" Margin="4,0,4,4">
             <Grid.ColumnDefinitions>
@@ -323,9 +261,6 @@
                      HorizontalAlignment="Stretch"
                      Text="{Binding RequestedText.Value,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                      IsEnabled="{Binding IsLogFollowing.Value}">
-                <!--
-                     KeyDown="TextBox_KeyDown"
-                     PreviewKeyDown="TextBox_PreviewKeyDown"-->
 
                 <TextBox.InputBindings>
                     <KeyBinding Key="Up" Command="{Binding DecrementCommand}"/>

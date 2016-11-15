@@ -24,12 +24,7 @@ namespace Terminal.Views
             ((App)Application.Current).CoreData
                 .WindowPlacement.Register(this, "TerminalHeavensRock");
 
-            this.ViewModel = new MainWindowViewModel()
-            {
-                View = this,
-                //TextsList = this.textsList,
-                //ListScroller = this.listScroller,
-            };
+            this.ViewModel = new MainWindowViewModel() { View = this };
 
             this.ViewModel.SubscribeTextChanged(this.inputText);
 
