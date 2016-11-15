@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define TEST
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,6 +26,7 @@ using Terminal.Models;
 using Terminal.Models.Macro;
 using Terminal.Models.Serial;
 using Terminal.Views;
+using WpfTools.Models;
 
 namespace Terminal.ViewModels
 {
@@ -97,10 +100,26 @@ namespace Terminal.ViewModels
         private Subject<Action> ActionQueueSubject { get; }
 
 
+        public AppendableTextController AppendableTextController
+        {
+            get { return _fieldAppendableTextController; }
+            set
+            {
+                if (_fieldAppendableTextController != value)
+                {
+                    _fieldAppendableTextController = value;
+                    RaisePropertyChanged(nameof(AppendableTextController));
+                }
+            }
+        }
+        private AppendableTextController _fieldAppendableTextController;
+
         public MainWindowViewModel()
         {
             this.Core = ((App)Application.Current).CoreData;
 
+
+            this.AppendableTextController = new AppendableTextController().AddTo(this.Disposables);
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
@@ -438,6 +457,10 @@ namespace Terminal.ViewModels
 
         private void ScrollToBottom(bool force)
         {
+            if (force)
+            {
+                this.AppendableTextController.ScrollToBottom();
+            }
             if (this.ListScroller != null
                 && this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 10)
             {
@@ -452,6 +475,12 @@ namespace Terminal.ViewModels
         /// <param name="force"></param>
         private void ScrollToBottomMain(bool force)
         {
+            if (force)
+            {
+                //this.AppendableTextController.ScrollToBottom();
+            }
+
+#if TEST
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
@@ -493,6 +522,7 @@ namespace Terminal.ViewModels
                     }
                 }
             }
+#endif
         }
 
         /// <summary>
@@ -509,6 +539,8 @@ namespace Terminal.ViewModels
             this.ActionQueueSubject.OnNext(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
+
+#if TEST
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
                 this.Log.Last.AddText(texts.First(), isBold);
@@ -526,6 +558,17 @@ namespace Terminal.ViewModels
                 {
                     this.ScrollToBottom(false);
                 }
+#endif
+
+                var brush = (isBold) ? new TextBrush(true, 0, fixedText.Length) : null;
+
+                if (feed)
+                {
+                    fixedText += "\n";
+                }
+                this.AppendableTextController.Write(fixedText, brush);
+                
+
             });
         }
 
@@ -555,6 +598,7 @@ namespace Terminal.ViewModels
             this.ActionQueueSubject.OnNext(() =>
             {
                 var fixedText = text.Replace(this.ignoredNewLine, "");
+#if TEST
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
                 int index = 0;
@@ -585,6 +629,10 @@ namespace Terminal.ViewModels
 
 
                 this.FeedLine();
+#endif
+
+                this.AppendableTextController.WriteLine(fixedText, type.GetColor());
+
                 this.ScrollToBottom(forceScroll);
 
             });
@@ -598,8 +646,8 @@ namespace Terminal.ViewModels
         private void AddLine(string text, LogTypes type, bool isBold = false)
         {
             if (!this.IsLogFollowing.Value)
-                //|| type == LogTypes.Error
-                //|| type == LogTypes.MacroMessage)
+            //|| type == LogTypes.Error
+            //|| type == LogTypes.MacroMessage)
             {
                 return;
             }
@@ -609,7 +657,7 @@ namespace Terminal.ViewModels
             {
                 last.IsLast = false;
             }
-            
+
             this.Log.Add(new LogItem()
             {
                 Text = text,

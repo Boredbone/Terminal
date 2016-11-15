@@ -7,6 +7,7 @@
         xmlns:view="clr-namespace:Terminal.Views"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:b="clr-namespace:Terminal.Views.Behaviors"
+        xmlns:cc="clr-namespace:WpfTools.Controls;assembly=WpfTools"
         mc:Ignorable="d"
         Closing="Window_Closing"
         Title="Warabimochi Terminal" Height="700" Width="800"
@@ -24,6 +25,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -308,9 +310,15 @@
             </ScrollViewer>
         </Border>
 
-
+        <cc:AppendableText
+            x:Name="mainText"
+            BorderThickness="1" BorderBrush="LightGray"
+            Grid.Row="3" Margin="4"
+            Controller="{Binding AppendableTextController}"
+            LastLineBrush="#FFF0F0F0"/>
+        
         <!-- Input Box -->
-        <Grid Grid.Row="3" Margin="4,0,4,4">
+        <Grid Grid.Row="4" Margin="4,0,4,4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
