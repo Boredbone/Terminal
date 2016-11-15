@@ -27,8 +27,8 @@ namespace Terminal.Views
             this.ViewModel = new MainWindowViewModel()
             {
                 View = this,
-                TextsList = this.textsList,
-                ListScroller = this.listScroller,
+                //TextsList = this.textsList,
+                //ListScroller = this.listScroller,
             };
 
             this.ViewModel.SubscribeTextChanged(this.inputText);

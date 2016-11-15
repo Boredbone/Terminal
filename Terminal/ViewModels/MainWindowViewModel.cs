@@ -1,6 +1,4 @@
-﻿#define TEST
-
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +16,6 @@ using System.Windows.Controls;
 using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
 using Boredbone.Utility.Notification;
-using Boredbone.XamlTools.Extensions;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -33,13 +30,13 @@ namespace Terminal.ViewModels
     /// <summary>
     /// コマンド入出力画面のViewModel
     /// </summary>
-    public class MainWindowViewModel : NotificationBase
+    public class MainWindowViewModel : DisposableBase
     {
-        private int LogSizeMax = 3000;
+        //private int LogSizeMax = 3000;
         //private int LogSizeCompressed = 3000;
 
-        private string[] splitter = new[] { "\n" };
-        private string ignoredNewLine = "\r";
+        //private string[] splitter = new[] { "\n" };
+        //private const string ignoredNewLine = "\r";
 
         private ApplicationCore Core { get; }
         private ConnectionBase Connection { get; }
@@ -51,7 +48,7 @@ namespace Terminal.ViewModels
         public ReactiveProperty<string> PortName { get; }
         public ReactiveProperty<bool> IsPortOpen { get; }
 
-        public LimitedLog<LogItem> Log { get; }
+        //public LimitedLog<LogItem> Log { get; }
         //public ObservableCollection<LogItem> Texts { get; }
         //public ReactiveCollection<LogItem> LimitedTexts { get; }
         //public ReadOnlyReactiveCollection<string> ReceivedTexts { get; }
@@ -73,7 +70,7 @@ namespace Terminal.ViewModels
         public ReactiveCommand OpenPortCommand { get; }
         public ReactiveCommand ClosePortCommand { get; }
         public ReactiveCommand SendCommand { get; }
-        public ReactiveCommand CopyCommand { get; }
+        //public ReactiveCommand CopyCommand { get; }
         public ReactiveCommand MacroCommand { get; }
         public ReactiveCommand MacroCancelCommand { get; }
         public ReactiveCommand MacroPauseCommand { get; }
@@ -86,33 +83,21 @@ namespace Terminal.ViewModels
         public ReactiveCommand IncrementCommand { get; }
         public ReactiveCommand DecrementCommand { get; }
 
-        private Subject<bool> ScrollRequestSubject { get; }
+        //private Subject<bool> ScrollRequestSubject { get; }
 
         public ReactiveProperty<bool> IsLogFollowing { get; }
-        private bool isAutoScrollEnabled = true;
-        private double lastVerticalOffset = 0;
+        //private bool isAutoScrollEnabled = true;
+        //private double lastVerticalOffset = 0;
 
 
-        public ListView TextsList { get; set; }
-        public ScrollViewer ListScroller { get; set; }
+        //public ListView TextsList { get; set; }
+        //public ScrollViewer ListScroller { get; set; }
         public Window View { get; set; }
 
         private Subject<Action> ActionQueueSubject { get; }
 
+        public AppendableTextController AppendableTextController { get; }
 
-        public AppendableTextController AppendableTextController
-        {
-            get { return _fieldAppendableTextController; }
-            set
-            {
-                if (_fieldAppendableTextController != value)
-                {
-                    _fieldAppendableTextController = value;
-                    RaisePropertyChanged(nameof(AppendableTextController));
-                }
-            }
-        }
-        private AppendableTextController _fieldAppendableTextController;
 
         public MainWindowViewModel()
         {
@@ -123,7 +108,7 @@ namespace Terminal.ViewModels
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
-            this.Log = new LimitedLog<LogItem>(this.LogSizeMax, this.LogSizeMax);
+            //this.Log = new LimitedLog<LogItem>(this.LogSizeMax, this.LogSizeMax);
 
             this.TextHistory = new List<string>();
             this.InputText = "";
@@ -140,32 +125,32 @@ namespace Terminal.ViewModels
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
 
 
-            // ログ画面スクロール要求
-            this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
-
-
-            var down = this.ScrollRequestSubject
-                .DownSample(TimeSpan.FromMilliseconds(1000));
-
-            var ct = this.ScrollRequestSubject
-                .Buffer(TimeSpan.FromMilliseconds(500))//(down)
-                .Select(y => y.Count)
-                .ToReactiveProperty()
-                .AddTo(this.Disposables);
-
-            var quick = this.ScrollRequestSubject
-                .Where(y => ct.Value < 20);
-
-            this.ScrollRequestSubject
-                .Throttle(TimeSpan.FromMilliseconds(300))
-                .Merge(down)
-                .Merge(quick)
-                .Buffer(TimeSpan.FromMilliseconds(10))
-                .Where(y => y.Count > 0)
-                .Select(y => y.Any(b => b))
-                .ObserveOnUIDispatcher()
-                .Subscribe(y => this.ScrollToBottomMain(y))
-                .AddTo(this.Disposables);
+            //// ログ画面スクロール要求
+            //this.ScrollRequestSubject = new Subject<bool>().AddTo(this.Disposables);
+            //
+            //
+            //var down = this.ScrollRequestSubject
+            //    .DownSample(TimeSpan.FromMilliseconds(1000));
+            //
+            //var ct = this.ScrollRequestSubject
+            //    .Buffer(TimeSpan.FromMilliseconds(500))//(down)
+            //    .Select(y => y.Count)
+            //    .ToReactiveProperty()
+            //    .AddTo(this.Disposables);
+            //
+            //var quick = this.ScrollRequestSubject
+            //    .Where(y => ct.Value < 20);
+            //
+            //this.ScrollRequestSubject
+            //    .Throttle(TimeSpan.FromMilliseconds(300))
+            //    .Merge(down)
+            //    .Merge(quick)
+            //    .Buffer(TimeSpan.FromMilliseconds(10))
+            //    .Where(y => y.Count > 0)
+            //    .Select(y => y.Any(b => b))
+            //    .ObserveOnUIDispatcher()
+            //    .Subscribe(y => this.ScrollToBottomMain(y))
+            //    .AddTo(this.Disposables);
 
 
 
@@ -280,28 +265,28 @@ namespace Terminal.ViewModels
 
                     this.RequestedText.Value = "";
 
-                    this.ScrollToBottom(true);
+                    this.ScrollToBottom();
 
                 }, this.Disposables);
 
 
 
-            //文字列コピー
-            this.CopyCommand = new ReactiveCommand()
-                .WithSubscribe(_ =>
-                {
-                    var items = this.TextsList.SelectedItems
-                        .OfType<LogItem>()
-                        .Where(x => x.Index >= 0)
-                        .OrderBy(x => x.Index)
-                        .Select(x => x.Text)
-                        .Join(Environment.NewLine);
+            ////文字列コピー
+            //this.CopyCommand = new ReactiveCommand()
+            //    .WithSubscribe(_ =>
+            //    {
+            //        var items = this.TextsList.SelectedItems
+            //            .OfType<LogItem>()
+            //            .Where(x => x.Index >= 0)
+            //            .OrderBy(x => x.Index)
+            //            .Select(x => x.Text)
+            //            .Join(Environment.NewLine);
+            //
+            //        Clipboard.SetDataObject(items.ToString(), true);
+            //
+            //    }, this.Disposables);
 
-                    Clipboard.SetDataObject(items.ToString(), true);
-
-                }, this.Disposables);
-
-            // ログのクリア
+            //// ログのクリア
             this.ClearCommand = new ReactiveCommand()
                 .WithSubscribe(y => this.Clear(), this.Disposables);
 
@@ -364,25 +349,13 @@ namespace Terminal.ViewModels
                 .AddTo(this.Disposables);
 
             //マクロメッセージ
-            player.Message.Subscribe(y =>
-            {
-                if (y.Type == StatusType.Message)
-                {
-                    this.WriteNotice(y.Text, false, LogTypes.MacroMessage);
-                }
-                else// if (this.IsNoticeEnabled.Value)
-                {
-                    this.WriteNotice(y.Text, false, LogTypes.Notice);
-                }
-            })
-            .AddTo(this.Disposables);
+            player.Message.Subscribe(y => this.WriteNotice(y.Text, false,
+                (y.Type == StatusType.Message) ? LogTypes.MacroMessage : LogTypes.Notice))
+                .AddTo(this.Disposables);
 
             //マクロエラー
-            player.Error.Subscribe(y =>
-            {
-                this.WriteNotice(y, false, LogTypes.Error);
-            })
-            .AddTo(this.Disposables);
+            player.Error.Subscribe(y => this.WriteNotice(y, false, LogTypes.Error))
+                .AddTo(this.Disposables);
 
             //マクロ実行開始
             this.MacroCommand = player.IsExecutingChanged
@@ -412,10 +385,9 @@ namespace Terminal.ViewModels
                     var prev = this.IsLogFollowing.Value;
                     this.IsLogFollowing.Value = y;
 
-
                     if (!prev && y)
                     {
-                        this.ScrollToBottom(true);
+                        this.ScrollToBottom();
                     }
                 })
                 .AddTo(this.Disposables);
@@ -430,7 +402,7 @@ namespace Terminal.ViewModels
 
 
             //リストに空アイテムを追加
-            this.FeedLine();
+            //this.FeedLine();
 
 
             this.PortName.Skip(1).Subscribe(name =>
@@ -447,28 +419,24 @@ namespace Terminal.ViewModels
         /// <summary>
         /// ログのクリア
         /// </summary>
-        private void Clear()
-        {
-            this.Log.Clear();
+        private void Clear() => this.AppendableTextController.Clear();
+            //this.Log.Clear();
             //リストに空アイテムを追加
-            this.FeedLine();
-        }
+            //this.FeedLine();
+        
 
-
-        private void ScrollToBottom(bool force)
-        {
-            if (force)
-            {
-                this.AppendableTextController.ScrollToBottom();
-            }
-            if (this.ListScroller != null
-                && this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 10)
-            {
-                force = true;
-            }
-            this.ScrollRequestSubject.OnNext(force);
-        }
-
+        /// <summary>
+        /// 末尾までスクロール
+        /// </summary>
+        private void ScrollToBottom() => this.AppendableTextController.ScrollToBottom();
+            //if (this.ListScroller != null
+            //    && this.ListScroller.VerticalOffset > this.ListScroller.ScrollableHeight - 10)
+            //{
+            //    force = true;
+            //}
+            //this.ScrollRequestSubject.OnNext(force);
+        
+#if false
         /// <summary>
         /// 末尾までスクロール
         /// </summary>
@@ -480,7 +448,7 @@ namespace Terminal.ViewModels
                 //this.AppendableTextController.ScrollToBottom();
             }
 
-#if TEST
+
             if (this.ListScroller == null && this.TextsList != null)
             {
                 this.ListScroller = this.TextsList.Descendants<ScrollViewer>().FirstOrDefault();
@@ -522,9 +490,9 @@ namespace Terminal.ViewModels
                     }
                 }
             }
-#endif
-        }
 
+        }
+#endif
         /// <summary>
         /// コンソールに文字列を表示
         /// </summary>
@@ -538,9 +506,9 @@ namespace Terminal.ViewModels
 
             this.ActionQueueSubject.OnNext(() =>
             {
-                var fixedText = text.Replace(this.ignoredNewLine, "");
 
-#if TEST
+#if false
+                var fixedText = text.Replace(ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
                 this.Log.Last.AddText(texts.First(), isBold);
@@ -560,13 +528,13 @@ namespace Terminal.ViewModels
                 }
 #endif
 
-                var brush = (isBold) ? new TextBrush(true, 0, fixedText.Length) : null;
+                var brush = (isBold) ? new TextBrush(true, 0, text.Length) : null;
 
                 if (feed)
                 {
-                    fixedText += "\n";
+                    text += "\n";
                 }
-                this.AppendableTextController.Write(fixedText, brush);
+                this.AppendableTextController.Write(text, brush);
                 
 
             });
@@ -597,8 +565,8 @@ namespace Terminal.ViewModels
 
             this.ActionQueueSubject.OnNext(() =>
             {
-                var fixedText = text.Replace(this.ignoredNewLine, "");
-#if TEST
+#if false
+                var fixedText = text.Replace(ignoredNewLine, "");
                 var texts = fixedText.Split(splitter, StringSplitOptions.None);
 
                 int index = 0;
@@ -630,51 +598,58 @@ namespace Terminal.ViewModels
 
                 this.FeedLine();
 #endif
+                if (this.AppendableTextController.LastText?.Length > 0)
+                {
+                    text = "\n" + text;
+                }
+                //this.AppendableTextController.Write("\n"+fixedText, type.GetColor());
+                this.AppendableTextController.WriteLine(text, type.GetColor());
 
-                this.AppendableTextController.WriteLine(fixedText, type.GetColor());
-
-                this.ScrollToBottom(forceScroll);
+                if (forceScroll)
+                {
+                    this.ScrollToBottom();
+                }
 
             });
         }
 
 
-        /// <summary>
-        /// 新しい行を追加して文字列を記入
-        /// </summary>
-        /// <param name="text"></param>
-        private void AddLine(string text, LogTypes type, bool isBold = false)
-        {
-            if (!this.IsLogFollowing.Value)
-            //|| type == LogTypes.Error
-            //|| type == LogTypes.MacroMessage)
-            {
-                return;
-            }
-
-            var last = this.Log.Last;
-            if (last != null)//this.Texts.Count > 0)
-            {
-                last.IsLast = false;
-            }
-
-            this.Log.Add(new LogItem()
-            {
-                Text = text,
-                Index = this.Log.Count,
-                LogType = type,
-                IsLast = true,
-                BoldCount = text.Length,
-            });
-        }
-
-        /// <summary>
-        /// 新しい空の行を追加
-        /// </summary>
-        private void FeedLine()
-        {
-            this.AddLine("", LogTypes.Normal);
-        }
+        ///// <summary>
+        ///// 新しい行を追加して文字列を記入
+        ///// </summary>
+        ///// <param name="text"></param>
+        //private void AddLine(string text, LogTypes type, bool isBold = false)
+        //{
+        //    if (!this.IsLogFollowing.Value)
+        //    //|| type == LogTypes.Error
+        //    //|| type == LogTypes.MacroMessage)
+        //    {
+        //        return;
+        //    }
+        //
+        //    var last = this.Log.Last;
+        //    if (last != null)//this.Texts.Count > 0)
+        //    {
+        //        last.IsLast = false;
+        //    }
+        //
+        //    this.Log.Add(new LogItem()
+        //    {
+        //        Text = text,
+        //        Index = this.Log.Count,
+        //        LogType = type,
+        //        IsLast = true,
+        //        BoldCount = text.Length,
+        //    });
+        //}
+        //
+        ///// <summary>
+        ///// 新しい空の行を追加
+        ///// </summary>
+        //private void FeedLine()
+        //{
+        //    this.AddLine("", LogTypes.Normal);
+        //}
 
         /// <summary>
         /// TextBoxの内容が変化したときにカーソルを末尾に移動させる

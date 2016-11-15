@@ -235,8 +235,6 @@
     <Compile Include="Models\Macro\MacroSample.cs" />
     <Compile Include="Models\Serial\SerialConnection.cs" />
     <Compile Include="Models\Serial\ConnectionSimulator.cs" />
-    <Compile Include="ViewModels\LimitedLog.cs" />
-    <Compile Include="ViewModels\LogItem.cs" />
     <Compile Include="Views\Behaviors\ColorChangeBehavior.cs" />
     <Compile Include="Views\Behaviors\ImageGrayoutBehavior.cs" />
     <Compile Include="Views\Behaviors\InnerScrollViewerBehavior.cs" />

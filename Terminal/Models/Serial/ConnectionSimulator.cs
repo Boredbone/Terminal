@@ -79,7 +79,7 @@ namespace Terminal.Models.Serial
                         else
                         {
                             //return;
-                            //await Task.Delay(2000);
+                            await Task.Delay(10);
                         }
 
                         reply = "echo:" + command + "\n>";
