@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Boredbone.XamlTools.ViewModel;
+using Boredbone.Utility.Notification;
 
 namespace Terminal.ViewModels
 {
@@ -12,7 +12,7 @@ namespace Terminal.ViewModels
     /// <summary>
     /// コンソールアイテムのViewModel
     /// </summary>
-    public class LogItem : ViewModelBase
+    public class LogItem : NotificationBase
     {
         private string _fieldText;
         public string Text

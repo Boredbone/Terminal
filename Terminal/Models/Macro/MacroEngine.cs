@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
-using Boredbone.XamlTools.ViewModel;
+using Boredbone.Utility.Notification;
 using Reactive.Bindings.Extensions;
 using Terminal.Macro.Api;
 using Terminal.Models.Serial;
@@ -18,7 +18,7 @@ namespace Terminal.Models.Macro
     /// <summary>
     /// マクロに通信関連機能を提供
     /// </summary>
-    public class MacroEngine : ViewModelBase, IMacroEngine
+    public class MacroEngine : NotificationBase, IMacroEngine
     {
         /// <summary>
         /// タイムアウト時間，0の場合タイムアウトなし

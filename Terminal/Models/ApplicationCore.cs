@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
+using Boredbone.Utility.Notification;
 using Boredbone.XamlTools;
 using Reactive.Bindings.Extensions;
 using RestoreWindowPlace;
@@ -104,9 +105,10 @@ namespace Terminal.Models
             }
 
             //ストレージに保存する設定
-            this.SettingsXml = new XmlSettingManager<ApplicationSettings>(settingsFileName);
+            this.SettingsXml = new XmlSettingManager<ApplicationSettings>
+                (System.IO.Path.Combine(saveDirectory, settingsFileName));
 
-            this.SettingsXml.Directory = saveDirectory;
+            //this.SettingsXml.Directory = saveDirectory;
 
             this.Settings = SettingsXml
                 .LoadXml(XmlLoadingOptions.IgnoreAllException)
@@ -125,7 +127,7 @@ namespace Terminal.Models
             this.MacroPlayer = new MacroPlayer(this.Connection).AddTo(this.Disposables);
 
             //ウィンドウ配置
-            this.WindowPlacement = new WindowPlace(saveDirectory + @"\" + placementFileName);
+            this.WindowPlacement = new WindowPlace(System.IO.Path.Combine(saveDirectory, placementFileName));
 
             //配下のフォルダからIActivatorを実装したプラグインのdllを読み込み
             this.PluginLoader = new PluginLoader<IActivator>("plugins").AddTo(this.Disposables);
@@ -151,7 +153,7 @@ namespace Terminal.Models
                     {
                         var ids = Application.Current
                             .Windows
-                            .AsEnumerableWithSafeCast<PluginWindow>()
+                            .OfType<PluginWindow>()
                             .Select(y => y.WindowId);
 
                         if (args.WindowId != null && ids.Contains(args.WindowId))
@@ -258,7 +260,7 @@ namespace Terminal.Models
         {
             return Application.Current
                .Windows
-               .AsEnumerableWithSafeCast<PluginWindow>()
+               .OfType<PluginWindow>()
                .Select(y => y.Content.GetType())
                .ToArray();
         }

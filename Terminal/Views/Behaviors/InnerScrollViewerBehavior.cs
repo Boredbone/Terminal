@@ -18,7 +18,6 @@ using System.Threading;
 using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
 using Boredbone.XamlTools.Extensions;
-using Boredbone.XamlTools.ViewModel;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

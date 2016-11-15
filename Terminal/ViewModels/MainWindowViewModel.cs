@@ -15,8 +15,8 @@ using System.Windows;
 using System.Windows.Controls;
 using Boredbone.Utility;
 using Boredbone.Utility.Extensions;
+using Boredbone.Utility.Notification;
 using Boredbone.XamlTools.Extensions;
-using Boredbone.XamlTools.ViewModel;
 using Microsoft.Win32;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -30,7 +30,7 @@ namespace Terminal.ViewModels
     /// <summary>
     /// コマンド入出力画面のViewModel
     /// </summary>
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : NotificationBase
     {
         private int LogSizeMax = 3000;
         //private int LogSizeCompressed = 3000;
@@ -272,7 +272,7 @@ namespace Terminal.ViewModels
                 .WithSubscribe(_ =>
                 {
                     var items = this.TextsList.SelectedItems
-                        .AsEnumerableWithSafeCast<LogItem>()
+                        .OfType<LogItem>()
                         .Where(x => x.Index >= 0)
                         .OrderBy(x => x.Index)
                         .Select(x => x.Text)

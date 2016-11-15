@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Boredbone.Utility.Extensions;
+using Boredbone.Utility.Notification;
 using Boredbone.XamlTools;
 using Boredbone.XamlTools.Extensions;
 using PluginSample.Models;

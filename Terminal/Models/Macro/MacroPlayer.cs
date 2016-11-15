@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using Boredbone.Utility.Extensions;
-using Boredbone.XamlTools.ViewModel;
+using Boredbone.Utility.Notification;
 using Reactive.Bindings.Extensions;
 using Terminal.Macro.Api;
 using Terminal.Models.Serial;
@@ -17,7 +17,7 @@ namespace Terminal.Models.Macro
     /// <summary>
     /// マクロの実行を管理
     /// </summary>
-    public class MacroPlayer : ViewModelBase, IMacroPlayer
+    public class MacroPlayer : NotificationBase, IMacroPlayer
     {
         IMacroEngine IMacroPlayer.Engine => this.Engine;
         IPluginManager IMacroPlayer.Plugins => this.Plugins;
