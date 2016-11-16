@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -75,7 +76,7 @@ namespace Terminal.ViewModels
 
         public AppendableTextController AppendableTextController { get; }
 
-        private Subject<Action> ActionQueueSubject { get; }
+        private Subject<RequestContainer> ActionQueueSubject { get; }
 
         public Window View { get; set; }
 
@@ -322,33 +323,103 @@ namespace Terminal.ViewModels
                 })
                 .AddTo(this.Disposables);
 
-            this.ActionQueueSubject = new Subject<Action>().AddTo(this.Disposables);
+            this.ActionQueueSubject = new Subject<RequestContainer>().AddTo(this.Disposables);
 
+
+            //this.ActionQueueSubject
+            //    .ObserveOnUIDispatcher()
+            //    .Subscribe(act => act())
+            //    .AddTo(this.Disposables);
 
             this.ActionQueueSubject
-                .ObserveOnUIDispatcher()
-                .Subscribe(act => act())
+                .Buffer(TimeSpan.FromMilliseconds(50))
+                .Where(x => x.Count > 0)
+                .Subscribe(x => this.WriteMain(x))
                 .AddTo(this.Disposables);
-            
-            this.PortName.Skip(1).Subscribe(name =>
-            {
-                if (!this.IsPortOpen.Value && name != null && name.Length > 0)
-                {
-                    this.OpenPortCommand.Execute();
-                }
-            })
-            .AddTo(this.Disposables);
+
+            //var scheduler = new EventLoopScheduler();
+            //
+            //this.ActionQueueSubject
+            //    .ObserveOn(scheduler)
+            //    .Subscribe(act => act())
+            //    .AddTo(this.Disposables);
+            //
+            //this.PortName.Skip(1).Subscribe(name =>
+            //{
+            //    if (!this.IsPortOpen.Value && name != null && name.Length > 0)
+            //    {
+            //        this.OpenPortCommand.Execute();
+            //    }
+            //})
+            //.AddTo(this.Disposables);
 
         }
-        
-        
+
+        private void WriteMain(IEnumerable<RequestContainer> items)
+        {
+            var length = 0;
+            var texts = new List<string>();
+            var brushs = new List<TextBrush>();
+
+            var scroll = false;
+
+            var isLastNewLine = this.AppendableTextController.LastText?.Length > 0;
+
+            foreach (var item in items)
+            {
+                var text = item.Text;
+                var newLine = (item.NewLine && isLastNewLine);
+
+                if (newLine)
+                {
+                    text = "\n" + text;
+                }
+
+                if (text.Length > 0)
+                {
+                    texts.Add(text);
+
+                    if (item.Brush != null)
+                    {
+                        brushs.Add(item.Brush.AddOffset((newLine) ? length + 1 : length));
+                    }
+
+                    length += text.Length;
+
+                    var lastChar = text[text.Length - 1];
+                    isLastNewLine = lastChar == '\n' || lastChar == '\r';
+                }
+
+                if (item.Scroll)
+                {
+                    scroll = true;
+                }
+            }
+
+            this.AppendableTextController.Write(string.Concat(texts), brushs.ToArray());
+
+            if (scroll)
+            {
+                this.ScrollToBottom();
+            }
+        }
+
+        private class RequestContainer
+        {
+            public string Text { get; set; }
+            public TextBrush Brush { get; set; }
+            public bool Scroll { get; set; }
+            public bool NewLine { get; set; }
+        }
+
+
 
         /// <summary>
         /// 末尾までスクロール
         /// </summary>
         private void ScrollToBottom() => this.AppendableTextController.ScrollToBottom();
 
-        
+
         /// <summary>
         /// コンソールに文字列を表示
         /// </summary>
@@ -360,15 +431,21 @@ namespace Terminal.ViewModels
                 return;
             }
 
-            this.ActionQueueSubject.OnNext(() =>
-            {
-                var brush = (isBold) ? new TextBrush(true, 0, text.Length) : null;
+            text = text.Replace("\r\n", "\n").Replace("\r", "\n");
 
-                if (feed)
-                {
-                    text += "\n";
-                }
-                this.AppendableTextController.Write(text, brush);
+            var brush = (isBold) ? new TextBrush(true, 0, text.Length) : null;
+
+            if (feed)
+            {
+                text += "\n";
+            }
+
+            this.ActionQueueSubject.OnNext(new RequestContainer()
+            {
+                Text = text,
+                Brush = brush,
+                Scroll = false,
+                NewLine = false
             });
         }
 
@@ -394,20 +471,30 @@ namespace Terminal.ViewModels
                     return;
                 }
             }
+            text = text.Replace("\r\n", "\n").Replace("\r", "\n");
 
-            this.ActionQueueSubject.OnNext(() =>
+            this.ActionQueueSubject.OnNext(new RequestContainer()
             {
-                if (this.AppendableTextController.LastText?.Length > 0)
-                {
-                    text = "\n" + text;
-                }
-                this.AppendableTextController.WriteLine(text, type.GetColor());
-
-                if (forceScroll)
-                {
-                    this.ScrollToBottom();
-                }
+                Text = text + "\n",
+                Brush = new TextBrush(type.GetColor(), 0, text.Length),
+                Scroll = forceScroll,
+                NewLine = true,
             });
+
+            //this.ActionQueueSubject.OnNext(() =>
+            //{
+            //    if (this.AppendableTextController.LastText?.Length > 0)
+            //    {
+            //        text = "\n" + text;
+            //    }
+            //
+            //    this.WriteMain(text + "\n", new TextBrush(type.GetColor(), 0, text.Length));
+            //
+            //    if (forceScroll)
+            //    {
+            //        this.ScrollToBottom();
+            //    }
+            //});
         }
         
 

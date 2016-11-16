@@ -255,6 +255,7 @@ namespace Terminal.Models.Macro
             await this.WaitIfPausingAsync();
         }
 
+#pragma warning disable 1998
         /// <summary>
         /// 文字列を送信
         /// </summary>
@@ -265,6 +266,7 @@ namespace Terminal.Models.Macro
                 ($"Method \"{nameof(IMacroEngine.SendAsync)}\" is not implemented."
                 + $" Use \"{nameof(IMacroEngine.SendLineAsync)}\"");
         }
+#pragma warning restore 1998
 
         /// <summary>
         /// 文字列を送信

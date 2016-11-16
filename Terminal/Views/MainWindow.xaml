@@ -248,7 +248,9 @@
             Controller="{Binding AppendableTextController}"
             LastLineBrush="#FFF0F0F0"
             FontFamily="Consolas"
-            FontSize="14"/>
+            FontSize="14"
+            BlockSize="256"
+            MaxBlockCount="16"/>
 
         <!-- Input Box -->
         <Grid Grid.Row="3" Margin="4,0,4,4">
