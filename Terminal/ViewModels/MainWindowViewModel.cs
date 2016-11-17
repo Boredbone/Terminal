@@ -41,7 +41,7 @@ namespace Terminal.ViewModels
         public ReadOnlyReactiveCollection<string> PortNames { get; }
         public ReactiveProperty<string> PortName { get; }
         public ReactiveProperty<bool> IsPortOpen { get; }
-        
+
         public ReactiveProperty<string> RequestedText { get; }
         public ReactiveProperty<int> TextHistoryIndex { get; }
 
@@ -71,7 +71,7 @@ namespace Terminal.ViewModels
 
         public ReactiveCommand IncrementCommand { get; }
         public ReactiveCommand DecrementCommand { get; }
-        
+
         public ReactiveProperty<bool> IsLogFollowing { get; }
 
         public AppendableTextController AppendableTextController { get; }
@@ -91,7 +91,7 @@ namespace Terminal.ViewModels
             this.AppendableTextController = new AppendableTextController().AddTo(this.Disposables);
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
-            
+
             this.TextHistory = new List<string>();
             this.InputText = "";
             this.TextHistoryIndex = new ReactiveProperty<int>(0).AddTo(this.Disposables);
@@ -107,7 +107,7 @@ namespace Terminal.ViewModels
             this.NoticeText = new ReactiveProperty<string>().AddTo(this.Disposables);
             this.IsNoticeEnabled = new ReactiveProperty<bool>(false).AddTo(this.Disposables);
 
-            
+
 
 
             var connection = this.Core.Connection;
@@ -150,7 +150,7 @@ namespace Terminal.ViewModels
                 .DataIgnored
                 .Subscribe(str => this.WriteNotice(str, false, LogTypes.DisabledMessage))
                 .AddTo(this.Disposables);
-            
+
 
             //ポートを開く
             this.OpenPortCommand = this.IsPortOpen
@@ -215,7 +215,7 @@ namespace Terminal.ViewModels
 
                 }, this.Disposables);
 
-            
+
 
             // ログのクリア
             this.ClearCommand = new ReactiveCommand()
@@ -326,32 +326,30 @@ namespace Terminal.ViewModels
             this.ActionQueueSubject = new Subject<RequestContainer>().AddTo(this.Disposables);
 
 
-            //this.ActionQueueSubject
-            //    .ObserveOnUIDispatcher()
-            //    .Subscribe(act => act())
-            //    .AddTo(this.Disposables);
 
             this.ActionQueueSubject
-                .Buffer(TimeSpan.FromMilliseconds(50))
+                .Buffer(TimeSpan.FromMilliseconds(15))
                 .Where(x => x.Count > 0)
                 .Subscribe(x => this.WriteMain(x))
                 .AddTo(this.Disposables);
 
-            //var scheduler = new EventLoopScheduler();
-            //
             //this.ActionQueueSubject
-            //    .ObserveOn(scheduler)
-            //    .Subscribe(act => act())
+            //    .BufferVariable
+            //        (TimeSpan.FromMilliseconds(20), TimeSpan.FromMilliseconds(1000),
+            //        100, Scheduler.Default)
+            //    .Where(_ => !this.IsDisposed)
+            //    .Subscribe(x => this.WriteMain(x))
             //    .AddTo(this.Disposables);
-            //
-            //this.PortName.Skip(1).Subscribe(name =>
-            //{
-            //    if (!this.IsPortOpen.Value && name != null && name.Length > 0)
-            //    {
-            //        this.OpenPortCommand.Execute();
-            //    }
-            //})
-            //.AddTo(this.Disposables);
+
+
+            this.PortName.Skip(1).Subscribe(name =>
+            {
+                if (!this.IsPortOpen.Value && name != null && name.Length > 0)
+                {
+                    this.OpenPortCommand.Execute();
+                }
+            })
+            .AddTo(this.Disposables);
 
         }
 
@@ -464,7 +462,7 @@ namespace Terminal.ViewModels
             if (type == LogTypes.Notice)
             {
                 Application.Current.Dispatcher.Invoke
-                    (() => this.NoticeText.Value = text);
+                    (() => { if (!this.IsDisposed) { this.NoticeText.Value = text; } });
 
                 if (!this.IsNoticeEnabled.Value)
                 {
@@ -496,7 +494,7 @@ namespace Terminal.ViewModels
             //    }
             //});
         }
-        
+
 
         /// <summary>
         /// TextBoxの内容が変化したときの処理
@@ -519,7 +517,7 @@ namespace Terminal.ViewModels
                 .AddTo(this.Disposables);
 
             textChanged
-                .Where(x =>this.TextHistory.ContainsIndex(this.TextHistoryIndex.Value)
+                .Where(x => this.TextHistory.ContainsIndex(this.TextHistoryIndex.Value)
                     && textBox.Text != this.TextHistory[this.TextHistoryIndex.Value])
                 .Subscribe(x =>
                 {
@@ -714,6 +712,6 @@ namespace Terminal.ViewModels
                 }
             }
         }
-
     }
 }
+
