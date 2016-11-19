@@ -179,7 +179,7 @@ namespace Terminal.ViewModels
 
 
             this.ConnectionText = this.IsPortOpen
-                .Select(y => y ? "Opened" : "Closed")
+                .Select(y => y ? "Open" : "Closed")
                 .ToReactiveProperty()
                 .AddTo(this.Disposables);
 
@@ -361,12 +361,12 @@ namespace Terminal.ViewModels
 
             var scroll = false;
 
-            var isLastNewLine = this.AppendableTextController.LastText?.Length > 0;
+            var isLastNewLine = this.AppendableTextController.LastText?.Length <= 0;
 
             foreach (var item in items)
             {
                 var text = item.Text;
-                var newLine = (item.NewLine && isLastNewLine);
+                var newLine = (item.NewLine && !isLastNewLine);
 
                 if (newLine)
                 {

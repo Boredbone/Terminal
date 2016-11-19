@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;_SIMULATION</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SIMULATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
@@ -223,6 +223,7 @@
     <Compile Include="Models\Macro\CodeReader.cs" />
     <Compile Include="Models\Macro\DelegateMacro.cs" />
     <Compile Include="Models\Macro\IMacroCode.cs" />
+    <Compile Include="Models\Serial\CircularBuffer.cs" />
     <Compile Include="Models\Serial\ConnectionBase.cs" />
     <Compile Include="Models\Serial\LineCodes.cs" />
     <Compile Include="Models\Macro\MacroEngine.cs" />

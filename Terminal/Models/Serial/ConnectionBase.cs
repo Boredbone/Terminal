@@ -52,7 +52,7 @@ namespace Terminal.Models.Serial
         public string PortName { get; private set; }
 
 
-        private List<string> HistoryList { get; }
+        private CircularBuffer<string> HistoryList { get; }
         private string LineBuffer { get; set; }
         
         protected Dictionary<string,SettingAccessor> Settings { get; }
@@ -129,7 +129,7 @@ namespace Terminal.Models.Serial
 
             this.LineCode = LineCodes.Lf;
 
-            this.HistoryList = new List<string>();
+            this.HistoryList = new CircularBuffer<string>(1024);
             this.LineBuffer = "";
 
             this.portNames = new ObservableCollection<string>();
@@ -189,10 +189,14 @@ namespace Terminal.Models.Serial
             {
                 return this.LineBuffer;
             }
+            if (back >= this.HistoryList.Length)
+            {
+                return "";
+            }
+            return this.HistoryList.GetPrevious(back - 1) ?? "";
 
-            var index = this.HistoryList.Count - back;
-
-            return (index >= 0) ? this.HistoryList[index] : "";
+            //var index = this.HistoryList.Count - back;
+            //return (index >= 0) ? this.HistoryList[index] : "";
 
         }
 

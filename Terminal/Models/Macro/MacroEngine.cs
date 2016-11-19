@@ -138,7 +138,7 @@ namespace Terminal.Models.Macro
             //キーワードの最大文字数
             var wordSize = keywords.Select(x => x.Length).Max();
 
-            var kwLastChar = keywords.Select(x => x.Last()).Distinct();
+            var kwLastChar = keywords.Select(x => x.Last()).Distinct().ToArray();
 
             int result = -1;
             var bs = new BehaviorSubject<bool>(false);
