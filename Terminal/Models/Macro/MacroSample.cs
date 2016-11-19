@@ -45,6 +45,11 @@ namespace Terminal.Models.Macro
             Macro.Display(Macro.History(2));
             Macro.Display(Macro.History(3));
 
+
+            await Macro.SendLineAsync("abdefhjicbcddefghi");
+            var i = await Macro.WaitAsync("abc", "defg", "hi");
+            Macro.Display(i.ToString());
+
             //Macro.Cancel();
 
             var fileName = @"d.txt";

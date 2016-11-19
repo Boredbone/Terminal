@@ -66,7 +66,7 @@ namespace Terminal.Models.Macro
             .Merge(this.CancelObservable)
             .Publish().RefCount();
 
-       
+
 
 
         public MacroEngine(ConnectionBase connection)
@@ -78,7 +78,7 @@ namespace Terminal.Models.Macro
             this.StatusSubject = new Subject<StatusItem>().AddTo(this.Disposables);
             this.CancelSubject = new BehaviorSubject<bool>(false).AddTo(this.Disposables);
             this.LogStateSubject = new Subject<bool>().AddTo(this.Disposables);
-            
+
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Terminal.Models.Macro
         {
             var list = new List<string>();
             var bs = new BehaviorSubject<bool>(false);
-            
+
             var trigger = this.Connection.LineReceived
                 .Skip(1)
                 .Take(count)
@@ -135,39 +135,46 @@ namespace Terminal.Models.Macro
                 return -1;
             }
 
-            //キーワードの最大文字数
-            var wordSize = keywords.Select(x => x.Length).Max();
-
-            var kwLastChar = keywords.Select(x => x.Last()).Distinct().ToArray();
-
             int result = -1;
             var bs = new BehaviorSubject<bool>(false);
 
-            var list = new List<string>();
-            var stringBuilder = new System.Text.StringBuilder();
+            var receivedCharCountArray = new int[keywords.Length];
 
             var trigger = this.Connection.DataReceivedWithSendingLine
-                //.Do(x => stringBuilder.Append(x))
-                //.Where(str => kwLastChar.Any(c => str.Contains(c)))
                 .Select(x =>
                 {
-                    stringBuilder.Append(x);
-
-                    if (kwLastChar.All(c => !x.Contains(c)))
+                    //受信したすべての文字に関して
+                    foreach (var c in x)
                     {
-                        return -1;
-                    }
-
-                    //受信データを結合
-                    var str = stringBuilder.ToString();
-
-                    //キーワードが含まれているか
-                    for (int i = 0; i < keywords.Length; i++)
-                    {
-                        if (str.Contains(keywords[i]))
+                        for (int i = 0; i < keywords.Length; i++)
                         {
-                            //インデックスを返却
-                            return i;
+                            var kw = keywords[i];
+                            var currentIndex = receivedCharCountArray[i];
+
+                            var received = kw[currentIndex] == c;
+
+                            if (!received && kw[0] == c)
+                            {
+                                received = true;
+                                currentIndex = 0;
+                            }
+
+                            if (received)
+                            {
+                                currentIndex++;
+
+                                if (currentIndex >= kw.Length)
+                                {
+                                    //キーワードを最後まで受信したらインデックスを返却
+                                    return i;
+                                }
+                                receivedCharCountArray[i] = currentIndex;
+                            }
+                            else
+                            {
+                                //キーワードを受信していない
+                                receivedCharCountArray[i] = 0;
+                            }
                         }
                     }
 
@@ -187,7 +194,7 @@ namespace Terminal.Models.Macro
 
             await this.WaitTriggerAsync(bs, trigger, new StatusItem
                 ($"Wait : {keywords.Select(x => x.Replace("\n", "\\n").Replace("\r", "\\r")).Join(",")}"));
-            
+
             return result;
         }
 
@@ -205,7 +212,7 @@ namespace Terminal.Models.Macro
                 .Subscribe(x => result = x, () => bs.OnNext(true));
 
             await this.WaitTriggerAsync(bs, trigger, new StatusItem($"Wait : Any responce"));
-            
+
             return result;
         }
 
