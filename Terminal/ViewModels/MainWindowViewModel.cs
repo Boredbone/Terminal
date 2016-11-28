@@ -139,10 +139,13 @@ namespace Terminal.ViewModels
                 .Subscribe(str => this.Write(str, false))
                 .AddTo(this.Disposables);
 
+
+            var isFeedAfterSend = !this.Core.NoFeedAfterSend;
+
             //データ送信時のエコー
             connection
                 .DataSent
-                .Subscribe(str => this.Write(str, true, true))
+                .Subscribe(str => this.Write(str, isFeedAfterSend, true))
                 .AddTo(this.Disposables);
 
             //データが送信されなかった
@@ -328,7 +331,7 @@ namespace Terminal.ViewModels
 
 
             this.ActionQueueSubject
-                .Buffer(TimeSpan.FromMilliseconds(15))
+                .Buffer(TimeSpan.FromMilliseconds(20))
                 .Where(x => x.Count > 0)
                 .Subscribe(x => this.WriteMain(x))
                 .AddTo(this.Disposables);

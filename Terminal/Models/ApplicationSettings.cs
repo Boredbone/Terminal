@@ -16,6 +16,9 @@ namespace Terminal.Models
         public string PortName { get; set; }
 
 
-        
+        [DataMember]
+        public bool NoFeedAfterSend { get; set; }
+
+
     }
 }

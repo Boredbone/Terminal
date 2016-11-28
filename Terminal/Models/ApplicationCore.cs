@@ -70,6 +70,19 @@ namespace Terminal.Models
             }
         }
 
+        public bool NoFeedAfterSend
+        {
+            get { return this.Settings.NoFeedAfterSend; }
+            set
+            {
+                if (this.Settings.NoFeedAfterSend != value)
+                {
+                    this.Settings.NoFeedAfterSend = value;
+                    RaisePropertyChanged(nameof(NoFeedAfterSend));
+                }
+            }
+        }
+
 
 
         public ApplicationCore()
