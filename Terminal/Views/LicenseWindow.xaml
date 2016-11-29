@@ -4,63 +4,138 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Terminal.Views"
-        mc:Ignorable="d" Loaded="Window_Loaded"
-        Title="License" Height="500" Width="400"
+        xmlns:tb="clr-namespace:WpfTools.Behaviors;assembly=WpfTools"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="About" Height="300" Width="520"
         UseLayoutRounding="True">
     <Window.Resources>
-        <Style x:Key="titleTextStyle" TargetType="TextBlock">
+        <Style x:Key="normalTextStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="0"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="FontWeight" Value="Bold"/>
         </Style>
-        <Style x:Key="smallTextStyle" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,25"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="FontSize" Value="11"/>
-        </Style>
+        <system:Double x:Key="TitleTextSize">18</system:Double>
+        <system:Double x:Key="SubTitleTextSize">14</system:Double>
     </Window.Resources>
-    <Grid>
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="1" x:Name="scroller"
+        <ScrollViewer x:Name="scroller"
                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                      HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                       HorizontalContentAlignment="Stretch"
                       VerticalContentAlignment="Stretch">
-            <Grid Width="{Binding ElementName=scroller,Path=ActualWidth}">
-                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="4,4,12,4">
 
+            <Grid HorizontalAlignment="Stretch">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="4,4,12,4">
+
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
                     <StackPanel>
 
-                        <TextBlock Style="{StaticResource smallTextStyle}">
-                            <Run Text="Version "/>
-                            <Run Name="versionText" Text="1.0"/>
-                        </TextBlock>
-                        <!--
-                        <TextBlock Style="{StaticResource smallTextStyle}">
-                            <Run Text="Date "/>
-                            <Run Name="buildDate" Text="1.0"/>
-                        </TextBlock>-->
-                        
-                        <TextBlock x:Name="description" Style="{StaticResource smallTextStyle}"/>
+
+                        <Grid HorizontalAlignment="Left" Margin="4">
+
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource normalTextStyle}"
+                                           FontSize="{StaticResource TitleTextSize}">
+                                    <Run Text="Terminal"/>
+                                </TextBlock>
+
+                                <TextBlock Style="{StaticResource normalTextStyle}"
+                                           FontSize="{StaticResource SubTitleTextSize}">
+                                    <Run Text="Version "/>
+                                    <Run Name="versionText" Text="1.0"/>
+                                </TextBlock>
+                                
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Run Text="Copyright 2016 Boredbone"/>
+                                </TextBlock>
+
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Hyperlink x:Name="projectHomeLink"
+                                               tb:HyperlinkBehavior.NavigateByClick="True"
+                                               NavigateUri="https://github.com/Boredbone/Terminal">
+                                        <Run Text="Project Home"/>
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+
+                        </Grid>
+
+                        <StackPanel HorizontalAlignment="Center" Margin="8">
+                            <TextBlock
+                                x:Name="description" Style="{StaticResource normalTextStyle}"
+                                FontSize="{StaticResource SubTitleTextSize}"
+                                Text="This software is built using these libraries:"/>
+
+                            <StackPanel Margin="8,2,2,2">
 
 
-                        <TextBlock Style="{StaticResource titleTextStyle}" Text="Reactive Extensions" />
-                        <TextBlock x:Name="rxText" Style="{StaticResource smallTextStyle}"/>
+                                <!-- Rx -->
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Hyperlink NavigateUri="https://github.com/Reactive-Extensions/Rx.NET"
+                                               tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="Reactive Extensions" FontWeight="Bold"/>
+                                    </Hyperlink>
+                                    <Run Text=" (c) .NET Foundation and Contributors "/>
+                                    <Hyperlink NavigateUri="http://www.apache.org/licenses/LICENSE-2.0"
+                                               tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="Apache License"/>
+                                    </Hyperlink>
+                                </TextBlock>
 
-                        <TextBlock Style="{StaticResource titleTextStyle}" Text="ReactiveProperty" />
-                        <TextBlock x:Name="rpText" Style="{StaticResource smallTextStyle}"/>
 
-                        <TextBlock Style="{StaticResource titleTextStyle}"
-                                   Text=".NET Compiler Platform (&quot;Roslyn&quot;)"/>
-                        <TextBlock x:Name="roslynText" Style="{StaticResource smallTextStyle}"/>
+                                <!-- Rp -->
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Hyperlink NavigateUri="https://github.com/runceel/ReactiveProperty"
+                                               tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="ReactiveProperty" FontWeight="Bold"/>
+                                    </Hyperlink>
+                                    <Run Text=" (c) 2016 neuecc, xin9le, okazuki "/>
+                                    <Hyperlink
+                                        NavigateUri="https://github.com/runceel/ReactiveProperty/blob/master/LICENSE.txt"
+                                        tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="The MIT License"/>
+                                    </Hyperlink>
+                                </TextBlock>
+
+                                <!-- Roslyn -->
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Hyperlink NavigateUri="https://github.com/dotnet/roslyn"
+                                               tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text=".NET Compiler Platform (&quot;Roslyn&quot;)" FontWeight="Bold"/>
+                                    </Hyperlink>
+                                    <Run Text=" by Roslyn Team "/>
+                                    <Hyperlink
+                                        NavigateUri="https://github.com/dotnet/roslyn/blob/master/License.txt"
+                                        tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="Apache License"/>
+                                    </Hyperlink>
+                                </TextBlock>
+
+
+
+                            </StackPanel>
+                        </StackPanel>
+
+
                     </StackPanel>
 
-
-
-                </StackPanel>
+                </Grid>
             </Grid>
         </ScrollViewer>
+        <!--<Button
+            Content="OK"
+            Grid.Row="1" Margin="8,8,32,16" HorizontalAlignment="Right"
+            Width="86" Height="30" IsDefault="True" IsCancel="True"
+            Click="Button_Click"/>-->
     </Grid>
 </Window>

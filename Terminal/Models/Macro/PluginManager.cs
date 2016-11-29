@@ -27,11 +27,6 @@ namespace Terminal.Models.Macro
         public T Get<T>() where T : IPlugin
         {
             return (T)this.Dictionary[typeof(T).FullName];
-
-            //var plugin = this.Dictionary[typeof(T).FullName];
-            //plugin.Engine = this.Engine;
-            //
-            //return (T)plugin;
         }
 
         public void Register(IPlugin value)

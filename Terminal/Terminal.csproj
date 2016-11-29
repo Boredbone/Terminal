@@ -342,11 +342,6 @@
     <Resource Include="Resources\WebFormTemplate_11274.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\Licenses\ReactiveExtensions.txt" />
-    <EmbeddedResource Include="Assets\Licenses\ReactiveProperty.txt" />
-    <EmbeddedResource Include="Assets\Licenses\roslyn.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Assets\Icons\action_Cancel_16xLG.png" />
     <Resource Include="Assets\Icons\ClassIcon_32x.png" />
     <Resource Include="Assets\Icons\refresh_16xLG.png" />
