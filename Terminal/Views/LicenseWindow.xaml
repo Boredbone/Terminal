@@ -121,6 +121,19 @@
                                     </Hyperlink>
                                 </TextBlock>
 
+                                <!-- Visual Studio Image Library -->
+                                <TextBlock Style="{StaticResource normalTextStyle}">
+                                    <Hyperlink NavigateUri="https://msdn.microsoft.com/en-US/library/ms246582.aspx"
+                                               tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="Visual Studio Image Library" FontWeight="Bold"/>
+                                    </Hyperlink>
+                                    <Run Text=" by Microsoft "/>
+                                    <Hyperlink 
+                                        NavigateUri="https://www.microsoft.com/web/webpi/eula/net_library_eula_enu.htm"
+                                        tb:HyperlinkBehavior.NavigateByClick="True">
+                                        <Run Text="MICROSOFT SOFTWARE LICENSE TERMS"/>
+                                    </Hyperlink>
+                                </TextBlock>
 
 
                             </StackPanel>
