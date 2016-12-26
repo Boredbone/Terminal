@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Boredbone.Utility.Tools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,15 +24,19 @@ namespace Terminal.Views
         {
             InitializeComponent();
 
-            var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var ver = assembly.GetName().Version;
 
-            this.versionText.Text = ver.ToString();
+            this.versionText.Text = ver.ToString(3);
 
-            var buildDateTime = new DateTime(2000, 1, 1, 0, 0, 0);
-            buildDateTime = buildDateTime.AddDays(ver.Build);
-            buildDateTime = buildDateTime.AddSeconds(ver.Revision * 2);
-            //this.buildDate.Text = buildDateTime.ToString();
-            
+            try
+            {
+                var buildDateTime = BuildTimeStamp.GetDateTimeUtcFrom(assembly.Location);
+                this.versionDetail.Text = $"{ver} {buildDateTime}";
+            }
+            catch
+            {
+            }
         }
     }
 }
