@@ -22,5 +22,9 @@ namespace Terminal.Models
 
         [DataMember]
         public List<string> CommandHistory { get; set; }
+
+
+        [DataMember]
+        public int CommandHistoryLength { get; set; }
     }
 }

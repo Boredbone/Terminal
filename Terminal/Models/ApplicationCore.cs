@@ -265,7 +265,13 @@ namespace Terminal.Models
             {
                 this.WindowPlacement.Save();
 
-                this.Settings.CommandHistory = this.CommandHistory.TakeLast(32).ToList();
+                if (this.Settings.CommandHistoryLength < 10)
+                {
+                    this.Settings.CommandHistoryLength = 32;
+                }
+                this.Settings.CommandHistory = this.CommandHistory
+                    .TakeLast(this.Settings.CommandHistoryLength)
+                    .ToList();
 
                 this.SettingsXml.SaveXml(this.Settings);
             }
