@@ -20,5 +20,7 @@ namespace Terminal.Models
         public bool NoFeedAfterSend { get; set; }
 
 
+        [DataMember]
+        public List<string> CommandHistory { get; set; }
     }
 }
