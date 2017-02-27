@@ -92,9 +92,9 @@ namespace Terminal.ViewModels
 
             this.IsLogFollowing = new ReactiveProperty<bool>(true).AddTo(this.Disposables);
 
-            this.TextHistory = new List<string>();
+            this.TextHistory = this.Core.CommandHistory;// new List<string>();
             this.InputText = "";
-            this.TextHistoryIndex = new ReactiveProperty<int>(0).AddTo(this.Disposables);
+            this.TextHistoryIndex = new ReactiveProperty<int>(this.TextHistory.Count).AddTo(this.Disposables);
 
             //ユーザー入力テキスト
             this.RequestedText = this.TextHistoryIndex

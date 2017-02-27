@@ -83,6 +83,8 @@ namespace Terminal.Models
             }
         }
 
+        public List<string> CommandHistory { get; private set; }
+
 
 
         public ApplicationCore()
@@ -126,6 +128,9 @@ namespace Terminal.Models
             this.Settings = SettingsXml
                 .LoadXml(XmlLoadingOptions.IgnoreAllException)
                 .Value;
+
+            // Command History
+            this.CommandHistory = this.Settings.CommandHistory?.ToList() ?? new List<string>();
             
             //ポートオープン時に名前を保存
             this.Connection.IsOpenChanged
@@ -259,6 +264,15 @@ namespace Terminal.Models
             try
             {
                 this.WindowPlacement.Save();
+
+                if (this.Settings.CommandHistoryLength < 10)
+                {
+                    this.Settings.CommandHistoryLength = 32;
+                }
+                this.Settings.CommandHistory = this.CommandHistory
+                    .TakeLast(this.Settings.CommandHistoryLength)
+                    .ToList();
+
                 this.SettingsXml.SaveXml(this.Settings);
             }
             catch
