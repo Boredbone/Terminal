@@ -188,7 +188,7 @@ C#スクリプトにマクロ機能を提供します．
 ## プロパティ
 
 
-<a name ="Timeout0">
+<a name ="Timeout0"></a>
 ### Macro.Timeout Property
 ```cs
 int Timeout { get; set; }
@@ -241,7 +241,7 @@ catch (TimeoutException)
 
 ------
 
-<a name ="SendLineAsync0">
+<a name ="SendLineAsync0"></a>
 ### Macro.SendLineAsync Method
 ```cs
 Task SendLineAsync(string text)
@@ -267,7 +267,7 @@ System.OperationCanceledException
 
 ------
 
-<a name ="SendLineAsync1">
+<a name ="SendLineAsync1"></a>
 ### Macro.SendLineAsync Method
 ```cs
 Task SendLineAsync(string text, bool immediately)
@@ -299,7 +299,7 @@ System.OperationCanceledException
 
 ------
 
-<a name ="DelayAsync0">
+<a name ="DelayAsync0"></a>
 ### Macro.DelayAsync Method
 ```cs
 Task DelayAsync(int timeMillisec)
@@ -329,7 +329,7 @@ System.OperationCanceledException
 
 ------
 
-<a name ="WaitAsync1">
+<a name ="WaitAsync1"></a>
 ### Macro.WaitAsync Method
 ```cs
 Task<string> WaitAsync()
@@ -356,7 +356,7 @@ System.TimeoutException
 
 ------
 
-<a name ="WaitAsync0">
+<a name ="WaitAsync0"></a>
 ### Macro.WaitAsync Method
 ```cs
 Task<int> WaitAsync(params string[] keywords)
@@ -411,7 +411,7 @@ var result = await Macro.WaitAsync("Reply0", "Reply1", "Reply2");
 
 ------
 
-<a name ="WaitLineAsync0">
+<a name ="WaitLineAsync0"></a>
 ### Macro.WaitLineAsync Method
 ```cs
 Task<string> WaitLineAsync()
@@ -438,7 +438,7 @@ System.TimeoutException
 
 ------
 
-<a name ="WaitLineAsync1">
+<a name ="WaitLineAsync1"></a>
 ### Macro.WaitLineAsync Method
 ```cs
 Task<string[]> WaitLineAsync(int count)
@@ -471,7 +471,7 @@ System.TimeoutException
 ## 同期メソッド
 
 
-<a name ="History0">
+<a name ="History0"></a>
 ### Macro.History Method
 ```cs
 string History(int back)
@@ -512,7 +512,7 @@ var h3 = Macro.History(3); // h3 = "aaa"
 
 ------
 
-<a name ="Display0">
+<a name ="Display0"></a>
 ### Macro.Display Method
 ```cs
 void Display(string text)
@@ -532,7 +532,7 @@ string text
 
 -----
 
-<a name ="ClearCancellation0">
+<a name ="ClearCancellation0"></a>
 ### Macro.ClearCancellation Method
 ```cs
 void ClearCancellation()
@@ -550,7 +550,7 @@ void ClearCancellation()
 
 -----
 
-<a name ="SetLogState0">
+<a name ="SetLogState0"></a>
 ### Macro.SetLogState Method
 ```cs
 void SetLogState(bool state)
